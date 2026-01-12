@@ -1,26 +1,14 @@
 import {
   Prompt,
   PromptsOverviewInfo,
-  ClusterMetadata,
   AddPromptsRequest,
   GetPromptsRequest,
-  ClusterIdParam,
   AddPromptsResponse,
-} from "@/app/types"; // adjust import paths to match your project
-import { REVELIUM_BASE_URL } from "../constants/requests";
+  Cluster,
+} from "@/app/types";
+import { ADD_PROMPTS_ENDPOINT, ADD_PROMPTS_FILE_ENDPOINT, BASE_CLUSTER_ENDPOINT, COUNT_CLUSTER_ENDPOINT, GET_LABELS_ENDPOINT, COUNT_PROMPTS_ENDPOINT, GET_PROMPTS_ENDPOINT, GET_PROMPTS_OVERVIEW_ENDPOINT, REVELIUM_BASE_URL, START_CLUSTER_ENDPOINT } from "./constants";
 
 export class ReveliumClient {
-  static ADD_PROMPTS_ENDPOINT = "/api/prompts/add";
-  static ADD_PROMPTS_FILE_ENDPOINT = "/api/prompts/add/file";
-  static GET_PROMPTS_ENDPOINT = "/api/prompts";
-  static GET_PROMPTS_OVERVIEW_ENDPOINT = "/api/prompts/overview";
-  static BASE_CLUSTER_ENDPOINT = "/api/clusters";
-  static GET_CLUSTER_META_ENDPOINT = "/api/clusters/metadata";
-  static GET_CLUSTER_META_BATCH_ENDPOINT = "/api/clusters/metadata/batch";
-  static GET_PROMPTS_COUNT_ENDPOINT = "/api/prompts/count";
-  static GET_CLUSTER_COUNT_ENDPOINT = "/api/clusters/count";
-  static GET_LABELS_ENDPOINT = "/api/labels";
-
   private baseUrl: string;
 
   constructor(baseUrl: string = REVELIUM_BASE_URL) {
@@ -36,7 +24,7 @@ export class ReveliumClient {
   }
 
   async addPrompts(prompts: Prompt[]): Promise<AddPromptsResponse> {
-    const url = `${this.baseUrl}${ReveliumClient.ADD_PROMPTS_ENDPOINT}`;
+    const url = `${this.baseUrl}${ADD_PROMPTS_ENDPOINT}`;
     const payload: AddPromptsRequest = { prompts };
 
     const res = await fetch(url, {
@@ -49,7 +37,7 @@ export class ReveliumClient {
   }
 
   async addPromptsFile(file: File): Promise<AddPromptsResponse> {
-    const url = `${this.baseUrl}${ReveliumClient.ADD_PROMPTS_FILE_ENDPOINT}`;
+    const url = `${this.baseUrl}${ADD_PROMPTS_FILE_ENDPOINT}`;
     const formData = new FormData();
     formData.append("file", file);
 
@@ -62,7 +50,7 @@ export class ReveliumClient {
   }
 
   async getPrompts(ids: string[]): Promise<Prompt[]> {
-    const url = `${this.baseUrl}${ReveliumClient.GET_PROMPTS_ENDPOINT}`;
+    const url = `${this.baseUrl}${GET_PROMPTS_ENDPOINT}`;
     const payload: GetPromptsRequest = { prompt_ids: ids };
 
     const res = await fetch(url, {
@@ -76,53 +64,39 @@ export class ReveliumClient {
   }
 
   async getPromptsOverview(): Promise<PromptsOverviewInfo> {
-    const url = `${this.baseUrl}${ReveliumClient.GET_PROMPTS_OVERVIEW_ENDPOINT}`;
+    const url = `${this.baseUrl}${GET_PROMPTS_OVERVIEW_ENDPOINT}`;
     const res = await fetch(url, { method: "GET" });
     return this.handleResponse(res);
   }
 
   async clusterPrompts(): Promise<Record<string, unknown>> {
-    const url = `${this.baseUrl}${ReveliumClient.BASE_CLUSTER_ENDPOINT}`;
+    const url = `${this.baseUrl}${START_CLUSTER_ENDPOINT}`;
     const res = await fetch(url, { method: "POST" });
     return this.handleResponse(res);
   }
 
-  async getClusterMetadata(
-    clusterId: string
-  ): Promise<ClusterMetadata | null> {
-    const url = `${this.baseUrl}${ReveliumClient.GET_CLUSTER_META_ENDPOINT}`;
-    const params: ClusterIdParam = { cluster_id: clusterId };
-
-    const query = new URLSearchParams(
-      Object.entries(params).reduce<Record<string, string>>(
-        (acc, [key, value]) => {
-          acc[key] = String(value);
-          return acc;
-        },
-        {}
+  async getClusters(clusterId?: string, offset?: number, limit?: number): Promise<Omit<Cluster, "embedding">[]> {
+      const query = { 
+        clusterId: clusterId,
+        offset: offset, 
+        limit: limit 
+      };
+      
+    const params = new URLSearchParams(
+      Object.fromEntries(
+        Object.entries(query).map(([key, value]) => [key, String(value)])
       )
     );
-
-    const res = await fetch(`${url}?${query.toString()}`, {
-      method: "GET",
-    });
-
-    const data = await this.handleResponse<{ metadata?: ClusterMetadata }>(res);
-    return data.metadata ?? null;
-  }
-
-  async getClusterMetadataBatch(): Promise<ClusterMetadata[] | null> {
-    const url = `${this.baseUrl}${ReveliumClient.GET_CLUSTER_META_BATCH_ENDPOINT}`;
+    const url = `${this.baseUrl}${BASE_CLUSTER_ENDPOINT}?${params.toString()}`;
     const res = await fetch(url, { method: "GET" });
-
-    const data = await this.handleResponse<{ metadatas?: ClusterMetadata[] }>(
+    const data = await this.handleResponse<Omit<Cluster, "embedding">[]>(
       res
     );
-    return data.metadatas ?? null;
+    return [];
   }
 
   async countPrompts(): Promise<number> {
-    const url = `${this.baseUrl}${ReveliumClient.GET_PROMPTS_COUNT_ENDPOINT}`;
+    const url = `${this.baseUrl}${COUNT_PROMPTS_ENDPOINT}`;
     const res = await fetch(url, { method: "GET" });
 
     const data = await this.handleResponse<{ count?: number }>(res);
@@ -130,7 +104,7 @@ export class ReveliumClient {
   }
 
   async countClusters(): Promise<number> {
-    const url = `${this.baseUrl}${ReveliumClient.GET_CLUSTER_COUNT_ENDPOINT}`;
+    const url = `${this.baseUrl}${COUNT_CLUSTER_ENDPOINT}`;
     const res = await fetch(url, { method: "GET" });
 
     const data = await this.handleResponse<{ count?: number }>(res);
@@ -138,7 +112,7 @@ export class ReveliumClient {
   }
 
   async getExistingLabels(): Promise<string[]> {
-    const url = `${this.baseUrl}${ReveliumClient.GET_LABELS_ENDPOINT}`;
+    const url = `${this.baseUrl}${GET_LABELS_ENDPOINT}`;
     const res = await fetch(url, { method: "GET" });
 
     const data = await this.handleResponse<{ labels?: string[] }>(res);

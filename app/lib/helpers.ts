@@ -54,3 +54,40 @@ export function camelCaseToWords(input: string,capitalizeFirst = false): string 
 
   return result.charAt(0).toUpperCase() + result.slice(1);
 }
+
+import { z } from "zod";
+
+/**
+ * Converts snake_case JSON to camelCase while preserving typing.
+ * Optionally validates the shape using a zod schema.
+ */
+function toCamelCaseKey(str: string): string {
+  return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+}
+
+function snakeToCamelRecursive(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(snakeToCamelRecursive);
+  } else if (obj !== null && typeof obj === "object") {
+    return Object.fromEntries(
+      Object.entries(obj).map(([k, v]) => [toCamelCaseKey(k), snakeToCamelRecursive(v)])
+    );
+  }
+  return obj;
+}
+
+/**
+ * Converts snake_case JSON to camelCase and optionally validates with zod
+ */
+export function convertSnakeToCamel<T>(
+  data: unknown,
+  schema?: z.ZodType<T>
+): T {
+  const camelCased = snakeToCamelRecursive(data);
+
+  if (schema) {
+    return schema.parse(camelCased);
+  }
+
+  return camelCased as T;
+}
