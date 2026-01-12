@@ -7,11 +7,7 @@ export const FPF_LABS_API_KEY = process.env.FPF_LABS_API_KEY!
 
 
 export const AcceptedMimes = [
-    'text/csv',
     'application/json',
-    'application/pdf',
-    'text/markdown',
-    'text/x-markdown'
   ]
 
 export const AcceptedImgMimes = [

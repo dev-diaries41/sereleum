@@ -1,9 +1,12 @@
 'use client';
 
 import { PromptOverviewInfo } from '@/app/types';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLayerGroup, faMoneyBill, faTag, faTerminal } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faLayerGroup, faMoneyBill, faTag, faTerminal } from '@fortawesome/free-solid-svg-icons';
+import FileUploader from '../common/upload';
+import { AcceptedDocFiles, AcceptedMimes } from '@/app/constants/global';
+import { clusterPrompts, uploadPromptsFile } from '@/app/lib/client/request';
 
 
 interface DashboardOverviewProps {
@@ -68,8 +71,20 @@ export default function DashboardOverview({ overview, email }: DashboardOverview
     ];
   }, [overview]);
 
+  const [promptsFile, setPromptsFile] = useState<File | null>(null)
+
   const clusters: any[] = [];
-  const recent: any[] = [];
+
+  const handleFileUpload = async() => {
+    if(!promptsFile) return
+    const res = await uploadPromptsFile(promptsFile)
+    alert(JSON.stringify(res.data))
+  }
+
+  const handleClusterPrompts = async() => {
+    const res = await clusterPrompts()
+    alert(JSON.stringify(res.data))
+  }
 
   return (
     <div className="flex-1 max-w-7xl mx-auto w-full">
@@ -80,10 +95,29 @@ export default function DashboardOverview({ overview, email }: DashboardOverview
             <div>
               <h1 className="text-2xl md:text-3xl font-bold">Overview</h1>
             </div>
-            <div className="flex items-center gap-3">
-              <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow-md">
-                Add Prompts
+            <div className="flex flex-col items-start gap-3">
+              <div className='flex flex-row gap-4 items-center'>
+               {promptsFile? ( 
+              <button onClick = {handleFileUpload} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow-md">
+                Upload Prompts
               </button>
+              ):(<FileUploader onFileUpload={(files) => setPromptsFile(files[0])} acceptedMimes={AcceptedMimes}>
+              <span className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow-md">
+                Add Prompts
+              </span>
+              </FileUploader>
+            )}           
+              </div>
+          
+              {promptsFile && (
+                <div className='flex flex-row gap-2 items-center'>
+                  <button onClick={() => setPromptsFile(null)}>
+                    <FontAwesomeIcon icon={faClose} className="w-4 h-4 text-red-700" />
+                  </button>
+                  <p>{promptsFile.name}</p>
+                </div>
+              )
+              }
             </div>
           </div>
 
@@ -138,7 +172,7 @@ export default function DashboardOverview({ overview, email }: DashboardOverview
               <h4 className="text-sm font-semibold mb-2">Quick Actions</h4>
               <div className="flex flex-col gap-2 mt-3">
                 <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Index prompts</button>
-                <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Cluster prompts</button>
+                <button onClick = {handleClusterPrompts} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Cluster prompts</button>
                 <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Manage labels</button>
               </div>
             </div>
