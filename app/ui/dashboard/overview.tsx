@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faLayerGroup, faMoneyBill, faTag, faTerminal } from '@fortawesome/free-solid-svg-icons';
 import FileUploader from '../common/upload';
 import { AcceptedDocFiles, AcceptedMimes } from '@/app/constants/global';
-import { clusterPrompts, uploadPromptsFile } from '@/app/lib/client/request';
+import { reveliumClient } from '@/app/revelium/client';
 
 
 interface DashboardOverviewProps {
@@ -77,13 +77,13 @@ export default function DashboardOverview({ overview, email }: DashboardOverview
 
   const handleFileUpload = async() => {
     if(!promptsFile) return
-    const res = await uploadPromptsFile(promptsFile)
-    alert(JSON.stringify(res.data))
+    const res = await reveliumClient.addPromptsFile(promptsFile)
+    alert(JSON.stringify(res))
   }
 
   const handleClusterPrompts = async() => {
-    const res = await clusterPrompts()
-    alert(JSON.stringify(res.data))
+    const res = await reveliumClient.clusterPrompts()
+    alert(JSON.stringify(res))
   }
 
   return (

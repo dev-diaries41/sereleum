@@ -7,6 +7,7 @@ import UserProfileWidget from '../../account/user-profile';
 import MobileNav from './mobile';
 // import { useSettings } from '@/app/providers/settings';
 import Logo from '../../logo';
+import ClusterListWrapper from '../../revelium/cluster-lists';
 
 export default React.memo(function SideNav({ email, credits }: { email: string | null | undefined, credits: number }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -41,6 +42,11 @@ export default React.memo(function SideNav({ email, credits }: { email: string |
         </Link>
         <div className='flex h-full flex-col justify-between'>
           <NavLinks navItems={sidebarLinks} />
+            <div className="flex-1 max-h-[60vh] overflow-y-auto custom-scrollbar">
+              <div className='mr-auto px-1'>
+                <ClusterListWrapper clusters={[]} onDelete={(clusterId) => {}} />
+              </div>
+          </div>
           <div className="flex-1 max-h-[60vh] overflow-y-auto custom-scrollbar">
             <div className='mr-auto px-1'>
             </div>
