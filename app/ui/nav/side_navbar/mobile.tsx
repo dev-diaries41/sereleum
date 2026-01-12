@@ -5,7 +5,7 @@ import Link from 'next/link';
 import NavLinks from './links';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
-import { navLinks, sidebarLinks } from '@/app/constants/navigation';
+import { navLinks, sideBarLinks } from '@/app/constants/navigation';
 import UserProfileWidget from '../../account/user-profile';
 import { faClose, faGear } from '@fortawesome/free-solid-svg-icons';
 // import { useSettings } from '@/app/providers/settings';
@@ -55,7 +55,7 @@ onToggleMenu
 
         {isOpen && (
         <div className=" absolute top-0 right-0 flex flex-col w-full min-h-screen bg-gray-100 border border-r-1 border-gray-300 pt-24 pb-32  p-2">
-          <NavLinks navItems={[...sidebarLinks]} />
+          <NavLinks navItems={[...sideBarLinks]} />
           <div className="flex-1 mr-auto max-h-[50vh] overflow-y-auto mb-8 custom-scrollbar p-1 ">
           </div>
           {/* <button onClick={() => {

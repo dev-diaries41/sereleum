@@ -2,16 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import NavLinks from './links';
-import { sidebarLinks } from '@/app/constants/navigation';
+import { bottomSidebarLinks, sideBarLinks, topSidebarLinks } from '@/app/constants/navigation';
 import UserProfileWidget from '../../account/user-profile';
 import MobileNav from './mobile';
-// import { useSettings } from '@/app/providers/settings';
 import Logo from '../../logo';
 import ClusterListWrapper from '../../revelium/cluster-lists';
 
 export default React.memo(function SideNav({ email, credits }: { email: string | null | undefined, credits: number }) {
   const [isOpen, setIsOpen] = useState(false);
-  // const { toggleSettings } = useSettings();
 
   // Prevent background scrolling when the mobile menu is open
   useEffect(() => {
@@ -41,7 +39,7 @@ export default React.memo(function SideNav({ email, credits }: { email: string |
           />
         </Link>
         <div className='flex h-full flex-col justify-between'>
-          <NavLinks navItems={sidebarLinks} />
+          <NavLinks navItems={topSidebarLinks} />
             <div className="flex-1 max-h-[60vh] overflow-y-auto custom-scrollbar">
               <div className='mr-auto px-1'>
                 <ClusterListWrapper clusters={[]} onDelete={(clusterId) => {}} />
@@ -52,14 +50,7 @@ export default React.memo(function SideNav({ email, credits }: { email: string |
             </div>
           </div>
           <div className="absolute bottom-0 right-0 left-0 p-3 flex flex-col">
-            {/* Uncomment this for settings */}
-            {/* <button onClick={() => {
-            toggleSettings();
-          }} className='flex flex-row items-center justify-start gap-2 p-2 text-sm font-medium mt-auto focus:cursor-pointer'>
-            <FontAwesomeIcon icon={faGear} className='w-4 h-4' />
-            Settings
-          </button> */}
-            {/* <UserPlanWidget userId={email} /> */}
+            {/* <NavLinks navItems={bottomSidebarLinks} /> */}
             <UserProfileWidget credits={credits} userId={email} />
           </div>
         </div>
