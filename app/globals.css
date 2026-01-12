@@ -1,0 +1,280 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+  --light-color: #333;
+  --dark-color: #fff
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 255, 255, 255;
+    --background-end-rgb: 255, 255, 255;
+    --light-color: #666;
+    --dark-color: #000;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 255, 255, 255;
+    --background-end-rgb: 255, 255, 255;
+    --light-color: #666;
+    --dark-color: #000;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-in-out;
+  animation-fill-mode: forwards;
+  will-change: opacity;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  75% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-fadeOut {
+  animation: fadeOut 0.5s ease-in-out;
+  animation-fill-mode: forwards;
+  will-change: opacity;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  75% {
+    opacity: 0.25;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Loading css */
+.loading-indicator {
+  display: inline-block;
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid #3498db;
+  border-top: 2px solid transparent;
+  animation: spin 1.5s linear infinite;
+  transition: opacity 0.3s ease-in-out; /* Add this line */
+}
+
+/* Loading css */
+.circle-loading-indicator {
+  display: inline-block;
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.1); /* Light border as the background */
+  border-top: 2px solid currentColor; /* Dynamic top color (uses currentColor for easy color changing) */
+  animation: spin 1.5s linear infinite;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.loading-indicator.animate {
+  animation: spin 1.5s linear infinite, pulse 1.5s linear infinite;
+  opacity: 1; /* Add this line */
+}
+
+.loading-indicator:not(.animate) {
+  opacity: 0.5; /* Add this line */
+}
+
+.loading-indicator-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-indicator-circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #3498db;
+  margin: 2px;
+  animation: bounce 1.5s linear infinite;
+}
+
+.loading-indicator-circle:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.loading-indicator-circle:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.loading-indicator-circle:nth-child(3) {
+  animation-delay: 1s;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes move1 {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(20px, -30px); }
+  50%  { transform: translate(40px, 10px); }
+  75%  { transform: translate(10px, 40px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes move2 {
+  0%   { transform: translate(0, 0); }
+  20%  { transform: translate(-30px, 20px); }
+  40%  { transform: translate(10px, 40px); }
+  60%  { transform: translate(-20px, 10px); }
+  80%  { transform: translate(30px, -20px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes move3 {
+  0%   { transform: translate(0, 0); }
+  33%  { transform: translate(400px, 300px); }
+  66%  { transform: translate(-300px, -200px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Add more keyframes or variations if needed */
+
+.animate-move1 {
+  animation: move1 6s ease-in-out infinite;
+}
+
+.animate-move2 {
+  animation: move2 7s ease-in-out infinite;
+}
+
+.animate-move3 {
+  animation: move3 5s ease-in-out infinite;
+}
+
+
+.bounce {
+  animation: bounce 2.0s infinite;
+}
+
+.truncate-3-lines {
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Number of lines to show */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Custom scrollbar styles */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* Default scrollbar styling (light mode) */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1; /* Light gray (Tailwind gray-300) */
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af; /* Darker gray for hover (Tailwind gray-400) */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f9fafb; /* Very light background (Tailwind gray-100) */
+}
+
+/* Dark mode scrollbar styling */
+@media (prefers-color-scheme: dark) {
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #374151; /* Tailwind gray-700 */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #4b5563; /* Slightly lighter gray */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #1f2937; /* Tailwind gray-800 */
+  }
+}
+
+.markdown-container ul ul {
+  margin-top: 0; /* Remove extra spacing between nested lists */
+  padding-left: 1.5em; /* Indent nested lists */
+}
+

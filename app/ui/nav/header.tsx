@@ -1,0 +1,35 @@
+'use client'
+import React from 'react';
+import Link from 'next/link';
+import Logo from '../logo';
+import { usePathname, useSearchParams } from 'next/navigation';
+import NavBar from './navbar';
+import { shouldHide } from '@/app/lib/helpers';
+import { HeaderProps } from '@/app/types';
+
+
+
+export default function Header({email}: HeaderProps) {
+  const pathname = usePathname();
+  const pathsToHide = ['/dashboard', '/login', '/register', 'reset-password', 'forgot-password'];
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl');
+  const hide = shouldHide(pathname, pathsToHide) || (callbackUrl && new URL(callbackUrl).pathname === '/dashboard')
+  
+  if (hide) {
+    return null;
+  }
+
+  return (
+    <div 
+      className={`fixed top-0 flex flex-row w-full mx-auto items-center justify-between pt-2 z-50`}
+    >
+      <div className='flex flex-row w-full max-w-7xl mx-auto items-center justify-between px-4'>
+        <Link href={'/'} className='z-50'>
+          <Logo name="Revelium" src={'/smartscan-logo.png'}/>
+        </Link>
+        <NavBar email={email}/>
+      </div>
+    </div>
+  );
+};

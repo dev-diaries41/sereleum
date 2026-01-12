@@ -1,0 +1,5 @@
+User-Agent: *
+Allow: /
+Disallow: /chat/
+Disallow: /order
+Disallow: /share

@@ -1,0 +1,107 @@
+'use client'
+import React, { useActionState, useEffect } from 'react';
+import {useFormStatus } from 'react-dom';
+import { register } from '@/app/lib/server/actions';
+import InputError from '@/app/ui/common/form-error';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import {REGISTRATION_SUCCESS} from '@/app/constants/messages';
+import CircleLoadingIndicator from '@/app/ui/utilities/circle-loading-indicator';
+
+
+export default function RegistrationForom(){
+  const initialState = { message: '', errors: {}};
+  const [state, dispatch] = useActionState(register, initialState);
+  const router = useRouter();
+
+  useEffect(() => {
+    if(state.message === REGISTRATION_SUCCESS){
+      setTimeout(() => router.push('/login'), 1000)
+    }
+  },[state])
+
+  return (
+    <form action={dispatch} className='md:max-w-[50%] w-full mx-auto p-4'>
+      <div className="flex flex-col gap-4 w-full">
+      <h1 className={`mb-3 text-2xl`}>
+          Create your account
+        </h1>
+         { state.message && <div className='flex flex-row justify-start items-center gap-2 rounded-md'>
+            <FontAwesomeIcon icon={state.message === REGISTRATION_SUCCESS? faCheckCircle : faExclamationCircle} className={`h-5 w-5 ${state.message === REGISTRATION_SUCCESS? 'text-emerald-500' : 'text-red-500'}`} />
+            <p className={`text-sm opacity-80`}>{state.message}</p>
+          </div>}
+          
+        <div className="relative">
+          <InputError id='email-error' state={state} inputName={'email'} />
+          <label htmlFor="email" className='mb-2 block text-xs font-medium'>Email</label>
+          <input
+            type="text"
+            id="email"
+            name="email"
+            defaultValue=""
+            className="peer block w-full bg-transparent rounded-md border border border-gray-300 dark:border-[#555] py-[9px] p-2 text-sm outline-2 placeholder:text-gray-500"
+            placeholder='Enter email address'
+            aria-describedby="email-error"
+            required
+          />
+        </div>
+
+        <div className="relative">
+          <InputError id='password-error' state={state} inputName={'password'} />
+          <label htmlFor="password" className='mb-2 block text-xs font-medium'>Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            className="peer block w-full bg-transparent rounded-md border border border-gray-300 dark:border-[#555] py-[9px] p-2 text-sm outline-2 placeholder:text-gray-500"
+            defaultValue=""
+            placeholder='Enter password'
+            aria-describedby="password-error"
+            required
+          />
+        </div>
+
+        <div className="relative">
+          <InputError id='confirm-password-error' state={state} inputName={'confirm-password'} />
+          <label htmlFor="confirm-password" className='mb-2 block text-xs font-medium'>Confirm password</label>
+          <input
+            type="password"
+            id="confirm-password"
+            name="confirm-password"
+            className="peer block w-full bg-transparent rounded-md border border border-gray-300 dark:border-[#555] py-[9px] p-2 text-sm outline-2 placeholder:text-gray-500"
+            defaultValue=""
+            placeholder='Confirm your password'
+            aria-describedby="confirm-password-error"
+            required
+          />
+        </div>
+        <p className='my-2' >
+          Already have an account?{' '}
+          <Link href="/login" className="text-blue-500 hover:underline">
+            Login
+          </Link>
+        </p>   
+        <div className='flex justify-center ml-auto w-[100%]'>
+          <RegisterButton/>
+        </div>
+      </div>
+    </form>
+  );
+};
+
+function RegisterButton() {
+  const { pending } = useFormStatus();
+ 
+  return (
+    <button 
+    type='submit'
+    className="mt-4 w-full flex  gap-2 items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
+    aria-disabled={pending}
+    disabled={pending}
+    > {'Sign up'} 
+      {pending && <CircleLoadingIndicator size={20}/>}
+    </button>
+  );
+}
