@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 
 interface ClusterListWrapperProps {
-    title: string
+    title?: string
     clusters: Omit<Cluster, "embedding">[];
     onDelete: (clusterId: string) => void
 }
