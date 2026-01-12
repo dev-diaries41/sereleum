@@ -1,23 +1,24 @@
 'use client'
-import { Cluster, ClusterMetadata } from '@/app/types';
-import React from 'react';
+import { Cluster } from '@/app/types';
 import DropDownMenu from '@/app/ui/common/dropdown-menu';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlassChart, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import {  faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 
 
 interface ClusterListWrapperProps {
-    clusters: Cluster[];
+    title: string
+    clusters: Omit<Cluster, "embedding">[];
     onDelete: (clusterId: string) => void
 }
 
 export default function ClusterListWrapper({
+    title = "Clusters",
     clusters,
     onDelete
 }: ClusterListWrapperProps) {
     return ( 
-        <DropDownMenu title="Recent Analyses">
+        <DropDownMenu title={title}>
             {clusters.map((cluster, index) => (
             <div 
             key={index} 

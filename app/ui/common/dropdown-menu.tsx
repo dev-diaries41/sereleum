@@ -1,4 +1,5 @@
 'use client'
+import { faArrowDown, faArrowUp, faChevronDown, faChevronRight, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon, FontAwesomeIconProps } from '@fortawesome/react-fontawesome';
 import React, { useState, ReactNode } from 'react';
 
@@ -23,7 +24,7 @@ export default function DropDownMenu({ title, children, icon }: DropDownMenuProp
                 <h2 className="text-sm">{title}</h2>
             </div>
                 <button className="text-sm">
-                    {isExpanded ? '▲' : '▼'}
+                    {isExpanded ? (<FontAwesomeIcon icon={faChevronRight} className='w-3 h-3'/>) : <FontAwesomeIcon icon={faChevronDown} className='w-3 h-3'/>}
                 </button>
             </div>
             {isExpanded && (
