@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faLayerGroup, faMoneyBill, faTag, faTerminal } from '@fortawesome/free-solid-svg-icons';
 import FileUploader from '../common/upload';
 import { AcceptedDocFiles, AcceptedMimes } from '@/app/constants/global';
-import { uploadPromptsFile } from '@/app/lib/client/request';
+import { clusterPrompts, uploadPromptsFile } from '@/app/lib/client/request';
 
 
 interface DashboardOverviewProps {
@@ -74,13 +74,16 @@ export default function DashboardOverview({ overview, email }: DashboardOverview
   const [promptsFile, setPromptsFile] = useState<File | null>(null)
 
   const clusters: any[] = [];
-  const recent: any[] = [];
 
   const handleFileUpload = async() => {
     if(!promptsFile) return
     const res = await uploadPromptsFile(promptsFile)
     alert(JSON.stringify(res.data))
-    console.log(res)
+  }
+
+  const handleClusterPrompts = async() => {
+    const res = await clusterPrompts()
+    alert(JSON.stringify(res.data))
   }
 
   return (
@@ -169,7 +172,7 @@ export default function DashboardOverview({ overview, email }: DashboardOverview
               <h4 className="text-sm font-semibold mb-2">Quick Actions</h4>
               <div className="flex flex-col gap-2 mt-3">
                 <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Index prompts</button>
-                <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Cluster prompts</button>
+                <button onClick = {handleClusterPrompts} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Cluster prompts</button>
                 <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Manage labels</button>
               </div>
             </div>
