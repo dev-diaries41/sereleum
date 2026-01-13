@@ -40,9 +40,7 @@ export default function ClusterListSideNavWrapper({
           className="relative p-2 flex justify-between items-center text-sm hover:bg-gray-200 rounded-md transition group"
         >
           <Link
-            href={cluster.prototype_id}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={`/dashboard/clusters/cluster/${cluster.prototype_id}`}
             className="flex-grow overflow-hidden overflow-ellipsis whitespace-nowrap pr-2"
           >
             {cluster.label}
