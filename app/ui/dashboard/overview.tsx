@@ -1,67 +1,28 @@
 'use client';
 
-import { PromptOverviewInfo } from '@/app/types';
-import React, { useMemo, useState } from 'react';
+import { Cluster, PromptOverviewInfo } from '@/app/types';
+import  { useMemo, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faLayerGroup, faMoneyBill, faTag, faTerminal } from '@fortawesome/free-solid-svg-icons';
 import FileUploader from '../common/upload';
-import { AcceptedDocFiles, AcceptedMimes } from '@/app/constants/global';
-import { clusterPrompts, uploadPromptsFile } from '@/app/lib/client/request';
+import {  AcceptedMimes } from '@/app/constants/global';
+import { reveliumClient } from '@/app/revelium/client';
+import { ClusterRow } from '../revelium/cluster-row';
+import { MetricCard } from './metric-card';
+import { usePrompts } from '@/app/providers/prompts';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 
 interface DashboardOverviewProps {
   overview: PromptOverviewInfo;
-  email: string;
-  credits?: number;
+  clusters: Omit<Cluster, "embedding">[];
 }
 
-// Small, reusable metric card with optional sparkline
-function MetricCard({ title, value, icon }: { title: string; value: React.ReactNode; icon?: any; }) {
-  return (
-    <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5 w-full">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <div className="flex items-end gap-3 mt-2">
-            <h3 className="text-3xl md:text-4xl font-extrabold leading-none">{value}</h3>
-          </div>
-        </div>
-        <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gray-50">
-          {icon ? <FontAwesomeIcon icon={icon} className="w-6 h-6 text-gray-700" /> : null}
-        </div>
-      </div>
-      {/* subtle sparkline placeholder */}
-      <div className="mt-4 h-8">
-        <svg viewBox="0 0 100 20" preserveAspectRatio="none" className="w-full h-8">
-          <polyline fill="none" stroke="#D1D5DB" strokeWidth={1.6} points="0,14 18,10 36,8 54,6 72,7 90,4 100,6" />
-        </svg>
-      </div>
-    </div>
-  );
-}
+const MAX_CLUSTERS = 6
 
-function ClusterRow({ c }: { c: { label: string; prototype_size: number; mean_similarity?: number } }) {
-  const percentage = Math.round((c.mean_similarity ?? 0) * 100);
-  return (
-    <div className="flex items-center justify-between gap-4 p-3 rounded-lg hover:bg-gray-50">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-sm font-medium">{c.label?.charAt(0)?.toUpperCase() ?? '—'}</div>
-        <div>
-          <div className="text-sm font-medium">{c.label}</div>
-          <div className="text-xs text-gray-500">{c.prototype_size} prototype(s)</div>
-        </div>
-      </div>
-      <div className="flex flex-col items-end">
-        <div className="text-sm font-medium">{percentage}%</div>
-        <div className="w-28 h-2 bg-gray-100 rounded-full overflow-hidden mt-1">
-          <div style={{ width: `${Math.min(100, percentage)}%` }} className="h-full bg-gradient-to-r from-indigo-500 to-cyan-400" />
-        </div>
-      </div>
-    </div>
-  );
-}
 
-export default function DashboardOverview({ overview, email }: DashboardOverviewProps) {
+export default function DashboardOverview({ overview, clusters }: DashboardOverviewProps) {
   const metrics = useMemo(() => {
     return [
       { key: 'total_clusters', title: 'Total Clusters', value: overview.totalClusters, icon: faLayerGroup },
@@ -72,18 +33,19 @@ export default function DashboardOverview({ overview, email }: DashboardOverview
   }, [overview]);
 
   const [promptsFile, setPromptsFile] = useState<File | null>(null)
+  const { setClusters} = usePrompts()
+  const router = useRouter();
 
-  const clusters: any[] = [];
 
   const handleFileUpload = async() => {
     if(!promptsFile) return
-    const res = await uploadPromptsFile(promptsFile)
-    alert(JSON.stringify(res.data))
+    const res = await reveliumClient.addPromptsFile(promptsFile)
+    alert(JSON.stringify(res))
   }
 
   const handleClusterPrompts = async() => {
-    const res = await clusterPrompts()
-    alert(JSON.stringify(res.data))
+    const res = await reveliumClient.clusterPrompts()
+    alert(JSON.stringify(res))
   }
 
   return (
@@ -141,17 +103,32 @@ export default function DashboardOverview({ overview, email }: DashboardOverview
                 {clusters.length === 0 ? (
                   <div className="text-sm text-gray-500 py-6 text-center">No clusters yet — add prompts to generate clusters</div>
                 ) : (
-                  clusters.slice(0, 6).map((c, i) => <ClusterRow key={i} c={c} />)
+                  clusters.slice(0, MAX_CLUSTERS).map((cluster, i) => 
+                    <Link
+                        key={cluster.prototype_id}
+                        href={`/dashboard/clusters/cluster/${cluster.prototype_id}`}
+                        className="block"
+                      >
+                        <ClusterRow cluster={cluster} />
+                    </Link>
+                )
                 )}
               </div>
 
               <div className="mt-4 flex items-center justify-between">
                 <div className="text-xs text-gray-500">Prototype separation and similarity help you understand cluster cohesion</div>
-                <button className="text-sm text-indigo-600">View all clusters</button>
+              { (MAX_CLUSTERS > overview.totalClusters) &&  <button
+                  className="text-sm text-indigo-600"
+                  onClick={() => {
+                    setClusters(clusters);
+                    router.push('/dashboard/clusters');
+                  }}
+                >
+                  View all clusters
+                </button>}              
               </div>
             </div>
           </div>
-
           {/* optional analytics footer */}
           <div className="w-full mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
@@ -173,7 +150,6 @@ export default function DashboardOverview({ overview, email }: DashboardOverview
               <div className="flex flex-col gap-2 mt-3">
                 <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Index prompts</button>
                 <button onClick = {handleClusterPrompts} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Cluster prompts</button>
-                <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Manage labels</button>
               </div>
             </div>
           </div>
@@ -184,7 +160,6 @@ export default function DashboardOverview({ overview, email }: DashboardOverview
   );
 }
 
-// small helpers
 function formatCost(n: number | undefined | null) {
   if (n === null || n === undefined) return '—';
   // assume n is token cost in cents or small integer: format as USD-like
@@ -193,9 +168,9 @@ function formatCost(n: number | undefined | null) {
   return `$${(asNumber).toFixed(2)}`;
 }
 
-function calculateCoverage(clusters: Array<{ prototype_size: number }>) {
+function calculateCoverage(clusters: Omit<Cluster, "embedding">[]) {
   if (!clusters || clusters.length === 0) return 0;
-  const totalPrototypes = clusters.reduce((s, c) => s + (c.prototype_size || 0), 0);
+  const totalPrototypes = clusters.reduce((s, c) => s + (c.metadata.prototype_size || 0), 0);
   const coverage = Math.min(100, Math.round((totalPrototypes / Math.max(1, totalPrototypes + 4)) * 100));
   return coverage;
 }
