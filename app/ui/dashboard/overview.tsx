@@ -16,8 +16,9 @@ import { useRouter } from 'next/navigation';
 interface DashboardOverviewProps {
   overview: PromptOverviewInfo;
   clusters: Omit<Cluster, "embedding">[];
-  credits?: number;
 }
+
+const MAX_CLUSTERS = 6
 
 
 export default function DashboardOverview({ overview, clusters }: DashboardOverviewProps) {
@@ -101,24 +102,24 @@ export default function DashboardOverview({ overview, clusters }: DashboardOverv
                 {clusters.length === 0 ? (
                   <div className="text-sm text-gray-500 py-6 text-center">No clusters yet — add prompts to generate clusters</div>
                 ) : (
-                  clusters.slice(0, 6).map((cluster, i) => <ClusterRow key={i} cluster={cluster} />)
+                  clusters.slice(0, MAX_CLUSTERS).map((cluster, i) => <ClusterRow key={i} cluster={cluster} />)
                 )}
               </div>
 
               <div className="mt-4 flex items-center justify-between">
                 <div className="text-xs text-gray-500">Prototype separation and similarity help you understand cluster cohesion</div>
-<button
-    className="text-sm text-indigo-600"
-    onClick={() => {
-      setClusters(clusters);
-      router.push('/dashboard/clusters');
-    }}
-  >
-    View all clusters
-  </button>              </div>
+              { (MAX_CLUSTERS > overview.totalClusters) &&  <button
+                  className="text-sm text-indigo-600"
+                  onClick={() => {
+                    setClusters(clusters);
+                    router.push('/dashboard/clusters');
+                  }}
+                >
+                  View all clusters
+                </button>}              
+              </div>
             </div>
           </div>
-
           {/* optional analytics footer */}
           <div className="w-full mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
@@ -151,7 +152,6 @@ export default function DashboardOverview({ overview, clusters }: DashboardOverv
   );
 }
 
-// small helpers
 function formatCost(n: number | undefined | null) {
   if (n === null || n === undefined) return '—';
   // assume n is token cost in cents or small integer: format as USD-like
