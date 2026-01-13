@@ -141,7 +141,6 @@ export default function DashboardOverview({ overview, clusters }: DashboardOverv
               <div className="flex flex-col gap-2 mt-3">
                 <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Index prompts</button>
                 <button onClick = {handleClusterPrompts} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Cluster prompts</button>
-                <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Manage labels</button>
               </div>
             </div>
           </div>
