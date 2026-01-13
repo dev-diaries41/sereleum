@@ -11,6 +11,7 @@ import { ClusterRow } from '../revelium/cluster-row';
 import { MetricCard } from './metric-card';
 import { usePrompts } from '@/app/providers/prompts';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 
 interface DashboardOverviewProps {
@@ -102,7 +103,15 @@ export default function DashboardOverview({ overview, clusters }: DashboardOverv
                 {clusters.length === 0 ? (
                   <div className="text-sm text-gray-500 py-6 text-center">No clusters yet — add prompts to generate clusters</div>
                 ) : (
-                  clusters.slice(0, MAX_CLUSTERS).map((cluster, i) => <ClusterRow key={i} cluster={cluster} />)
+                  clusters.slice(0, MAX_CLUSTERS).map((cluster, i) => 
+                    <Link
+                        key={cluster.prototype_id}
+                        href={`/dashboard/clusters/cluster/${cluster.prototype_id}`}
+                        className="block"
+                      >
+                        <ClusterRow cluster={cluster} />
+                    </Link>
+                )
                 )}
               </div>
 
