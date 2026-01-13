@@ -1,9 +1,8 @@
 'use client'
-import React, { createContext, useState, useContext, useEffect, useLayoutEffect } from 'react';
+import React, { createContext, useState, useContext, useLayoutEffect, useEffect } from 'react';
 import { Cluster, ProviderProps } from '@/app/types';
 import { StorageKeys } from '../constants/global';
-
-import * as LocalStorage from "@/app/lib/client/storage/local"
+import * as LocalStorage from "@/app/lib/client/storage/session"
  
 interface PromptsContextProps {
     clusters: Omit<Cluster, "embedding">[];
@@ -15,21 +14,20 @@ const PromptsContext = createContext<PromptsContextProps | undefined>(undefined)
 const PromptsProvider = ({ children, initialClusters }: ProviderProps & {initialClusters: Omit<Cluster, "embedding">[]}) => {
     const [ clusters, setClusters ] = useState<Omit<Cluster, "embedding">[]>(initialClusters);
 
-        // Retreive Prompts
-        useLayoutEffect(() => {
-            const clusters = LocalStorage.get<Omit<Cluster, "embedding">[]>(StorageKeys.clusters);
-            if (clusters && Array.isArray(clusters) && clusters.length > 0 ) {
-                setClusters(clusters); 
-            }
-        }, []);
+    // useLayoutEffect(() => {
+    //     const clusters = LocalStorage.get<Omit<Cluster, "embedding">[]>(StorageKeys.clusters);
+    //     if (clusters && Array.isArray(clusters) && clusters.length > 0 ) {
+    //         setClusters(clusters); 
+    //     }
+    // }, []);
+
+      useEffect(() => {
+        if(initialClusters.length > 0){
+          LocalStorage.set(StorageKeys.clusters, JSON.stringify(initialClusters));
+        }
+       
+    }, []);
     
-        // Save Prompts
-        useEffect(() => {
-            const previousClusters = LocalStorage.get(StorageKeys.clusters);
-            if(previousClusters !== clusters){
-              LocalStorage.set(StorageKeys.clusters, JSON.stringify(clusters))
-            }
-        }, [clusters]);
     
    
   return (
