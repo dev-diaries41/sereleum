@@ -36,8 +36,7 @@ export const Time = {
 export const StorageKeys = {
   jobId: 'jobId',
   token: 'token',
-  recentAnalyses: 'recent-analyses',
-  recentCharts: 'recent-charts',
+  clusters: "clusters",
   subscription: 'stripe-subscription',
   credits: 'credits',
 }

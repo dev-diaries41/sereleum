@@ -6,7 +6,7 @@ import { bottomSidebarLinks, sideBarLinks, topSidebarLinks } from '@/app/constan
 import UserProfileWidget from '../../account/user-profile';
 import MobileNav from './mobile';
 import Logo from '../../logo';
-import ClusterListWrapper from '../../revelium/cluster-lists';
+import ClusterListSideNavWrapper from '../../revelium/clusters-sidenav';
 import { Cluster } from '@/app/types';
 
 export default React.memo(function SideNav({ email, credits, initialClusters }: { email: string | null | undefined, credits: number , initialClusters: Omit<Cluster, "embedding">[]}) {
@@ -43,7 +43,7 @@ export default React.memo(function SideNav({ email, credits, initialClusters }: 
         <div className='flex h-full flex-col justify-between'>
           <NavLinks navItems={topSidebarLinks} />
           <div className="flex-1 max-h-[60vh] overflow-y-auto custom-scrollbar pb-24">
-             <ClusterListWrapper clusters={clusters}  onDelete={(id) => {
+             <ClusterListSideNavWrapper clusters={clusters}  onDelete={(id) => {
       if (window.confirm("Are you sure you want to delete this item?")) {
         // existing delete logic here
       }

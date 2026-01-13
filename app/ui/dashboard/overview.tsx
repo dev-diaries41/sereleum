@@ -1,100 +1,22 @@
 'use client';
 
 import { Cluster, PromptOverviewInfo } from '@/app/types';
-import React, { useMemo, useState } from 'react';
+import  { useMemo, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faLayerGroup, faMoneyBill, faTag, faTerminal } from '@fortawesome/free-solid-svg-icons';
 import FileUploader from '../common/upload';
-import { AcceptedDocFiles, AcceptedMimes } from '@/app/constants/global';
+import {  AcceptedMimes } from '@/app/constants/global';
 import { reveliumClient } from '@/app/revelium/client';
+import { ClusterRow } from '../revelium/cluster-row';
+import { MetricCard } from './metric-card';
+import { usePrompts } from '@/app/providers/prompts';
+import { useRouter } from 'next/navigation';
 
 
 interface DashboardOverviewProps {
   overview: PromptOverviewInfo;
   clusters: Omit<Cluster, "embedding">[];
   credits?: number;
-}
-
-// Small, reusable metric card with optional sparkline
-function MetricCard({ title, value, icon }: { title: string; value: React.ReactNode; icon?: any; }) {
-  return (
-    <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5 w-full">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <div className="flex items-end gap-3 mt-2">
-            <h3 className="text-3xl md:text-4xl font-extrabold leading-none">{value}</h3>
-          </div>
-        </div>
-        <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gray-50">
-          {icon ? <FontAwesomeIcon icon={icon} className="w-6 h-6 text-gray-700" /> : null}
-        </div>
-      </div>
-      {/* subtle sparkline placeholder */}
-      <div className="mt-4 h-8">
-        <svg viewBox="0 0 100 20" preserveAspectRatio="none" className="w-full h-8">
-          <polyline fill="none" stroke="#D1D5DB" strokeWidth={1.6} points="0,14 18,10 36,8 54,6 72,7 90,4 100,6" />
-        </svg>
-      </div>
-    </div>
-  );
-}
-
-function ClusterRow({ cluster}: { cluster: Omit<Cluster, "embedding"> }) {
-  const {
-    mean_similarity,
-    min_similarity,
-    max_similarity,
-    nearest_other_similarity,
-    separation_margin,
-    prototype_size,
-  } = cluster.metadata || {};
-
-  const pct = (v?: number | null) => {
-    if (v === null || v === undefined) return '—';
-    return `${Math.round(v * 100)}%`;
-  };
-
-  const separationLabel = (v?: number | null) => {
-    if (v === null || v === undefined) return '—';
-    return Number.isFinite(v) ? v.toFixed(2) : String(v);
-  };
-
-  const cohesionPercentage = Math.round((mean_similarity ?? 0) * 100);
-
-  return (
-    <div className="flex items-center justify-between gap-4 p-3 rounded-lg hover:bg-gray-50">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-sm font-medium">
-          {cluster.label?.charAt(0)?.toUpperCase() ?? '—'}
-        </div>
-        <div>
-          <div className="text-sm font-medium">{cluster.label}</div>
-          <div className="text-xs text-gray-500">{prototype_size ?? 0} item(s) in cluster</div>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-end">
-        <div className="text-xs text-gray-400">Cohesion Score</div>
-        <div className="text-sm font-medium">{pct(mean_similarity)}</div>
-
-        <div className="w-28 h-2 bg-gray-100 rounded-full overflow-hidden mt-1">
-          <div
-            style={{ width: `${Math.min(100, cohesionPercentage)}%` }}
-            className="h-full bg-gradient-to-r from-indigo-500 to-cyan-400"
-            aria-hidden
-          />
-        </div>
-
-        <div className="mt-2 text-xs text-gray-500 flex gap-3">
-          <div title="Minimum similarity within cluster">min: {pct(min_similarity)}</div>
-          <div title="Maximum similarity within cluster">max: {pct(max_similarity)}</div>
-          <div title="Similarity to nearest other cluster">nearest: {pct(nearest_other_similarity)}</div>
-          <div title="Separation margin between clusters">sep: {separationLabel(separation_margin)}</div>
-        </div>
-      </div>
-    </div>
-  );
 }
 
 
@@ -109,6 +31,9 @@ export default function DashboardOverview({ overview, clusters }: DashboardOverv
   }, [overview]);
 
   const [promptsFile, setPromptsFile] = useState<File | null>(null)
+  const { setClusters} = usePrompts()
+  const router = useRouter();
+
 
   const handleFileUpload = async() => {
     if(!promptsFile) return
@@ -182,8 +107,15 @@ export default function DashboardOverview({ overview, clusters }: DashboardOverv
 
               <div className="mt-4 flex items-center justify-between">
                 <div className="text-xs text-gray-500">Prototype separation and similarity help you understand cluster cohesion</div>
-                <button className="text-sm text-indigo-600">View all clusters</button>
-              </div>
+<button
+    className="text-sm text-indigo-600"
+    onClick={() => {
+      setClusters(clusters);
+      router.push('/dashboard/clusters');
+    }}
+  >
+    View all clusters
+  </button>              </div>
             </div>
           </div>
 

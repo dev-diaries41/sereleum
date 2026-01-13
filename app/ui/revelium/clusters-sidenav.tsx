@@ -7,17 +7,17 @@ import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
-interface ClusterListWrapperProps {
+interface ClusterListSideNavWrapperProps {
   title?: string;
   clusters: Omit<Cluster, 'embedding'>[];
   onDelete: (clusterId: string) => void;
 }
 
-export default function ClusterListWrapper({
+export default function ClusterListSideNavWrapper({
   title = 'Clusters',
   clusters,
   onDelete,
-}: ClusterListWrapperProps) {
+}: ClusterListSideNavWrapperProps) {
   const [openId, setOpenId] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -84,7 +84,7 @@ interface ClusterActionMenuProps {
   onLabel: () => void;
 }
 
-export function ClusterActionMenu({
+function ClusterActionMenu({
   onDelete,
   onLabel,
 }: ClusterActionMenuProps) {

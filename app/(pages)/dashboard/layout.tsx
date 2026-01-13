@@ -1,3 +1,4 @@
+import { PromptsProvider } from "@/app/providers/prompts";
 import { reveliumClient } from "@/app/revelium/client";
 import DashboardHeader from "@/app/ui/nav/dashboard/header"
 import Sidenav from "@/app/ui/nav/side_navbar/sidenav";
@@ -12,12 +13,13 @@ export default async function Layout({
     const email = session?.user?.email; 
     const credits = session?.user?.credits; 
     const clusters = await reveliumClient.getClusters()
-    console.log(clusters)
   return (
+    <PromptsProvider initialClusters={clusters}>
       <div className={``}>
         <Sidenav email={email} credits={credits!} initialClusters ={clusters}/>
         {/* <DashboardHeader email={email!} credits={credits!}/> */}
         <div className="flex flex-col lg:pl-[240px]">{children}</div>
       </div>
+      </PromptsProvider>
   )
 }
