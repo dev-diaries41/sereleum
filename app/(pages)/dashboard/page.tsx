@@ -15,11 +15,12 @@ export default async function Page() {
     const email = session?.user.email;
     const credits = session?.user.credits;
     const promptOverview = await reveliumClient.getPromptsOverview();
-    
+    const clusters = await reveliumClient.getClusters();
+
     return (
         <ErrorBoundary errorComponent={ErrorComponent}>
             <Suspense fallback={<Loading />}>
-                <DashboardOverview overview={convertSnakeToCamel(promptOverview)} email={email!} credits={credits!}/>
+                <DashboardOverview overview={convertSnakeToCamel(promptOverview)} clusters={clusters} credits={credits!}/>
             </Suspense>
         </ErrorBoundary>
     );

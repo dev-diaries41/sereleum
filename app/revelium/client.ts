@@ -75,11 +75,11 @@ export class ReveliumClient {
     return this.handleResponse(res);
   }
 
-  async getClusters(clusterId?: string, offset?: number, limit?: number): Promise<Omit<Cluster, "embedding">[]> {
+  async getClusters(clusterId: string | null = null, offset: number | null = null, limit: number | null = null): Promise<Omit<Cluster, "embedding">[]> {
       const query = { 
-        clusterId: clusterId,
-        offset: offset, 
-        limit: limit 
+        clusterId: clusterId || "",
+        offset: offset || 0, 
+        limit: limit  || 50
       };
       
     const params = new URLSearchParams(
@@ -89,10 +89,8 @@ export class ReveliumClient {
     );
     const url = `${this.baseUrl}${BASE_CLUSTER_ENDPOINT}?${params.toString()}`;
     const res = await fetch(url, { method: "GET" });
-    const data = await this.handleResponse<Omit<Cluster, "embedding">[]>(
-      res
-    );
-    return [];
+    const data = await this.handleResponse<Record<"clusters", Omit<Cluster, "embedding">[]>>(res);
+    return data.clusters;
   }
 
   async countPrompts(): Promise<number> {

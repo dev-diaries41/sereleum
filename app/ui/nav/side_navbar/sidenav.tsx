@@ -7,9 +7,11 @@ import UserProfileWidget from '../../account/user-profile';
 import MobileNav from './mobile';
 import Logo from '../../logo';
 import ClusterListWrapper from '../../revelium/cluster-lists';
+import { Cluster } from '@/app/types';
 
-export default React.memo(function SideNav({ email, credits }: { email: string | null | undefined, credits: number }) {
+export default React.memo(function SideNav({ email, credits, initialClusters }: { email: string | null | undefined, credits: number , initialClusters: Omit<Cluster, "embedding">[]}) {
   const [isOpen, setIsOpen] = useState(false);
+  const [clusters, setClusters] = useState<Omit<Cluster, "embedding">[]>(initialClusters)
 
   // Prevent background scrolling when the mobile menu is open
   useEffect(() => {
@@ -40,17 +42,14 @@ export default React.memo(function SideNav({ email, credits }: { email: string |
         </Link>
         <div className='flex h-full flex-col justify-between'>
           <NavLinks navItems={topSidebarLinks} />
-            <div className="flex-1 max-h-[60vh] overflow-y-auto custom-scrollbar">
-              <div className='mr-auto px-1'>
-                <ClusterListWrapper clusters={[]} onDelete={(clusterId) => {}} />
-              </div>
-          </div>
-          <div className="flex-1 max-h-[60vh] overflow-y-auto custom-scrollbar">
-            <div className='mr-auto px-1'>
-            </div>
+          <div className="flex-1 max-h-[60vh] overflow-y-auto custom-scrollbar pb-24">
+             <ClusterListWrapper clusters={clusters}  onDelete={(id) => {
+      if (window.confirm("Are you sure you want to delete this item?")) {
+        // existing delete logic here
+      }
+    }}/>
           </div>
           <div className="absolute bottom-0 right-0 left-0 p-3 flex flex-col">
-            {/* <NavLinks navItems={bottomSidebarLinks} /> */}
             <UserProfileWidget credits={credits} userId={email} />
           </div>
         </div>

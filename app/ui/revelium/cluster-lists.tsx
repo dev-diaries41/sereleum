@@ -1,44 +1,107 @@
-'use client'
+'use client';
+
 import { Cluster } from '@/app/types';
 import DropDownMenu from '@/app/ui/common/dropdown-menu';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {  faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
-
+import { useEffect, useRef, useState } from 'react';
 
 interface ClusterListWrapperProps {
-    title?: string
-    clusters: Omit<Cluster, "embedding">[];
-    onDelete: (clusterId: string) => void
+  title?: string;
+  clusters: Omit<Cluster, 'embedding'>[];
+  onDelete: (clusterId: string) => void;
 }
 
 export default function ClusterListWrapper({
-    title = "Clusters",
-    clusters,
-    onDelete
+  title = 'Clusters',
+  clusters,
+  onDelete,
 }: ClusterListWrapperProps) {
-    return ( 
-        <DropDownMenu title={title}>
-            {clusters.map((cluster, index) => (
-            <div 
-            key={index} 
-            className="p-2 flex justify-between items-center cursor-pointer opacity-80 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md transition duration-300 overflow-hidden whitespace-nowrap relative group"
+  const [openId, setOpenId] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpenId(null);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <DropDownMenu title={title}>
+      {clusters.map((cluster) => (
+        <div
+          key={cluster.prototype_id}
+          className="relative p-2 flex justify-between items-center text-sm hover:bg-gray-200 rounded-md transition group"
         >
-            <Link 
-            href={cluster.prototype_id} 
-            target="_blank" 
+          <Link
+            href={cluster.prototype_id}
+            target="_blank"
             rel="noopener noreferrer"
-            className="flex-grow overflow-hidden overflow-ellipsis whitespace-nowrap pr-1"
+            className="flex-grow overflow-hidden overflow-ellipsis whitespace-nowrap pr-2"
+          >
+            {cluster.label}
+          </Link>
+
+          <button
+            onClick={() =>
+              setOpenId((prev) =>
+                prev === cluster.prototype_id ? null : cluster.prototype_id
+              )
+            }
+            className="opacity-0 group-hover:opacity-100 transition"
+          >
+            <FontAwesomeIcon icon={faEllipsisH} />
+          </button>
+
+          {openId === cluster.prototype_id && (
+            <div
+              ref={menuRef}
+              className="absolute right-0 top-8 z-10 bg-white rounded-md shadow-md w-40"
             >
-                {cluster.label}
-            </Link>
-            <FontAwesomeIcon 
-                icon={faTrashAlt} 
-                className="ml-1 cursor-pointer text-red-500 hover:text-red-700 transition duration-300 opacity-0 group-hover:opacity-100"
-                onClick={() => onDelete(cluster.prototype_id)}
-            />
+              <ClusterActionMenu
+                onLabel={() => setOpenId(null)}
+                onDelete={() => {
+                  onDelete(cluster.prototype_id);
+                  setOpenId(null);
+                }}
+              />
             </div>
-            ))}
-        </DropDownMenu>
-    );
+          )}
+        </div>
+      ))}
+    </DropDownMenu>
+  );
+}
+
+interface ClusterActionMenuProps {
+  onDelete: () => void;
+  onLabel: () => void;
+}
+
+export function ClusterActionMenu({
+  onDelete,
+  onLabel,
+}: ClusterActionMenuProps) {
+  return (
+    <div className="flex flex-col p-2">
+      <button
+        onClick={onLabel}
+        className="h-8 text-left px-3 hover:bg-gray-200 text-sm rounded-md"
+      >
+        Label
+      </button>
+      <button
+        onClick={onDelete}
+        className="h-8 text-left text-red-500 px-3 hover:bg-gray-200 text-sm rounded-md"
+      >
+        Delete
+      </button>
+    </div>
+  );
 }

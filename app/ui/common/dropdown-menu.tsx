@@ -24,7 +24,7 @@ export default function DropDownMenu({ title, children, icon }: DropDownMenuProp
                 <h2 className="text-sm">{title}</h2>
             </div>
                 <button className="text-sm">
-                    {isExpanded ? (<FontAwesomeIcon icon={faChevronRight} className='w-2 h-2 opacity-80'/>) : <FontAwesomeIcon icon={faChevronDown} className='w-2 h-2 opacity-80 '/>}
+                    {isExpanded ? (<FontAwesomeIcon icon={faChevronDown} className='w-2 h-2 opacity-80'/>) : <FontAwesomeIcon icon={faChevronRight} className='w-2 h-2 opacity-80 '/>}
                 </button>
             </div>
             {isExpanded && (
