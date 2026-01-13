@@ -96,3 +96,8 @@ export interface GetClusterMetadataBatchResponse {
 }
 
 export interface GetPromptsOverviewResponse extends PromptsOverviewInfo {}
+
+export interface UpdateLabelParams {
+  cluster_id: string
+  label: string;
+}

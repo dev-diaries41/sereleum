@@ -16,7 +16,7 @@ export default async function Layout({
   return (
     <PromptsProvider initialClusters={clusters}>
       <div className={``}>
-        <Sidenav email={email} credits={credits!} initialClusters ={clusters}/>
+        <Sidenav email={email} credits={credits!}/>
         {/* <DashboardHeader email={email!} credits={credits!}/> */}
         <div className="flex flex-col lg:pl-[240px]">{children}</div>
       </div>

@@ -4,6 +4,7 @@ import {
   AddPromptsRequest,
   GetPromptsRequest,
   AddPromptsResponse,
+  UpdateLabelParams,
   Cluster,
 } from "@/app/types";
 import { ADD_PROMPTS_ENDPOINT, ADD_PROMPTS_FILE_ENDPOINT, BASE_CLUSTER_ENDPOINT, COUNT_CLUSTER_ENDPOINT, GET_LABELS_ENDPOINT, COUNT_PROMPTS_ENDPOINT, GET_PROMPTS_ENDPOINT, GET_PROMPTS_OVERVIEW_ENDPOINT, REVELIUM_BASE_URL, START_CLUSTER_ENDPOINT } from "./constants";
@@ -115,6 +116,25 @@ export class ReveliumClient {
 
     const data = await this.handleResponse<{ labels?: string[] }>(res);
     return data.labels ?? [];
+  }
+
+  async updateClusterLabel(clusterId: string, label: string): Promise<string> {
+    const payload: UpdateLabelParams = { cluster_id: clusterId, label };
+         
+    const params = new URLSearchParams(
+      Object.fromEntries(
+        Object.entries(payload).map(([key, value]) => [key, String(value)])
+      )
+    );
+    const url = `${this.baseUrl}${BASE_CLUSTER_ENDPOINT}?${params.toString()}`;
+
+    const res = await fetch(url, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const data = await this.handleResponse<{ updated_label?: string }>(res);
+    return data.updated_label ?? "";
   }
 }
 

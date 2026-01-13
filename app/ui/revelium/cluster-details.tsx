@@ -1,6 +1,7 @@
 'use client';
 
 import { usePrompts } from "@/app/providers/prompts";
+import { reveliumClient } from "@/app/revelium/client";
 import { Cluster } from "@/app/types";
 import { faCheck, faFlask } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -60,13 +61,14 @@ export function ClusterDetail({ id }: { id?: string }) {
   const saveLabel = async () => {
     setSaving(true);
     try {
+      const newLabel = await reveliumClient.updateClusterLabel(cluster.prototype_id, labelDraft)
       setClusters((prev) =>
         prev.map((c) =>
           c.prototype_id === cluster.prototype_id
             ? {
                 ...c,
-                label: labelDraft,
-                metadata: { ...c.metadata, label: labelDraft },
+                label: newLabel,
+                metadata: { ...c.metadata, label: newLabel },
               }
             : c
         )

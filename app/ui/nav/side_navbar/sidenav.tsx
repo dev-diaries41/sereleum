@@ -7,11 +7,11 @@ import UserProfileWidget from '../../account/user-profile';
 import MobileNav from './mobile';
 import Logo from '../../logo';
 import ClusterListSideNavWrapper from '../../revelium/clusters-sidenav';
-import { Cluster } from '@/app/types';
+import { usePrompts } from '@/app/providers/prompts';
 
-export default React.memo(function SideNav({ email, credits, initialClusters }: { email: string | null | undefined, credits: number , initialClusters: Omit<Cluster, "embedding">[]}) {
+export default React.memo(function SideNav({ email, credits }: { email: string | null | undefined, credits: number}) {
   const [isOpen, setIsOpen] = useState(false);
-  const [clusters, setClusters] = useState<Omit<Cluster, "embedding">[]>(initialClusters)
+  const {clusters} = usePrompts()
 
   // Prevent background scrolling when the mobile menu is open
   useEffect(() => {
