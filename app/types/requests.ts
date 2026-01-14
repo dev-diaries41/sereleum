@@ -74,7 +74,10 @@ export interface AddPromptsRequest extends PromptsPayload {}
 export interface AddPromptsResponse extends JobReceipt {}
 
 export interface GetPromptsRequest {
-  prompt_ids: string[];
+  prompt_ids?: string[];
+  cluster_id?: string;
+  limit?: number;
+  offset?: number
 }
 
 export interface GetPromptsResponse extends PromptsPayload {}

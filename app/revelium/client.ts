@@ -6,8 +6,9 @@ import {
   AddPromptsResponse,
   UpdateLabelParams,
   Cluster,
+  ClusterAccuracy,
 } from "@/app/types";
-import { ADD_PROMPTS_ENDPOINT, ADD_PROMPTS_FILE_ENDPOINT, BASE_CLUSTER_ENDPOINT, COUNT_CLUSTER_ENDPOINT, GET_LABELS_ENDPOINT, COUNT_PROMPTS_ENDPOINT, GET_PROMPTS_ENDPOINT, GET_PROMPTS_OVERVIEW_ENDPOINT, REVELIUM_BASE_URL, START_CLUSTER_ENDPOINT } from "./constants";
+import { ADD_PROMPTS_ENDPOINT, ADD_PROMPTS_FILE_ENDPOINT, BASE_CLUSTER_ENDPOINT, COUNT_CLUSTER_ENDPOINT, GET_LABELS_ENDPOINT, COUNT_PROMPTS_ENDPOINT, GET_PROMPTS_ENDPOINT, GET_PROMPTS_OVERVIEW_ENDPOINT, REVELIUM_BASE_URL, START_CLUSTER_ENDPOINT, CALC_CLUSTER_ACCURACY_ENDPOINT } from "./constants";
 
 export class ReveliumClient {
   private baseUrl: string;
@@ -50,7 +51,7 @@ export class ReveliumClient {
     return this.handleResponse(res);
   }
 
-  async getPrompts(ids: string[]): Promise<Prompt[]> {
+  async getPrompts(ids?: string[]): Promise<Prompt[]> {
     const url = `${this.baseUrl}${GET_PROMPTS_ENDPOINT}`;
     const payload: GetPromptsRequest = { prompt_ids: ids };
 
@@ -135,6 +136,14 @@ export class ReveliumClient {
 
     const data = await this.handleResponse<{ updated_label?: string }>(res);
     return data.updated_label ?? "";
+  }
+
+  async calculateClusterAccuracy(): Promise<ClusterAccuracy> {
+    const url = `${this.baseUrl}${CALC_CLUSTER_ACCURACY_ENDPOINT}`;
+    const res = await fetch(url, { method: "GET" });
+
+    const data = await this.handleResponse<{ accuracy: ClusterAccuracy }>(res);
+    return data.accuracy;
   }
 }
 

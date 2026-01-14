@@ -49,3 +49,9 @@ export interface Cluster {
 
 export const UNLABELLED_CLUSTER = "unlabelled";
 export const UNCLUSTERED = "Unclustered"; // TODO: lower case
+
+export interface ClusterAccuracy {
+  per_label: Record<string, number>
+  mean_accuracy: number
+
+}

@@ -4,8 +4,10 @@ export const ADD_PROMPTS_ENDPOINT = "/api/prompts/add";
 export const ADD_PROMPTS_FILE_ENDPOINT = "/api/prompts/add/file";
 export const GET_PROMPTS_ENDPOINT = "/api/prompts";
 export const GET_PROMPTS_OVERVIEW_ENDPOINT = "/api/prompts/overview";
+export const COUNT_PROMPTS_ENDPOINT = "/api/prompts/count";
+
 export const BASE_CLUSTER_ENDPOINT = "/api/clusters";
 export const START_CLUSTER_ENDPOINT = `${BASE_CLUSTER_ENDPOINT}/start`;
-export const COUNT_PROMPTS_ENDPOINT = "/api/prompts/count";
 export const COUNT_CLUSTER_ENDPOINT = "/api/clusters/count";
-export const GET_LABELS_ENDPOINT = "/api/labels";
+export const GET_LABELS_ENDPOINT = `${BASE_CLUSTER_ENDPOINT}/labels`;
+export const CALC_CLUSTER_ACCURACY_ENDPOINT = `${BASE_CLUSTER_ENDPOINT}/accuracy`;
