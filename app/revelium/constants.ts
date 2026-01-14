@@ -11,3 +11,4 @@ export const START_CLUSTER_ENDPOINT = `${BASE_CLUSTER_ENDPOINT}/start`;
 export const COUNT_CLUSTER_ENDPOINT = "/api/clusters/count";
 export const GET_LABELS_ENDPOINT = `${BASE_CLUSTER_ENDPOINT}/labels`;
 export const CALC_CLUSTER_ACCURACY_ENDPOINT = `${BASE_CLUSTER_ENDPOINT}/accuracy`;
+export const GET_CLUSTER_PLOT_ENDPOINT = `${BASE_CLUSTER_ENDPOINT}/plot`;

@@ -8,7 +8,7 @@ import {
   Cluster,
   ClusterAccuracy,
 } from "@/app/types";
-import { ADD_PROMPTS_ENDPOINT, ADD_PROMPTS_FILE_ENDPOINT, BASE_CLUSTER_ENDPOINT, COUNT_CLUSTER_ENDPOINT, GET_LABELS_ENDPOINT, COUNT_PROMPTS_ENDPOINT, GET_PROMPTS_ENDPOINT, GET_PROMPTS_OVERVIEW_ENDPOINT, REVELIUM_BASE_URL, START_CLUSTER_ENDPOINT, CALC_CLUSTER_ACCURACY_ENDPOINT } from "./constants";
+import { ADD_PROMPTS_ENDPOINT, ADD_PROMPTS_FILE_ENDPOINT, BASE_CLUSTER_ENDPOINT, COUNT_CLUSTER_ENDPOINT, GET_LABELS_ENDPOINT, COUNT_PROMPTS_ENDPOINT, GET_PROMPTS_ENDPOINT, GET_PROMPTS_OVERVIEW_ENDPOINT, REVELIUM_BASE_URL, START_CLUSTER_ENDPOINT, CALC_CLUSTER_ACCURACY_ENDPOINT, GET_CLUSTER_PLOT_ENDPOINT } from "./constants";
 
 export class ReveliumClient {
   private baseUrl: string;
@@ -145,6 +145,17 @@ export class ReveliumClient {
     const data = await this.handleResponse<{ accuracy: ClusterAccuracy }>(res);
     return data.accuracy;
   }
+
+  async getClusterPlotBlob(method: "tsne" | "pca" = "tsne"): Promise<Blob> {
+    const url = `${this.baseUrl}${GET_CLUSTER_PLOT_ENDPOINT}?method=${method}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text);
+    }
+    return await res.blob();
+  }
+  
 }
 
 

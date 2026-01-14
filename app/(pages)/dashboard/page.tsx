@@ -1,5 +1,5 @@
 import  { Suspense } from 'react';
-import DashboardOverview from '@/app/ui/dashboard/overview';
+import DashboardOverview, { DashboardOverviewWrapper } from '@/app/ui/dashboard/overview';
 import Loading from './loading';
 import ErrorComponent from './error';
 import { ErrorBoundary } from 'next/dist/client/components/error-boundary';
@@ -11,11 +11,14 @@ export const revalidate = 120;
 export default async function Page() {
     const promptOverview = await reveliumClient.getPromptsOverview();
     const clusters = await reveliumClient.getClusters();
+    const blob = await reveliumClient.getClusterPlotBlob()
+    const imgUrl = URL.createObjectURL(blob);
+    console.log(imgUrl)
 
     return (
         <ErrorBoundary errorComponent={ErrorComponent}>
             <Suspense fallback={<Loading />}>
-                <DashboardOverview overview={convertSnakeToCamel(promptOverview)} clusters={clusters}/>
+                <DashboardOverviewWrapper overview={convertSnakeToCamel(promptOverview)} clusters={clusters}/>
             </Suspense>
         </ErrorBoundary>
     );

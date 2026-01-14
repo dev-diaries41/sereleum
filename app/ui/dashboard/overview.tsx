@@ -1,7 +1,8 @@
 'use client';
 
 import { Cluster, PromptOverviewInfo } from '@/app/types';
-import  { useMemo, useState } from 'react';
+import  { useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faLayerGroup, faMoneyBill, faTag, faTerminal } from '@fortawesome/free-solid-svg-icons';
 import FileUploader from '../common/upload';
@@ -13,16 +14,15 @@ import { usePrompts } from '@/app/providers/prompts';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-
 interface DashboardOverviewProps {
   overview: PromptOverviewInfo;
   clusters: Omit<Cluster, "embedding">[];
+  cluster_plot_img_url: string;
 }
 
 const MAX_CLUSTERS = 6
 
-
-export default function DashboardOverview({ overview, clusters }: DashboardOverviewProps) {
+export default function DashboardOverview({ overview, clusters, cluster_plot_img_url }: DashboardOverviewProps) {
   const metrics = useMemo(() => {
     return [
       { key: 'total_clusters', title: 'Total Clusters', value: overview.totalClusters, icon: faLayerGroup },
@@ -35,7 +35,6 @@ export default function DashboardOverview({ overview, clusters }: DashboardOverv
   const [promptsFile, setPromptsFile] = useState<File | null>(null)
   const { setClusters} = usePrompts()
   const router = useRouter();
-
 
   const handleFileUpload = async() => {
     if(!promptsFile) return
@@ -90,7 +89,8 @@ export default function DashboardOverview({ overview, clusters }: DashboardOverv
           </div>
 
           <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-3 bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+            {/* Left: clusters list (span 2) */}
+            <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold">Clusters</h3>
@@ -117,7 +117,7 @@ export default function DashboardOverview({ overview, clusters }: DashboardOverv
 
               <div className="mt-4 flex items-center justify-between">
                 <div className="text-xs text-gray-500">Prototype separation and similarity help you understand cluster cohesion</div>
-              { (MAX_CLUSTERS > overview.totalClusters) &&  <button
+                { (MAX_CLUSTERS > overview.totalClusters) &&  <button
                   className="text-sm text-indigo-600"
                   onClick={() => {
                     setClusters(clusters);
@@ -128,7 +128,40 @@ export default function DashboardOverview({ overview, clusters }: DashboardOverv
                 </button>}              
               </div>
             </div>
+
+            {/* Right: cluster plot image */}
+            <div className="lg:col-span-1">
+              <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4 h-full flex flex-col">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h4 className="text-sm font-semibold">Cluster Plot</h4>
+                    <p className="text-xs text-gray-500">2D visualization of prompt clusters</p>
+                  </div>
+                </div>
+
+                <div className="flex-1 w-full min-h-[220px] flex items-center justify-center">
+                  {cluster_plot_img_url ? (
+                    <div className="w-full h-full relative rounded-lg overflow-hidden border border-gray-50">
+                      <Image
+                        src={cluster_plot_img_url}
+                        alt="Cluster plot"
+                        width={800}
+                        height={480}
+                        style={{ objectFit: 'contain' }}
+                        className="w-full h-full"
+                        priority={false}
+                      />
+                    </div>
+                  ) : (
+                    <div className="text-sm text-gray-400">No plot available</div>
+                  )}
+                </div>
+
+                <div className="mt-3 text-xs text-gray-500">Downloadable preview available</div>
+              </div>
+            </div>
           </div>
+
           {/* optional analytics footer */}
           <div className="w-full mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
@@ -157,6 +190,36 @@ export default function DashboardOverview({ overview, clusters }: DashboardOverv
         </div>
       </div>
     </div>
+  );
+}
+
+export function DashboardOverviewWrapper({ overview, clusters }: {overview: PromptOverviewInfo, clusters: Omit<Cluster, "embedding">[]}) {
+  const [clusterPlotUrl, setClusterPlotUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    let url: string;
+    const fetchPlot = async () => {
+      try {
+        const blob = await reveliumClient.getClusterPlotBlob();
+        url = URL.createObjectURL(blob);
+        setClusterPlotUrl(url);
+      } catch (e) {
+        console.error("Failed to load cluster plot", e);
+      }
+    };
+    fetchPlot();
+
+    return () => {
+      if (url) URL.revokeObjectURL(url); // cleanup
+    };
+  }, []);
+
+  return (
+    <DashboardOverview
+      cluster_plot_img_url={clusterPlotUrl ?? ""}
+      overview={overview}
+      clusters={clusters}
+    />
   );
 }
 
