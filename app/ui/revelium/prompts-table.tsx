@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import PopUp from '../common/popup';
-import { Prompt, UNLABELLED_CLUSTER } from '@/app/types/prompts';
+import { Prompt, UNLABELLED_CLUSTER, UNCLUSTERED } from '@/app/types/prompts';
 import usePopUp from '@/app/hooks/usePopUp';
 import { usePrompts } from '@/app/providers/prompts';
 
@@ -10,10 +11,6 @@ export default function PromptsTableView() {
   const [searchTerm, setSearchTerm] = useState('');
   const { popUpCta, popUpDescription, popUpTitle, showPopUp, closePopUp } = usePopUp();
   const { prompts, clusters, onUpdatePrompt } = usePrompts();
-
-  const onRowClick = (prompt: Prompt) => {
-    showPopUp(prompt.prompt_id, 'What do you want to do', 'View');
-  };
 
   const handleLabelChange = (prompt: Prompt, newLabel: string) => {
     const updatedPrompt = {
@@ -61,34 +58,55 @@ export default function PromptsTableView() {
                 </td>
               </tr>
             ) : (
-              filteredPrompts.map((prompt) => (
-                <tr
-                  key={prompt.prompt_id}
-                  className="hover:bg-gray-50 cursor-pointer transition-all duration-200"
-                  // onClick={() => onRowClick(prompt)}
-                >
-                  <td className="border px-4 py-2">{prompt.prompt_id}</td>
-                  <td className="border px-4 py-2">{prompt.metadata.cluster_id}</td>
-                  <td className="border px-4 py-2 w-1/6" onClick={(e) => e.stopPropagation()}>
-                    <select
-                      value={prompt.metadata.cluster_id}
-                      onChange={(e) => handleLabelChange(prompt, e.target.value)}
-                      className="w-full px-2 py-1 text-sm border rounded"
-                    >
-                      <option value="Unclustered">Unclustered</option>
-                      {clusters.map((c) => (
-                        <option
-                          key={c.prototype_id}
-                          value={c.label === UNLABELLED_CLUSTER ? c.prototype_id : c.label}
+              filteredPrompts.map((prompt) => {
+                const clusterId = prompt.metadata.cluster_id;
+                const isLinkable = clusterId !== UNCLUSTERED;
+
+                return (
+                  <tr
+                    key={prompt.prompt_id}
+                    className="hover:bg-gray-50 transition-all duration-200"
+                  >
+                    <td className="border px-4 py-2">{prompt.prompt_id}</td>
+
+                    <td className="border px-4 py-2">
+                      {isLinkable ? (
+                        <Link
+                          href={`/dashboard/clusters/cluster/${clusterId}`}
+                          className="text-blue-600 hover:underline"
                         >
-                          {c.label === UNLABELLED_CLUSTER ? c.prototype_id : c.label}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="border px-4 py-2">{prompt.content}</td>
-                </tr>
-              ))
+                          {clusterId}
+                        </Link>
+                      ) : (
+                        <span>{clusterId}</span>
+                      )}
+                    </td>
+
+                    <td
+                      className="border px-4 py-2 w-1/6"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <select
+                        value={clusterId}
+                        onChange={(e) => handleLabelChange(prompt, e.target.value)}
+                        className="w-full px-2 py-1 text-sm border rounded"
+                      >
+                        <option value={UNCLUSTERED}>{UNCLUSTERED}</option>
+                        {clusters.map((c) => (
+                          <option
+                            key={c.prototype_id}
+                            value={c.label === UNLABELLED_CLUSTER ? c.prototype_id : c.label}
+                          >
+                            {c.label === UNLABELLED_CLUSTER ? c.prototype_id : c.label}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+
+                    <td className="border px-4 py-2">{prompt.content}</td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
