@@ -4,6 +4,7 @@ import { getPromptOverView } from '@/app/lib/server/data/prompts';
 import { ErrorBoundary } from 'next/dist/client/components/error-boundary';
 import ErrorComponent from "./error"
 import Loading from "./loading"
+import { ClusterAccuracyPlayground } from '@/app/ui/revelium/cluster-accuracy';
 
 export const revalidate = 120;
 
@@ -16,7 +17,7 @@ export default async function Page() {
     return (
         <ErrorBoundary errorComponent={ErrorComponent}>
             <Suspense fallback={<Loading />}>
-            <div>Playground screen</div>
+            <ClusterAccuracyPlayground/>
             </Suspense>
         </ErrorBoundary>
     );
