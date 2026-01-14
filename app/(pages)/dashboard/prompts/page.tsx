@@ -12,12 +12,11 @@ export default async function Page() {
     const session = await auth();
     const email = session?.user.email;
     const credits = session?.user.credits;
-    const prompts = await reveliumClient.getPrompts();
-    
+        
     return (
         <ErrorBoundary errorComponent={ErrorComponent}>
             <Suspense fallback={<Loading />}>
-            <PromptsTableView prompts={prompts}/>
+            <PromptsTableView/>
             </Suspense>
         </ErrorBoundary>
     );
