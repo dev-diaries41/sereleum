@@ -167,15 +167,25 @@ export class ReveliumClient {
     return data.accuracy;
   }
 
-  async getClusterPlotBlob(method: "tsne" | "pca" = "tsne"): Promise<Blob> {
-    const url = `${this.baseUrl}${GET_CLUSTER_PLOT_ENDPOINT}?method=${method}`;
-    const res = await fetch(url);
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(text);
-    }
-    return await res.blob();
+ async getClusterPlotBlob(
+  method: "tsne" | "pca" = "tsne"
+): Promise<Blob | null> {
+  const url = `${this.baseUrl}${GET_CLUSTER_PLOT_ENDPOINT}?method=${method}`;
+  const res = await fetch(url);
+
+  if (res.status === 204) {
+    return null;
   }
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text);
+  }
+
+  const blob = await res.blob();
+  return blob.size === 0 ? null : blob;
+}
+
   
 }
 

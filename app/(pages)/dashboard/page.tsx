@@ -11,9 +11,6 @@ export const revalidate = 120;
 export default async function Page() {
     const promptOverview = await reveliumClient.getPromptsOverview();
     const clusters = await reveliumClient.getClusters();
-    const blob = await reveliumClient.getClusterPlotBlob()
-    const imgUrl = URL.createObjectURL(blob);
-    console.log(imgUrl)
 
     return (
         <ErrorBoundary errorComponent={ErrorComponent}>

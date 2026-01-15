@@ -197,11 +197,11 @@ export function DashboardOverviewWrapper({ overview, clusters }: {overview: Prom
   const [clusterPlotUrl, setClusterPlotUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    let url: string;
+    let url: string | null = null;
     const fetchPlot = async () => {
       try {
         const blob = await reveliumClient.getClusterPlotBlob();
-        url = URL.createObjectURL(blob);
+        url = blob? URL.createObjectURL(blob) : null;
         setClusterPlotUrl(url);
       } catch (e) {
         console.error("Failed to load cluster plot", e);
