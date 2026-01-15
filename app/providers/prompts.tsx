@@ -3,6 +3,7 @@ import React, { createContext, useState, useContext, useLayoutEffect, useEffect 
 import { Cluster, Prompt, ProviderProps } from '@/app/types';
 import { StorageKeys } from '../constants/global';
 import * as LocalStorage from "@/app/lib/client/storage/session"
+import { reveliumClient } from '../revelium/client';
  
 interface PromptsContextProps {
     clusters: Omit<Cluster, "embedding">[];
@@ -53,8 +54,10 @@ const usePrompts = () => {
 
 const { clusters, setClusters, prompts, setPrompts } = context;
 
-const onUpdatePrompt = (prompt: Prompt) => {
-  alert("updating prompt " +  prompt.prompt_id)
+const onUpdatePrompt = async(prompt: Prompt, newClusterId: string) => {
+  // alert("updating prompt " +  prompt.prompt_id)
+  const res = await reveliumClient.updatePromptClusterId(prompt.prompt_id, newClusterId)
+  setPrompts(prev => prev.map(p => p.prompt_id === prompt.prompt_id? {...p, metadata: {...p.metadata, cluster_id: newClusterId}} : p))
 }
     return {
         clusters,

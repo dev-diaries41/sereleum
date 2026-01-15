@@ -104,3 +104,8 @@ export interface UpdateLabelParams {
   cluster_id: string
   label: string;
 }
+
+export interface UpdatePromptClusterIdParams {
+  cluster_id: string
+  prompt_id: string;
+}

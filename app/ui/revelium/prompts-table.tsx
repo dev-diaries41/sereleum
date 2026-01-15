@@ -12,13 +12,15 @@ export default function PromptsTableView() {
   const { popUpCta, popUpDescription, popUpTitle, showPopUp, closePopUp } = usePopUp();
   const { prompts, clusters, onUpdatePrompt } = usePrompts();
 
-  const handleLabelChange = (prompt: Prompt, newLabel: string) => {
+  const handleLabelChange = (prompt: Prompt, newClusterId: string) => {
     const updatedPrompt = {
       ...prompt,
-      metadata: { ...prompt.metadata, cluster_id: newLabel },
+      metadata: { ...prompt.metadata, cluster_id: newClusterId },
     };
-    onUpdatePrompt(updatedPrompt);
+
+    onUpdatePrompt(updatedPrompt, newClusterId);
   };
+
 
   const filteredPrompts = prompts.filter(
     (p) =>
@@ -86,21 +88,19 @@ export default function PromptsTableView() {
                       className="border px-4 py-2 w-1/6"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <select
-                        value={clusterId}
+                    <select
+                        value={prompt.metadata.cluster_id}
                         onChange={(e) => handleLabelChange(prompt, e.target.value)}
                         className="w-full px-2 py-1 text-sm border rounded"
                       >
                         <option value={UNCLUSTERED}>{UNCLUSTERED}</option>
                         {clusters.map((c) => (
-                          <option
-                            key={c.prototype_id}
-                            value={c.label === UNLABELLED_CLUSTER ? c.prototype_id : c.label}
-                          >
+                          <option key={c.prototype_id} value={c.prototype_id}>
                             {c.label === UNLABELLED_CLUSTER ? c.prototype_id : c.label}
                           </option>
                         ))}
                       </select>
+
                     </td>
 
                     <td className="border px-4 py-2">{prompt.content}</td>

@@ -7,8 +7,9 @@ import {
   UpdateLabelParams,
   Cluster,
   ClusterAccuracy,
+  UpdatePromptClusterIdParams,
 } from "@/app/types";
-import { ADD_PROMPTS_ENDPOINT, ADD_PROMPTS_FILE_ENDPOINT, BASE_CLUSTER_ENDPOINT, COUNT_CLUSTER_ENDPOINT, GET_LABELS_ENDPOINT, COUNT_PROMPTS_ENDPOINT, GET_PROMPTS_ENDPOINT, GET_PROMPTS_OVERVIEW_ENDPOINT, REVELIUM_BASE_URL, START_CLUSTER_ENDPOINT, CALC_CLUSTER_ACCURACY_ENDPOINT, GET_CLUSTER_PLOT_ENDPOINT } from "./constants";
+import { ADD_PROMPTS_ENDPOINT, ADD_PROMPTS_FILE_ENDPOINT, BASE_CLUSTER_ENDPOINT, COUNT_CLUSTER_ENDPOINT, GET_LABELS_ENDPOINT, COUNT_PROMPTS_ENDPOINT, BASE_PROMPTS_ENDPOINT, GET_PROMPTS_OVERVIEW_ENDPOINT, REVELIUM_BASE_URL, START_CLUSTER_ENDPOINT, CALC_CLUSTER_ACCURACY_ENDPOINT, GET_CLUSTER_PLOT_ENDPOINT } from "./constants";
 
 export class ReveliumClient {
   private baseUrl: string;
@@ -52,7 +53,7 @@ export class ReveliumClient {
   }
 
   async getPrompts(ids?: string[]): Promise<Prompt[]> {
-    const url = `${this.baseUrl}${GET_PROMPTS_ENDPOINT}`;
+    const url = `${this.baseUrl}${BASE_PROMPTS_ENDPOINT}`;
     const payload: GetPromptsRequest = { prompt_ids: ids };
 
     const res = await fetch(url, {
@@ -75,6 +76,26 @@ export class ReveliumClient {
     const url = `${this.baseUrl}${START_CLUSTER_ENDPOINT}`;
     const res = await fetch(url, { method: "POST" });
     return this.handleResponse(res);
+  }
+
+
+  async updatePromptClusterId( promptId: string, clusterId: string): Promise<string> {
+    const payload: UpdatePromptClusterIdParams = { cluster_id: clusterId, prompt_id: promptId };
+         
+    const params = new URLSearchParams(
+      Object.fromEntries(
+        Object.entries(payload).map(([key, value]) => [key, String(value)])
+      )
+    );
+    const url = `${this.baseUrl}${BASE_PROMPTS_ENDPOINT}?${params.toString()}`;
+
+    const res = await fetch(url, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const data = await this.handleResponse<{ updated_label: string }>(res);
+    return data.updated_label;
   }
 
   async getClusters(clusterId: string | null = null, offset: number | null = null, limit: number | null = null): Promise<Omit<Cluster, "embedding">[]> {
