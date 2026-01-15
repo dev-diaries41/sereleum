@@ -178,13 +178,13 @@ export default function DashboardOverview({ overview, clusters, cluster_plot_img
               </div>
             </div>
 
-            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+            {/* <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
               <h4 className="text-sm font-semibold mb-2">Quick Actions</h4>
               <div className="flex flex-col gap-2 mt-3">
                 <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Index prompts</button>
                 <button onClick = {handleClusterPrompts} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Cluster prompts</button>
               </div>
-            </div>
+            </div> */}
           </div>
 
         </div>
