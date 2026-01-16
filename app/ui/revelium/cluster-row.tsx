@@ -1,4 +1,4 @@
-import { Cluster } from "@/app/types";
+import { Cluster, UNLABELLED_CLUSTER } from "@/app/types";
 
 export function ClusterRow({ cluster}: { cluster: Omit<Cluster, "embedding"> }) {
   const {
@@ -23,13 +23,14 @@ export function ClusterRow({ cluster}: { cluster: Omit<Cluster, "embedding"> }) 
   const cohesionPercentage = Math.round((mean_similarity ?? 0) * 100);
 
   return (
-    <div className="flex items-center justify-between gap-4 p-3 rounded-lg hover:bg-gray-50">
+    <div className="flex items-center justify-between gap-4 p-3 rounded-lg bg-white hover:bg-gray-50">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-sm font-medium">
-          {cluster.label?.charAt(0)?.toUpperCase() ?? '—'}
+          {cluster.label?.charAt(0)?.toUpperCase()}
         </div>
-        <div>
-          <div className="text-sm font-medium">{cluster.label}</div>
+        <div className="flex flex-col gap-1">
+          <div className="text-sm font-medium">{(cluster.label === UNLABELLED_CLUSTER? `${cluster.prototype_id }`: cluster.label)}</div>
+          { (cluster.label == UNLABELLED_CLUSTER) && <div className="text-xs text-gray-500">{cluster.label}</div>}
           <div className="text-xs text-gray-500">{prototype_size ?? 0} item(s) in cluster</div>
         </div>
       </div>

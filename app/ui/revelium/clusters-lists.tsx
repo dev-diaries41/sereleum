@@ -43,7 +43,7 @@ export function ClustersWrapper() {
   }
 
   return (
-    <div className="flex flex-col mx-auto w-full items-center justify-center p-8">
+    <div className="flex flex-col mx-auto w-full items-center justify-center p-8 gap-4">
       <div className="w-full flex flex-col gap-8 md:flex-row justify-between mb-6">
         <h1 className="text-2xl md:text-3xl font-bold">Clusters</h1>
           <button
@@ -71,7 +71,7 @@ export function ClustersWrapper() {
         <Link
           key={cluster.prototype_id}
           href={`/dashboard/clusters/cluster/${cluster.prototype_id}`}
-          className="block w-full"
+          className="block w-full gap-4"
         >
           <ClusterRow cluster={cluster} />
         </Link>
