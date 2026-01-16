@@ -37,11 +37,7 @@ export function ClusterAccuracyPlayground({
       v == null ? '—' : `${Math.round(v * 100)}%`;
   
   return (
-    <div className="max-w-6xl mr-auto py-6 space-y-6">
-      {/* Header */}
-   
-
-      {/* Input Section */}
+    <div className="max-w-6xl mr-auto py-6 space-y-6">   
       <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 space-y-4">
         <h3 className="text-lg font-semibold mb-2">
           Labelled assignment input
@@ -80,10 +76,10 @@ export function ClusterAccuracyPlayground({
                   <input
                     type="checkbox"
                     className="mr-2"
-                    checked={selectedClusterIds.includes('Unclustered')}
-                    onChange={() => toggleSelection('Unclustered')}
+                    checked={selectedClusterIds.includes('unclustered')}
+                    onChange={() => toggleSelection('unclustered')}
                   />
-                  Unclustered
+                  unclustered
                 </label>
                 {clusters.map((c) => {
                   const id = c.label === UNLABELLED_CLUSTER ? c.prototype_id : c.label;
@@ -117,7 +113,6 @@ export function ClusterAccuracyPlayground({
         </div>
       </div>
 
-      {/* Result Section */}
       {result && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <aside className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">

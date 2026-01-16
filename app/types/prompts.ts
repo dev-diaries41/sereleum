@@ -9,7 +9,7 @@ export interface PromptMetadata {
 export const createPromptMetadata = (): PromptMetadata => {
   const now = new Date().toISOString();
   return {
-    cluster_id: "Unclustered",
+    cluster_id: "unclustered",
     created_at: now,
     updated_at: now,
   };
@@ -48,7 +48,7 @@ export interface Cluster {
 }
 
 export const UNLABELLED_CLUSTER = "unlabelled";
-export const UNCLUSTERED = "Unclustered"; // TODO: lower case
+export const UNCLUSTERED = "unclustered"; // TODO: lower case
 
 export interface ClusterAccuracy {
   per_label: Record<string, number>
