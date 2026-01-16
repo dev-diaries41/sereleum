@@ -1,6 +1,6 @@
 'use client';
 
-import { Cluster, PromptOverviewInfo } from '@/app/types';
+import { Cluster } from '@/app/types';
 import  { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,26 +15,25 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 interface DashboardOverviewProps {
-  overview: PromptOverviewInfo;
-  clusters: Omit<Cluster, "embedding">[];
   cluster_plot_img_url: string;
 }
 
 const MAX_CLUSTERS = 6
 
-export default function DashboardOverview({ overview, clusters, cluster_plot_img_url }: DashboardOverviewProps) {
+export default function DashboardOverview({ cluster_plot_img_url }: DashboardOverviewProps) {
+  const [promptsFile, setPromptsFile] = useState<File | null>(null)
+  const { clusters, setClusters, promptsOverview: overview} = usePrompts()
+  const router = useRouter();
   const metrics = useMemo(() => {
     return [
-      { key: 'total_clusters', title: 'Total Clusters', value: overview.totalClusters, icon: faLayerGroup },
+      { key: 'total_clusters', title: 'Total Clusters', value: overview.total_clusters, icon: faLayerGroup },
       { key: 'label_clusters', title: 'Labelled Clusters', value: 0, icon: faTag },
-      { key: 'total_prompts', title: 'Total Prompts', value: overview.totalPrompts, icon: faTerminal },
-      { key: 'average_prompt_cost', title: 'Average Token Cost', value: formatCost(overview.averageTokenCost), icon: faMoneyBill },
+      { key: 'total_prompts', title: 'Total Prompts', value: overview.total_prompts, icon: faTerminal },
+      { key: 'average_prompt_cost', title: 'Average Token Cost', value: formatCost(overview.average_prompt_cost), icon: faMoneyBill },
     ];
   }, [overview]);
 
-  const [promptsFile, setPromptsFile] = useState<File | null>(null)
-  const { setClusters} = usePrompts()
-  const router = useRouter();
+
 
   const handleFileUpload = async() => {
     if(!promptsFile) return
@@ -117,7 +116,7 @@ export default function DashboardOverview({ overview, clusters, cluster_plot_img
 
               <div className="mt-4 flex items-center justify-between">
                 <div className="text-xs text-gray-500">Prototype separation and similarity help you understand cluster cohesion</div>
-                { (MAX_CLUSTERS > overview.totalClusters) &&  <button
+                { (MAX_CLUSTERS > overview.total_clusters) &&  <button
                   className="text-sm text-indigo-600"
                   onClick={() => {
                     setClusters(clusters);
@@ -166,7 +165,7 @@ export default function DashboardOverview({ overview, clusters, cluster_plot_img
           <div className="w-full mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
               <h4 className="text-sm font-semibold mb-2">Token Cost (7d)</h4>
-              <div className="text-2xl font-extrabold">{formatCost(overview.averageTokenCost)}</div>
+              <div className="text-2xl font-extrabold">{formatCost(overview.average_prompt_cost)}</div>
               <p className="text-xs text-gray-500 mt-2">Average token cost per prompt</p>
             </div>
 
@@ -193,7 +192,7 @@ export default function DashboardOverview({ overview, clusters, cluster_plot_img
   );
 }
 
-export function DashboardOverviewWrapper({ overview, clusters }: {overview: PromptOverviewInfo, clusters: Omit<Cluster, "embedding">[]}) {
+export function DashboardOverviewWrapper() {
   const [clusterPlotUrl, setClusterPlotUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -215,11 +214,7 @@ export function DashboardOverviewWrapper({ overview, clusters }: {overview: Prom
   }, []);
 
   return (
-    <DashboardOverview
-      cluster_plot_img_url={clusterPlotUrl ?? ""}
-      overview={overview}
-      clusters={clusters}
-    />
+    <DashboardOverview cluster_plot_img_url={clusterPlotUrl ?? ""} />
   );
 }
 

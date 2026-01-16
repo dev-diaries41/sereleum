@@ -1,6 +1,6 @@
 'use client'
 import React, { createContext, useState, useContext, useLayoutEffect, useEffect } from 'react';
-import { Cluster, Prompt, ProviderProps } from '@/app/types';
+import { Cluster, Prompt, PromptsOverviewInfo, ProviderProps } from '@/app/types';
 import { StorageKeys } from '../constants/global';
 import * as LocalStorage from "@/app/lib/client/storage/session"
 import { reveliumClient } from '../revelium/client';
@@ -10,13 +10,21 @@ interface PromptsContextProps {
     setClusters: React.Dispatch<React.SetStateAction<Omit<Cluster, "embedding">[]>>;
     prompts: Prompt[];
     setPrompts: React.Dispatch<React.SetStateAction<Prompt[]>>;
+    promptsOverview: PromptsOverviewInfo;
+    setPromptsOverview: React.Dispatch<React.SetStateAction<PromptsOverviewInfo>>;
 }
 
 const PromptsContext = createContext<PromptsContextProps | undefined>(undefined);
 
-const PromptsProvider = ({ children, initialClusters, initialPrompts }: ProviderProps & {initialClusters: Omit<Cluster, "embedding">[], initialPrompts: Prompt[]}) => {
+interface PromptsProviderProps extends ProviderProps {
+  initialClusters: Omit<Cluster, "embedding">[]; 
+  initialPrompts: Prompt[];
+  overview: PromptsOverviewInfo;
+}
+const PromptsProvider = ({ children, initialClusters, initialPrompts, overview }: PromptsProviderProps) => {
     const [ clusters, setClusters ] = useState<Omit<Cluster, "embedding">[]>(initialClusters);
     const [ prompts, setPrompts ] = useState<Prompt[]>(initialPrompts);
+    const [ promptsOverview, setPromptsOverview ] = useState<PromptsOverviewInfo>(overview);
 
     // useLayoutEffect(() => {
     //     const clusters = LocalStorage.get<Omit<Cluster, "embedding">[]>(StorageKeys.clusters);
@@ -39,7 +47,9 @@ const PromptsProvider = ({ children, initialClusters, initialPrompts }: Provider
       clusters,
       setClusters,
       prompts,
-      setPrompts
+      setPrompts,
+      promptsOverview, 
+      setPromptsOverview
     }}>
       {children}
     </PromptsContext.Provider>
@@ -52,20 +62,34 @@ const usePrompts = () => {
     throw new Error('usePrompts must be used within a PromptsProvider');
   }
 
-const { clusters, setClusters, prompts, setPrompts } = context;
+const { clusters, prompts, promptsOverview,  setClusters, setPrompts, setPromptsOverview } = context;
 
 const onUpdatePrompt = async(prompt: Prompt, newClusterId: string) => {
-  // alert("updating prompt " +  prompt.prompt_id)
   const res = await reveliumClient.updatePromptClusterId(prompt.prompt_id, newClusterId)
   setPrompts(prev => prev.map(p => p.prompt_id === prompt.prompt_id? {...p, metadata: {...p.metadata, cluster_id: newClusterId}} : p))
 }
-    return {
-        clusters,
-        setClusters,
-        prompts, 
-        setPrompts,
-        onUpdatePrompt
-     };
+
+const onLoadMorePrompts = async(limit: number, offset: number) => {
+  if(prompts.length >= promptsOverview.total_prompts) return
+  const result = await reveliumClient.getPrompts(undefined, limit, offset)
+  setPrompts(prev => [...prev, ...result] )
+}
+
+const cachePromptsOverview =(promptOverview: PromptsOverviewInfo) => {
+  setPromptsOverview(promptOverview)
+}
+
+
+return {
+    clusters,
+    prompts, 
+    promptsOverview,
+    setClusters,
+    setPrompts,
+    onUpdatePrompt,
+    onLoadMorePrompts,
+    cachePromptsOverview
+  };
 };
 
 

@@ -13,9 +13,11 @@ export default async function Layout({
     const email = session?.user?.email; 
     const credits = session?.user?.credits; 
     const clusters = await reveliumClient.getClusters()
-    const prompts = await reveliumClient.getPrompts()
+    const prompts = await reveliumClient.getPrompts(undefined, 10)
+    const promptOverview = await reveliumClient.getPromptsOverview();
+
   return (
-    <PromptsProvider initialClusters={clusters} initialPrompts={prompts}>
+    <PromptsProvider initialClusters={clusters} initialPrompts={prompts} overview={promptOverview}>
       <div className={``}>
         <Sidenav email={email} credits={credits!}/>
         {/* <DashboardHeader email={email!} credits={credits!}/> */}

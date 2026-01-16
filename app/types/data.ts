@@ -22,12 +22,6 @@ export type Usage = {
     total: number;
   }
 
-export type PromptOverviewInfo = {
-    totalPrompts: number;
-    totalClusters: number;
-    averageTokenCost: number;
-}
-
   export interface UsageTrackerProps {
   usage: number;
   period: string;
