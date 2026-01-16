@@ -1,4 +1,4 @@
-import { faBook, faCreditCard, faFlask, faHome, faQuestionCircle, faTerminal } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faCreditCard, faFlask, faHome, faLayerGroup, faQuestionCircle, faTerminal } from "@fortawesome/free-solid-svg-icons";
 import { NavItem } from "../types";
 
 export const navLinks: NavItem[] = [
@@ -22,8 +22,8 @@ export const navLinks: NavItem[] = [
 
    export const topSidebarLinks: NavItem[] = [
     { name: 'Home', link: '/dashboard', icon: faHome},
-    { name: 'Playground', link: '/dashboard/playground', icon: faFlask},
     { name: 'Prompts', link: '/dashboard/prompts', icon: faTerminal},
+    { name: 'Clusters', link: '/dashboard/clusters', icon: faLayerGroup},
   ];
 
    export const bottomSidebarLinks: NavItem[] = [

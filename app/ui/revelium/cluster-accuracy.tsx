@@ -4,64 +4,58 @@ import { useState, useRef, useEffect } from 'react';
 import { reveliumClient } from '@/app/revelium/client';
 import { faChevronDown, faFlask } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ClusterAccuracy, UNLABELLED_CLUSTER } from '@/app/types';
+import { Cluster, ClusterAccuracy, UNLABELLED_CLUSTER } from '@/app/types';
 import { MetricsItem } from '../dashboard/metrics-item';
 import Link from 'next/link';
 import { usePrompts } from '@/app/providers/prompts';
 
-export function ClusterAccuracyPlayground() {
-  const [running, setRunning] = useState(false);
-  const [result, setResult] = useState<ClusterAccuracy | null>(null);
-  const [selectedClusterIds, setSelectedClusterIds] = useState<string[]>([]);
-  const {clusters} = usePrompts()
+interface ClusterAccuracyPlaygroundProps {
+  result: ClusterAccuracy | null;
+  clusters: Omit<Cluster, "embedding">[];
+  dropdownOpen: boolean;
+  selectedClusterIds: string[];
+  running: boolean;
+  toggleDropDown: () => void;
+  toggleSelection: (value: string) => void;
+  runAccuracy: () => Promise<void>;
 
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+}
+export function ClusterAccuracyPlayground({
+  result,
+  clusters,
+  dropdownOpen,
+  running,
+  selectedClusterIds,
+  toggleDropDown,
+  toggleSelection,
+  runAccuracy
 
-  const runAccuracy = async () => {
-    setRunning(true);
-    try {
-      const res = await reveliumClient.calculateClusterAccuracy();
-      setResult(res);
-    } finally {
-      setRunning(false);
-    }
-  };
+}: ClusterAccuracyPlaygroundProps) {
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const pct = (v?: number) =>
-    v == null ? '—' : `${Math.round(v * 100)}%`;
+        // Close dropdown when clicking outside
+    useEffect(() => {
+      const handleClickOutside = (e: MouseEvent) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+          toggleDropDown();
+        }
+      };
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
-  const toggleSelection = (id: string) => {
-    setSelectedClusterIds((prev) =>
-      prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]
-    );
-  };
+      
+    const pct = (v?: number) =>
+      v == null ? '—' : `${Math.round(v * 100)}%`;
+  
+
+  
 
   return (
-    <div className="max-w-6xl mr-auto p-6 space-y-6">
+    <div className="max-w-6xl mr-auto py-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-semibold flex items-center gap-2">
-            <FontAwesomeIcon icon={faFlask} />
-            Cluster Accuracy Playground
-          </h2>
-          <p className="text-sm text-gray-500">
-            Measure clustering accuracy against labelled assignments.
-          </p>
-        </div>
-      </div>
+   
 
       {/* Input Section */}
       <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 space-y-4">
@@ -84,7 +78,7 @@ export function ClusterAccuracyPlayground() {
           <div className="relative" ref={dropdownRef}>
             <button
               type="button"
-              onClick={() => setDropdownOpen(!dropdownOpen)}
+              onClick={toggleDropDown}
               className="text-left px-3 py-2 border rounded-md bg-white border-gray-300"
             >
               {selectedClusterIds.length

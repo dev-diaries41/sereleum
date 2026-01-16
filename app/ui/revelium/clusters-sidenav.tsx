@@ -14,7 +14,7 @@ interface ClusterListSideNavWrapperProps {
 }
 
 export default function ClusterListSideNavWrapper({
-  title = 'Clusters',
+  title = 'Top clusters',
   clusters,
   onDelete,
 }: ClusterListSideNavWrapperProps) {
