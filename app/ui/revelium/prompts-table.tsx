@@ -115,7 +115,7 @@ export default function PromptsTableView({
             {filteredPrompts.length === 0 ? (
               <tr>
                 <td colSpan={4} className="text-center py-6 text-gray-500">
-                  No prompts match the current filters.
+                 { searchTerm? "No prompts match the current filters.": "No prompts stored."}
                 </td>
               </tr>
             ) : (
