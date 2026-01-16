@@ -9,13 +9,11 @@ import { convertSnakeToCamel } from '@/app/lib/helpers';
 export const revalidate = 120;
 
 export default async function Page() {
-    const promptOverview = await reveliumClient.getPromptsOverview();
-    const clusters = await reveliumClient.getClusters();
-
+   
     return (
         <ErrorBoundary errorComponent={ErrorComponent}>
             <Suspense fallback={<Loading />}>
-                <DashboardOverviewWrapper overview={convertSnakeToCamel(promptOverview)} clusters={clusters}/>
+                <DashboardOverviewWrapper/>
             </Suspense>
         </ErrorBoundary>
     );

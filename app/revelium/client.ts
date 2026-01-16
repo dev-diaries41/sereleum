@@ -52,9 +52,14 @@ export class ReveliumClient {
     return this.handleResponse(res);
   }
 
-  async getPrompts(ids?: string[]): Promise<Prompt[]> {
+  async getPrompts(ids?: string[], limit?: number, offset?: number, clusterId?: string): Promise<Prompt[]> {
     const url = `${this.baseUrl}${BASE_PROMPTS_ENDPOINT}`;
-    const payload: GetPromptsRequest = { prompt_ids: ids };
+    const payload: GetPromptsRequest = { 
+      prompt_ids: ids,
+      cluster_id: clusterId,
+      limit: limit, 
+      offset: offset
+    };
 
     const res = await fetch(url, {
       method: "POST",
