@@ -1,6 +1,6 @@
 'use client';
 
-import { Cluster } from '@/app/types';
+import { Cluster, UNCLUSTERED, UNLABELLED_CLUSTER } from '@/app/types';
 import DropDownMenu from '@/app/ui/common/dropdown-menu';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
@@ -14,7 +14,7 @@ interface ClusterListSideNavWrapperProps {
 }
 
 export default function ClusterListSideNavWrapper({
-  title = 'Clusters',
+  title = 'Top clusters',
   clusters,
   onDelete,
 }: ClusterListSideNavWrapperProps) {
@@ -43,7 +43,7 @@ export default function ClusterListSideNavWrapper({
             href={`/dashboard/clusters/cluster/${cluster.prototype_id}`}
             className="flex-grow overflow-hidden overflow-ellipsis whitespace-nowrap pr-2"
           >
-            {cluster.label}
+            {cluster.label == UNLABELLED_CLUSTER? cluster.prototype_id : cluster.label}
           </Link>
 
           <button

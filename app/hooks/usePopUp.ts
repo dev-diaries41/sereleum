@@ -1,31 +1,22 @@
-import {useState } from 'react'
+import React, {useLayoutEffect, useState } from 'react'
 
 const usePopUp = () => {
     const [popUpTitle, setPopUpTitle] = useState('');
     const [popUpDescription, setPopUpDescription] = useState('');
-    const [popUpCta, setPopUpCta] = useState<string|undefined>(undefined);
-    const [isPopUpError, setIsPopUpError] = useState<boolean|undefined>(undefined);
-    const isPopUpVisible = popUpTitle && popUpDescription;
+    const [popUpCta, setPopUpCta] = useState<string|undefined>('');
+
+  
 
     const closePopUp = () => {
         setPopUpTitle('');
         setPopUpDescription('');  
         setPopUpCta('');
-        setIsPopUpError(false);
     }
 
-    type PopUpParams =  {
-        title: string, 
-        description: string, 
-        cta?: string, 
-        isError?: boolean
-    }
-
-    const showPopUp=({title, description, cta, isError}: PopUpParams)=> {
+    const showPopUp=(title: string, description: string, cta?: string)=> {
         setPopUpTitle(title);
         setPopUpDescription(description);
         setPopUpCta(cta);
-        setIsPopUpError(isError);
     }
 
 
@@ -33,8 +24,6 @@ const usePopUp = () => {
         popUpCta,
         popUpTitle,
         popUpDescription,
-        isPopUpVisible,
-        isPopUpError,
         closePopUp, 
         showPopUp
     };

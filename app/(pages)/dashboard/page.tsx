@@ -1,5 +1,5 @@
 import  { Suspense } from 'react';
-import DashboardOverview from '@/app/ui/dashboard/overview';
+import DashboardOverview, { DashboardOverviewWrapper } from '@/app/ui/dashboard/overview';
 import Loading from './loading';
 import ErrorComponent from './error';
 import { ErrorBoundary } from 'next/dist/client/components/error-boundary';
@@ -15,7 +15,7 @@ export default async function Page() {
     return (
         <ErrorBoundary errorComponent={ErrorComponent}>
             <Suspense fallback={<Loading />}>
-                <DashboardOverview overview={convertSnakeToCamel(promptOverview)} clusters={clusters}/>
+                <DashboardOverviewWrapper overview={convertSnakeToCamel(promptOverview)} clusters={clusters}/>
             </Suspense>
         </ErrorBoundary>
     );
