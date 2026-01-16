@@ -1,16 +1,27 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import PopUp from '../common/popup';
 import { Prompt, UNLABELLED_CLUSTER, UNCLUSTERED } from '@/app/types/prompts';
 import usePopUp from '@/app/hooks/usePopUp';
 import { usePrompts } from '@/app/providers/prompts';
 
-export default function PromptsTableView() {
+interface PromptsTableViewProps {
+  scrollLoadThreshold?: number;
+}
+
+export default function PromptsTableView({
+  scrollLoadThreshold = 0.8,
+}: PromptsTableViewProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const { popUpCta, popUpDescription, popUpTitle, showPopUp, closePopUp } = usePopUp();
-  const { prompts, clusters, onUpdatePrompt } = usePrompts();
+  const { prompts, clusters, onUpdatePrompt, onLoadMorePrompts } = usePrompts();
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const loadingRef = useRef(false);
+  const limit = 10;
+  let offset = useRef(prompts.length); // already loaded first batch
 
   const handleLabelChange = (prompt: Prompt, newClusterId: string) => {
     const updatedPrompt = {
@@ -21,6 +32,51 @@ export default function PromptsTableView() {
     onUpdatePrompt(updatedPrompt, newClusterId);
   };
 
+  // Reset the loading flag when prompts array changes (so subsequent loads can be requested)
+  useEffect(() => {
+    loadingRef.current = false;
+  }, [prompts.length]);
+
+  useEffect(() => {
+    const handler = () => {
+      const el = containerRef.current;
+      if (el && el.scrollHeight > 0) {
+        const { scrollTop, scrollHeight, clientHeight } = el;
+        const ratio = (scrollTop + clientHeight) / scrollHeight;
+        if (ratio >= scrollLoadThreshold && !loadingRef.current) {
+          loadingRef.current = true;
+          onLoadMorePrompts(limit, offset.current);
+          offset.current = offset.current + limit
+        }
+        return;
+      }
+
+      // Fallback to window/document scrolling
+      // const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      // const scrollHeight = document.documentElement.scrollHeight;
+      // const clientHeight = window.innerHeight;
+      // const ratio = (scrollTop + clientHeight) / scrollHeight;
+      // if (ratio >= scrollLoadThreshold && !loadingRef.current) {
+      //   loadingRef.current = true;
+      //     onLoadMorePrompts(limit, offset.current);
+      //     offset.current = offset.current + limit
+      // }
+    };
+
+    // Attach listeners
+    window.addEventListener('scroll', handler, { passive: true });
+    const containerEl = containerRef.current;
+    if (containerEl) {
+      containerEl.addEventListener('scroll', handler, { passive: true });
+    }
+
+    return () => {
+      window.removeEventListener('scroll', handler);
+      if (containerEl) {
+        containerEl.removeEventListener('scroll', handler);
+      }
+    };
+  }, [onLoadMorePrompts, scrollLoadThreshold]);
 
   const filteredPrompts = prompts.filter(
     (p) =>
@@ -42,7 +98,10 @@ export default function PromptsTableView() {
         />
       </div>
 
-      <div className="overflow-x-auto w-full bg-white">
+      <div
+        ref={containerRef}
+        className="overflow-x-auto w-full bg-white"
+      >
         <table className="table-auto border-collapse border border-gray-300 w-full text-sm md:text-base">
           <thead>
             <tr className="uppercase text-sm">
@@ -88,7 +147,7 @@ export default function PromptsTableView() {
                       className="border px-4 py-2 w-1/6"
                       onClick={(e) => e.stopPropagation()}
                     >
-                    <select
+                      <select
                         value={prompt.metadata.cluster_id}
                         onChange={(e) => handleLabelChange(prompt, e.target.value)}
                         className="w-full px-2 py-1 text-sm border rounded"
@@ -100,7 +159,6 @@ export default function PromptsTableView() {
                           </option>
                         ))}
                       </select>
-
                     </td>
 
                     <td className="border px-4 py-2">{prompt.content}</td>
