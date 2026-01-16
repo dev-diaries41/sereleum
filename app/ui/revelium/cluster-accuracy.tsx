@@ -112,7 +112,7 @@ export function ClusterAccuracyPlayground({
             disabled={running}
             className="px-4 py-2 rounded-md bg-indigo-600 text-white text-sm disabled:opacity-60"
           >
-            Run evaluation
+            Run
           </button>
         </div>
       </div>
