@@ -1,13 +1,11 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { reveliumClient } from '@/app/revelium/client';
-import { faChevronDown, faFlask } from '@fortawesome/free-solid-svg-icons';
+import { useRef } from 'react';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Cluster, ClusterAccuracy, UNLABELLED_CLUSTER } from '@/app/types';
 import { MetricsItem } from '../dashboard/metrics-item';
 import Link from 'next/link';
-import { usePrompts } from '@/app/providers/prompts';
 
 interface ClusterAccuracyPlaygroundProps {
   result: ClusterAccuracy | null;
@@ -18,8 +16,8 @@ interface ClusterAccuracyPlaygroundProps {
   toggleDropDown: () => void;
   toggleSelection: (value: string) => void;
   runAccuracy: () => Promise<void>;
-
 }
+
 export function ClusterAccuracyPlayground({
   result,
   clusters,
@@ -33,25 +31,11 @@ export function ClusterAccuracyPlayground({
 }: ClusterAccuracyPlaygroundProps) {
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-        // Close dropdown when clicking outside
-    useEffect(() => {
-      const handleClickOutside = (e: MouseEvent) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-          toggleDropDown();
-        }
-      };
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
 
       
     const pct = (v?: number) =>
       v == null ? '—' : `${Math.round(v * 100)}%`;
   
-
-  
-
   return (
     <div className="max-w-6xl mr-auto py-6 space-y-6">
       {/* Header */}
@@ -74,8 +58,11 @@ export function ClusterAccuracyPlayground({
         </p>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
-          {/* Custom dropdown */}
-          <div className="relative" ref={dropdownRef}>
+          <div className="relative" ref={dropdownRef}   onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                toggleDropDown();
+              }
+            }}>
             <button
               type="button"
               onClick={toggleDropDown}
