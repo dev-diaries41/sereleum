@@ -18,7 +18,7 @@ interface DashboardOverviewProps {
   cluster_plot_img_url: string;
 }
 
-const MAX_CLUSTERS = 6
+const MAX_CLUSTERS = 5
 
 export default function DashboardOverview({ cluster_plot_img_url }: DashboardOverviewProps) {
   const [promptsFile, setPromptsFile] = useState<File | null>(null)
@@ -38,11 +38,6 @@ export default function DashboardOverview({ cluster_plot_img_url }: DashboardOve
   const handleFileUpload = async() => {
     if(!promptsFile) return
     const res = await reveliumClient.addPromptsFile(promptsFile)
-    alert(JSON.stringify(res))
-  }
-
-  const handleClusterPrompts = async() => {
-    const res = await reveliumClient.clusterPrompts()
     alert(JSON.stringify(res))
   }
 
@@ -116,7 +111,7 @@ export default function DashboardOverview({ cluster_plot_img_url }: DashboardOve
 
               <div className="mt-4 flex items-center justify-between">
                 <div className="text-xs text-gray-500">Prototype separation and similarity help you understand cluster cohesion</div>
-                { (MAX_CLUSTERS > overview.total_clusters) &&  <button
+                { (clusters.length > overview.total_clusters) &&  <button
                   className="text-sm text-indigo-600"
                   onClick={() => {
                     setClusters(clusters);
