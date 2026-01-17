@@ -18,7 +18,7 @@ interface DashboardOverviewProps {
   cluster_plot_img_url: string;
 }
 
-const MAX_CLUSTERS = 5
+const N_TOP_CLUSTERS = 5
 
 export default function DashboardOverview({ cluster_plot_img_url }: DashboardOverviewProps) {
   const [promptsFile, setPromptsFile] = useState<File | null>(null)
@@ -97,7 +97,7 @@ export default function DashboardOverview({ cluster_plot_img_url }: DashboardOve
                 {clusters.length === 0 ? (
                   <div className="text-sm text-gray-500 py-6 text-center">No clusters yet — add prompts to generate clusters</div>
                 ) : (
-                  clusters.slice(0, MAX_CLUSTERS).map((cluster, i) => 
+                  clusters.slice(0, N_TOP_CLUSTERS).map((cluster, i) => 
                     <Link
                         key={cluster.prototype_id}
                         href={`/dashboard/clusters/cluster/${cluster.prototype_id}`}
@@ -111,7 +111,7 @@ export default function DashboardOverview({ cluster_plot_img_url }: DashboardOve
 
               <div className="mt-4 flex items-center justify-between">
                 <div className="text-xs text-gray-500">Prototype separation and similarity help you understand cluster cohesion</div>
-                { (clusters.length > overview.total_clusters) &&  <button
+                { ( clusters.length > N_TOP_CLUSTERS) &&  <button
                   className="text-sm text-indigo-600"
                   onClick={() => {
                     setClusters(clusters);
