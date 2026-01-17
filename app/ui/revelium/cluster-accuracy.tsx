@@ -115,18 +115,26 @@ export function ClusterAccuracyPlayground({
 
       {result && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <aside className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+          {/* <aside className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
             <h4 className="text-sm font-semibold mb-4">Accuracy summary</h4>
             <MetricsItem
               label="Mean accuracy"
               value={pct(result.mean_accuracy)}
               largeValue={pct(result.mean_accuracy)}
             />
-          </aside>
+          </aside> */}
 
           <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
-            <h4 className="text-sm font-semibold mb-4">Accuracy by cluster label</h4>
             <div className="space-y-3">
+              <h4 className="text-md font-semibold mb-4">Results</h4>
+
+              <MetricsItem
+                label="Overall accuracy"
+                value={pct(result.mean_accuracy)}
+                largeValue={pct(result.mean_accuracy)}
+              />
+              
+              <h4 className="text-sm font-semibold pt-4">Accuracy by cluster label</h4>
               {Object.entries(result.per_label).map(([label, acc]) => (
                 <div
                   key={label}
