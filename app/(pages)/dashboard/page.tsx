@@ -1,10 +1,8 @@
 import  { Suspense } from 'react';
-import DashboardOverview, { DashboardOverviewWrapper } from '@/app/ui/dashboard/overview';
+import  { DashboardOverviewWrapper } from '@/app/ui/dashboard/overview';
 import Loading from './loading';
 import ErrorComponent from './error';
 import { ErrorBoundary } from 'next/dist/client/components/error-boundary';
-import { reveliumClient } from '@/app/revelium/client';
-import { convertSnakeToCamel } from '@/app/lib/helpers';
 
 export const revalidate = 120;
 
