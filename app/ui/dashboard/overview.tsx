@@ -1,6 +1,6 @@
 'use client';
 
-import { Cluster } from '@/app/types';
+import { Cluster, Status } from '@/app/types';
 import  { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,15 +14,16 @@ import { usePrompts } from '@/app/providers/prompts';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-interface DashboardOverviewProps {
-  cluster_plot_img_url: string;
-}
 
 const N_TOP_CLUSTERS = 5
 
-export default function DashboardOverview({ cluster_plot_img_url }: DashboardOverviewProps) {
+export function DashboardOverview() {
   const [promptsFile, setPromptsFile] = useState<File | null>(null)
   const { clusters, setClusters, promptsOverview: overview} = usePrompts()
+  const [clusterPlotUrl, setClusterPlotUrl] = useState<string | null>(null);
+  const [progress, setProgress] = useState<number>(0);
+  const [status, setStatus] = useState<Status|null>(null);
+
   const router = useRouter();
   const metrics = useMemo(() => {
     return [
@@ -34,11 +35,39 @@ export default function DashboardOverview({ cluster_plot_img_url }: DashboardOve
   }, [overview]);
 
 
+  useEffect(() => {
+    let url: string | null = null;
+    const fetchPlot = async () => {
+      try {
+        const blob = await reveliumClient.getClusterPlotBlob();
+        url = blob? URL.createObjectURL(blob) : null;
+        setClusterPlotUrl(url);
+      } catch (e) {
+        console.error("Failed to load cluster plot", e);
+      }
+    };
+    fetchPlot();
+
+    return () => {
+      if (url) URL.revokeObjectURL(url); // cleanup
+    };
+  }, []);
+
+
 
   const handleFileUpload = async() => {
     if(!promptsFile) return
     const res = await reveliumClient.addPromptsFile(promptsFile)
-    alert(JSON.stringify(res))
+    setStatus(res.status)
+    const es = reveliumClient.trackPromptsIndexProgress(res.job_id, {
+      onProgress: (p) => {
+        setProgress(p)
+        console.log(p)
+      },
+      onComplete: () => setStatus('completed'),
+      onFail: (e) => alert(e),
+    })    
+    // alert(JSON.stringify(res))
   }
 
   return (
@@ -74,6 +103,10 @@ export default function DashboardOverview({ cluster_plot_img_url }: DashboardOve
               )
               }
             </div>
+          </div>
+
+          <div className='flex'>
+            Progress: {progress}
           </div>
 
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -134,10 +167,10 @@ export default function DashboardOverview({ cluster_plot_img_url }: DashboardOve
                 </div>
 
                 <div className="flex-1 w-full min-h-[220px] flex items-center justify-center">
-                  {cluster_plot_img_url ? (
+                  {clusterPlotUrl ? (
                     <div className="w-full h-full relative rounded-lg overflow-hidden border border-gray-50">
                       <Image
-                        src={cluster_plot_img_url}
+                        src={clusterPlotUrl}
                         alt="Cluster plot"
                         width={800}
                         height={480}
@@ -184,32 +217,6 @@ export default function DashboardOverview({ cluster_plot_img_url }: DashboardOve
         </div>
       </div>
     </div>
-  );
-}
-
-export function DashboardOverviewWrapper() {
-  const [clusterPlotUrl, setClusterPlotUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    let url: string | null = null;
-    const fetchPlot = async () => {
-      try {
-        const blob = await reveliumClient.getClusterPlotBlob();
-        url = blob? URL.createObjectURL(blob) : null;
-        setClusterPlotUrl(url);
-      } catch (e) {
-        console.error("Failed to load cluster plot", e);
-      }
-    };
-    fetchPlot();
-
-    return () => {
-      if (url) URL.revokeObjectURL(url); // cleanup
-    };
-  }, []);
-
-  return (
-    <DashboardOverview cluster_plot_img_url={clusterPlotUrl ?? ""} />
   );
 }
 

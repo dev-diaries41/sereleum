@@ -42,21 +42,14 @@ export type FinishedStatus = (typeof FINISHED_STATUSES)[number];
 export const STATUSES = [
   ...FINISHED_STATUSES,
   "active",
-  "delayed",
-  "prioritized",
-  "waiting",
-  "waiting-children",
+  "queued",
 ] as const;
 
 export type Status = (typeof STATUSES)[number];
 
 export interface JobReceipt {
-  jobId: string;
+  job_id: string;
   status: Status;
-  queue: number;
-  createdAt: string;
-  delay: number;
-  jobName?: string;
 }
 
 // HTTP 

@@ -9,7 +9,7 @@ import {
   ClusterAccuracy,
   UpdatePromptClusterIdParams,
 } from "@/app/types";
-import { ADD_PROMPTS_ENDPOINT, ADD_PROMPTS_FILE_ENDPOINT, BASE_CLUSTER_ENDPOINT, COUNT_CLUSTER_ENDPOINT, GET_LABELS_ENDPOINT, COUNT_PROMPTS_ENDPOINT, BASE_PROMPTS_ENDPOINT, GET_PROMPTS_OVERVIEW_ENDPOINT, REVELIUM_BASE_URL, START_CLUSTER_ENDPOINT, CALC_CLUSTER_ACCURACY_ENDPOINT, GET_CLUSTER_PLOT_ENDPOINT } from "./constants";
+import { ADD_PROMPTS_ENDPOINT, ADD_PROMPTS_FILE_ENDPOINT, BASE_CLUSTER_ENDPOINT, COUNT_CLUSTER_ENDPOINT, GET_LABELS_ENDPOINT, COUNT_PROMPTS_ENDPOINT, BASE_PROMPTS_ENDPOINT, GET_PROMPTS_OVERVIEW_ENDPOINT, REVELIUM_BASE_URL, START_CLUSTER_ENDPOINT, CALC_CLUSTER_ACCURACY_ENDPOINT, GET_CLUSTER_PLOT_ENDPOINT, SSE_PROMPTS_INDEX_PROGRESS } from "./constants";
 
 export class ReveliumClient {
   private baseUrl: string;
@@ -190,6 +190,74 @@ export class ReveliumClient {
   const blob = await res.blob();
   return blob.size === 0 ? null : blob;
 }
+
+trackPromptsIndexProgress(
+  jobId: string,
+  {
+    onProgress,
+    onFail,
+    onActive,
+    onOpen,
+    onError,
+    onComplete,
+  }: {
+    onProgress: (progress: number) => void;
+    onFail?: (error: string) => void;
+    onActive?: () => void;
+    onOpen?: () => void;
+    onError?: (err: unknown) => void;
+    onComplete?: () => void;
+  }
+): EventSource {
+  const url = `${this.baseUrl}/${SSE_PROMPTS_INDEX_PROGRESS}?job_id=${encodeURIComponent(
+      jobId
+    )}`;
+  const es = new EventSource(url);
+
+  es.onopen = () => {
+    onOpen?.();
+  };
+
+  es.addEventListener("progress", (ev: MessageEvent) => {
+    try {
+      const payload = JSON.parse(ev.data);
+      onProgress(Number(payload.progress));
+    } catch (err) {
+      onError?.(err);
+    }
+  });
+
+  es.addEventListener("active", () => {
+    onActive?.();
+  });
+
+  es.addEventListener("complete", () => {
+    onComplete?.();
+    es.close();
+  });
+
+  es.addEventListener("failed", (ev: MessageEvent) => {
+    try {
+      const payload = JSON.parse(ev.data);
+      onFail?.(String(payload.error));
+    } catch (err) {
+      onError?.(err);
+    } finally {
+      es.close();
+      onComplete?.();
+    }
+  });
+
+  es.onerror = (ev: Event | any) => {
+    if ((es as any).readyState === (EventSource as any).CLOSED) {
+      onComplete?.();
+    }
+    onError?.(ev);
+  };
+
+  return es;
+  }
+
 
   
 }
