@@ -3,8 +3,6 @@ import { Cluster, UNLABELLED_CLUSTER } from "@/app/types";
 export function ClusterRow({ cluster}: { cluster: Omit<Cluster, "embedding"> }) {
   const {
     mean_similarity,
-    min_similarity,
-    max_similarity,
     nearest_other_similarity,
     separation_margin,
     prototype_size,
@@ -48,8 +46,6 @@ export function ClusterRow({ cluster}: { cluster: Omit<Cluster, "embedding"> }) 
         </div>
 
         <div className="mt-2 text-xs text-gray-500 flex gap-3">
-          <div title="Minimum similarity within cluster">min: {pct(min_similarity)}</div>
-          <div title="Maximum similarity within cluster">max: {pct(max_similarity)}</div>
           <div title="Similarity to nearest other cluster">nearest: {pct(nearest_other_similarity)}</div>
           <div title="Separation margin between clusters">sep: {separationLabel(separation_margin)}</div>
         </div>
