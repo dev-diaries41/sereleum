@@ -1,6 +1,6 @@
 'use client';
 
-import {  Cluster, Status } from '@/app/types';
+import {  Cluster, PromptsOverviewInfo, Status } from '@/app/types';
 import  { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -38,23 +38,59 @@ export function DashboardOverview() {
   }, [overview]);
 
 
-  // useEffect(() => {
-  //   let url: string | null = null;
-  //   const fetchPlot = async () => {
-  //     try {
-  //       const blob = await reveliumClient.getClusterPlotBlob();
-  //       url = blob? URL.createObjectURL(blob) : null;
-  //       setClusterPlotUrl(url);
-  //     } catch (e) {
-  //       console.error("Failed to load cluster plot", e);
-  //     }
-  //   };
-  //   fetchPlot();
+useEffect(() => {
+  let url: string | null = null;
 
-  //   return () => {
-  //     if (url) URL.revokeObjectURL(url);
-  //   };
-  // }, []);
+  const fetchPlot = async () => {
+    const request = indexedDB.open("ClusterPlotDB", 1);
+    const cachedOverview = LocalStorage.get<PromptsOverviewInfo>(StorageKeys.overview) as PromptsOverviewInfo | null
+    const isTheSameOverview = cachedOverview?.total_prompts === overview.total_prompts
+
+    request.onupgradeneeded = (event) => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains("plots")) {
+        db.createObjectStore("plots");
+      }
+    };
+
+    request.onsuccess = async () => {
+      const db = request.result;
+      const tx = db.transaction("plots", "readonly");
+      const store = tx.objectStore("plots");
+      const cachedBlob = await new Promise<Blob | undefined>((resolve) => {
+        const getReq = store.get("clusterPlot");
+        getReq.onsuccess = () => resolve(getReq.result);
+        getReq.onerror = () => resolve(undefined);
+      });
+
+      if (cachedBlob && isTheSameOverview) {
+        url = URL.createObjectURL(cachedBlob);
+        setClusterPlotUrl(url);
+        return;
+      }
+
+      const blob = await reveliumClient.getClusterPlotBlob();
+      if (blob) {
+        LocalStorage.set(StorageKeys.overview, JSON.stringify(overview))
+        url = URL.createObjectURL(blob);
+        setClusterPlotUrl(url);
+
+        const txWrite = db.transaction("plots", "readwrite");
+        const storeWrite = txWrite.objectStore("plots");
+        storeWrite.put(blob, "clusterPlot");
+      }
+    };
+
+    request.onerror = (e) => console.error("IndexedDB error", e);
+  };
+
+  fetchPlot();
+
+  return () => {
+    if (url) URL.revokeObjectURL(url);
+  };
+}, []);
+
 
   useEffect(() => {
     if(status === "complete" || status === "failed"){
@@ -70,7 +106,6 @@ export function DashboardOverview() {
 
   useEffect(() => {
     const jobId = LocalStorage.get<string>(StorageKeys.indexingJobId)
-    console.log({jobId})
     if(jobId){
       const es = reveliumClient.trackPromptsIndexProgress(jobId, {
         onProgress: (p) => {

@@ -37,8 +37,7 @@ export const StorageKeys = {
   indexingJobId: 'indexingJobId',
   indexingProgress: "indexingProgress",
   clusters: "clusters",
-
-
+  overview: "overview",
 }
 
 // Usage
