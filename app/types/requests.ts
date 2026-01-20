@@ -73,6 +73,12 @@ export interface GetPromptsRequest {
   offset?: number
 }
 
+export interface QueryPromptsRequest {
+  query: string;
+  cluster_id?: string;
+  limit?: number;
+}
+
 export interface GetPromptsResponse extends PromptsPayload {}
 
 export interface GetCountResponse {

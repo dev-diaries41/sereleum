@@ -2,7 +2,7 @@
 
 import { usePrompts } from "@/app/providers/prompts";
 import { reveliumClient } from "@/app/revelium/client";
-import { Cluster, ClusterMetadata } from "@/app/types";
+import { Cluster, ClusterMetadata, Prompt } from "@/app/types";
 import { faCheck, faFlask } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
@@ -14,6 +14,9 @@ export function ClusterDetail({ id }: { id?: string }) {
   const { clusters, setClusters } = usePrompts();
   const [labelDraft, setLabelDraft] = useState<string>('');
   const [saving, setSaving] = useState(false);
+  const [topPrompts, setTopPrompts] = useState<Prompt[]>([]);
+  const [isPromptsVisible, setIsPromptsVisible] = useState(false);
+
 
   const cluster = useMemo(() => {
     if (!id) return undefined;
@@ -21,10 +24,46 @@ export function ClusterDetail({ id }: { id?: string }) {
       (c) => c.prototype_id === id || (c as any).id === id || c.label === id
     ) as Omit<Cluster, 'embedding'> | undefined;
   }, [clusters, id]);
+  
 
   useEffect(() => {
     setLabelDraft(cluster?.label ?? '');
   }, [cluster]);
+
+
+  const saveLabel = async () => {
+    setSaving(true);
+    try {
+      const newLabel = await reveliumClient.updateClusterLabel(cluster?.prototype_id!, labelDraft)
+      setClusters((prev) =>
+        prev.map((c) =>
+          c.prototype_id === cluster?.prototype_id
+            ? {
+                ...c,
+                label: newLabel,
+                metadata: { ...c.metadata, label: newLabel },
+              }
+            : c
+        )
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+
+  const getTopPrompts = async() => {
+    const fetchedPrompts = await reveliumClient.getPrompts(undefined, 10, 0, cluster?.prototype_id)
+    setTopPrompts(fetchedPrompts)
+  }
+
+  const showPrompts = async() => {
+    if(topPrompts.length == 0){
+      await getTopPrompts()
+    }
+    setIsPromptsVisible(prev => !prev)
+  }
+
 
   if (!id) {
     return (
@@ -48,29 +87,8 @@ export function ClusterDetail({ id }: { id?: string }) {
     );
   }
 
-  const saveLabel = async () => {
-    setSaving(true);
-    try {
-      const newLabel = await reveliumClient.updateClusterLabel(cluster.prototype_id, labelDraft)
-      setClusters((prev) =>
-        prev.map((c) =>
-          c.prototype_id === cluster.prototype_id
-            ? {
-                ...c,
-                label: newLabel,
-                metadata: { ...c.metadata, label: newLabel },
-              }
-            : c
-        )
-      );
-    } finally {
-      setSaving(false);
-    }
-  };
-
-
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="mx-auto p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-semibold">
@@ -90,20 +108,35 @@ export function ClusterDetail({ id }: { id?: string }) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <ClusterLabelForm cluster={cluster} labelDraft={labelDraft} enabled={saving} onLabelDraftChange={(e) => setLabelDraft(e.target.value)} onSaveLabel={saveLabel}/>
+        <ClusterLabelForm 
+        cluster={cluster} 
+        labelDraft={labelDraft} 
+        enabled={saving} 
+        onLabelDraftChange={(e) => setLabelDraft(e.target.value)} 
+        onSaveLabel={saveLabel}
+        onShowPrompts={showPrompts}
+        />
         <ClusterMetricsSummary metadata={cluster.metadata}/>
       </div>
+      {(topPrompts.length > 0 && isPromptsVisible) && <PromptsTable prompts={topPrompts}/>}
     </div>
   );
 }
 
-
+interface ClusterLabelFormPromptsProps {
+  cluster:  Omit<Cluster, "embedding">;
+  labelDraft: string, enabled:boolean;
+  onLabelDraftChange: (e:  ChangeEvent<HTMLInputElement>) => void;
+  onSaveLabel: () => Promise<void>;
+  onShowPrompts:() => Promise<void>;
+}
 function ClusterLabelForm({
   cluster, 
   labelDraft,
   enabled,
+  onShowPrompts,
   onSaveLabel, 
-  onLabelDraftChange}: {cluster:  Omit<Cluster, "embedding">, labelDraft: string, enabled:boolean, onLabelDraftChange: (e:  ChangeEvent<HTMLInputElement>) => void, onSaveLabel: () => Promise<void>}
+  onLabelDraftChange}: ClusterLabelFormPromptsProps
 ){
   return (
   <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
@@ -161,6 +194,15 @@ function ClusterLabelForm({
         className="w-full min-h-[120px] p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-200 outline-none"
       />
     </div>
+     <div className="pt-2">
+          <button
+            onClick={onShowPrompts}
+            type="button"
+            className="text-sm text-indigo-600 hover:underline"
+          >
+            Show prompts
+          </button>
+        </div>
   </div>
 </div>
   )
@@ -217,4 +259,47 @@ function ClusterMetricsSummary({metadata, title = "Cluster metrics"}: {metadata:
       </div>
     </aside>
   )
+}
+
+
+function PromptsTable({ prompts }: { prompts: Prompt[] }) {
+  return (
+    <div className="overflow-x-auto w-full bg-white mt-8">
+      <table className="table-auto border-collapse border border-gray-300 w-full text-sm md:text-base">
+        <thead>
+          <tr className="uppercase text-sm">
+            <th className="border px-4 py-2 text-left">Prompt ID</th>
+            <th className="border px-4 py-2 text-left">Cluster</th>
+            <th className="border px-4 py-2 text-left w-[120px]">Label</th>
+            <th className="border px-4 py-2 text-left">Content</th>
+          </tr>
+        </thead>
+        <tbody>
+          {prompts.map((prompt) => {
+            const clusterId = prompt.metadata.cluster_id;
+            return (
+              <tr
+                key={prompt.prompt_id}
+                className="hover:bg-gray-50 transition-all duration-200"
+              >
+                <td className="border px-4 py-2">{prompt.prompt_id}</td>
+                <td className="border px-4 py-2">
+                  <span>{clusterId}</span>
+                </td>
+                <td
+                  className="border px-4 py-2 w-1/6"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span className="w-full px-2 py-1 text-sm border rounded">
+                    {clusterId}
+                  </span>
+                </td>
+                <td className="border px-4 py-2">{prompt.content}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
 }
