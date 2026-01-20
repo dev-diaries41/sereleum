@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faLayerGroup, faMoneyBill, faSpinner, faTag, faTerminal } from '@fortawesome/free-solid-svg-icons';
 import FileUploader from '../common/upload';
-import {  AcceptedMimes } from '@/app/constants/global';
+import {  AcceptedMimes, StorageKeys } from '@/app/constants/global';
 import { reveliumClient } from '@/app/revelium/client';
 import { ClusterRow } from '../revelium/cluster-row';
 import { MetricCard } from './metric-card';
@@ -14,6 +14,7 @@ import { usePrompts } from '@/app/providers/prompts';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { IndexProgressTrackerPopUp } from '../common/progress-tracker';
+import * as LocalStorage from "@/app/lib/client/storage/local"
 
 
 const N_TOP_CLUSTERS = 5
@@ -37,23 +38,23 @@ export function DashboardOverview() {
   }, [overview]);
 
 
-  useEffect(() => {
-    let url: string | null = null;
-    const fetchPlot = async () => {
-      try {
-        const blob = await reveliumClient.getClusterPlotBlob();
-        url = blob? URL.createObjectURL(blob) : null;
-        setClusterPlotUrl(url);
-      } catch (e) {
-        console.error("Failed to load cluster plot", e);
-      }
-    };
-    fetchPlot();
+  // useEffect(() => {
+  //   let url: string | null = null;
+  //   const fetchPlot = async () => {
+  //     try {
+  //       const blob = await reveliumClient.getClusterPlotBlob();
+  //       url = blob? URL.createObjectURL(blob) : null;
+  //       setClusterPlotUrl(url);
+  //     } catch (e) {
+  //       console.error("Failed to load cluster plot", e);
+  //     }
+  //   };
+  //   fetchPlot();
 
-    return () => {
-      if (url) URL.revokeObjectURL(url);
-    };
-  }, []);
+  //   return () => {
+  //     if (url) URL.revokeObjectURL(url);
+  //   };
+  // }, []);
 
   useEffect(() => {
     if(status === "complete" || status === "failed"){
@@ -67,18 +68,47 @@ export function DashboardOverview() {
   }, [status, trackerMinimized])
 
 
+  useEffect(() => {
+    const jobId = LocalStorage.get<string>(StorageKeys.indexingJobId)
+    console.log({jobId})
+    if(jobId){
+      const es = reveliumClient.trackPromptsIndexProgress(jobId, {
+        onProgress: (p) => {
+          setProgress(p)
+        },
+        onComplete: () => {
+          setStatus("complete")
+          LocalStorage.remove(StorageKeys.indexingJobId)
+        },
+        onFail: (e) => {
+          setStatus("failed")
+          LocalStorage.remove(StorageKeys.indexingJobId)
+          alert(e)
+        },
+        onActive: () => setStatus('active'),
+      })    
+    }
+  }, [])
+
+
 
   const handleFileUpload = async() => {
     if(!promptsFile) return
     const res = await reveliumClient.addPromptsFile(promptsFile)
     setStatus(res.status)
+    LocalStorage.set(StorageKeys.indexingJobId, res.job_id)
+
     const es = reveliumClient.trackPromptsIndexProgress(res.job_id, {
       onProgress: (p) => {
         setProgress(p)
       },
-      onComplete: () => setStatus("complete"),
+      onComplete: () => {
+        setStatus("complete")
+        LocalStorage.remove(StorageKeys.indexingJobId)
+      },
       onFail: (e) => {
         setStatus("failed")
+        LocalStorage.remove(StorageKeys.indexingJobId)
         alert(e)
       },
       onActive: () => setStatus('active'),
@@ -246,7 +276,7 @@ export function DashboardOverview() {
 
         </div>
       </div>
-         {status != null  && <IndexProgressTrackerPopUp
+         {progress > 0  && <IndexProgressTrackerPopUp
           progress={progress} 
           status={status} 
           title={"Indexing prompts"}

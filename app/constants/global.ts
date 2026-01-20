@@ -34,11 +34,11 @@ export const Time = {
 }
 
 export const StorageKeys = {
-  jobId: 'jobId',
-  token: 'token',
+  indexingJobId: 'indexingJobId',
+  indexingProgress: "indexingProgress",
   clusters: "clusters",
-  subscription: 'stripe-subscription',
-  credits: 'credits',
+
+
 }
 
 // Usage

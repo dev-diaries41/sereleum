@@ -244,14 +244,10 @@ trackPromptsIndexProgress(
       onError?.(err);
     } finally {
       es.close();
-      onComplete?.();
     }
   });
 
   es.onerror = (ev: Event | any) => {
-    if ((es as any).readyState === (EventSource as any).CLOSED) {
-      onComplete?.();
-    }
     onError?.(ev);
   };
 
