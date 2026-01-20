@@ -1,10 +1,10 @@
 'use client';
 
-import { Cluster, Status } from '@/app/types';
+import {  Cluster, Status } from '@/app/types';
 import  { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose, faLayerGroup, faMoneyBill, faTag, faTerminal } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faLayerGroup, faMoneyBill, faSpinner, faTag, faTerminal } from '@fortawesome/free-solid-svg-icons';
 import FileUploader from '../common/upload';
 import {  AcceptedMimes } from '@/app/constants/global';
 import { reveliumClient } from '@/app/revelium/client';
@@ -13,6 +13,7 @@ import { MetricCard } from './metric-card';
 import { usePrompts } from '@/app/providers/prompts';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { IndexProgressTrackerPopUp } from '../common/progress-tracker';
 
 
 const N_TOP_CLUSTERS = 5
@@ -23,6 +24,7 @@ export function DashboardOverview() {
   const [clusterPlotUrl, setClusterPlotUrl] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
   const [status, setStatus] = useState<Status|null>(null);
+  const [trackerMinimized, setTrackerMinimized] = useState(false);
 
   const router = useRouter();
   const metrics = useMemo(() => {
@@ -49,9 +51,20 @@ export function DashboardOverview() {
     fetchPlot();
 
     return () => {
-      if (url) URL.revokeObjectURL(url); // cleanup
+      if (url) URL.revokeObjectURL(url);
     };
   }, []);
+
+  useEffect(() => {
+    if(status === "complete" || status === "failed"){
+      setTimeout(()=>{
+        setStatus(null)
+        setProgress(0)
+        setTrackerMinimized(false)
+      }, 1000
+)
+    }
+  }, [status, trackerMinimized])
 
 
 
@@ -62,12 +75,14 @@ export function DashboardOverview() {
     const es = reveliumClient.trackPromptsIndexProgress(res.job_id, {
       onProgress: (p) => {
         setProgress(p)
-        console.log(p)
       },
-      onComplete: () => setStatus('completed'),
-      onFail: (e) => alert(e),
+      onComplete: () => setStatus("complete"),
+      onFail: (e) => {
+        setStatus("failed")
+        alert(e)
+      },
+      onActive: () => setStatus('active'),
     })    
-    // alert(JSON.stringify(res))
   }
 
   return (
@@ -80,17 +95,37 @@ export function DashboardOverview() {
               <h1 className="text-2xl md:text-3xl font-bold">Overview</h1>
             </div>
             <div className="flex flex-col items-start gap-3">
-              <div className='flex flex-row gap-4 items-center'>
-               {promptsFile? ( 
-              <button onClick = {handleFileUpload} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow-md">
-                Upload Prompts
+           <div className="flex flex-row gap-3 items-center">
+            {(status === "active") && trackerMinimized && (
+              <button
+                onClick={() => setTrackerMinimized(false)}
+                className="flex items-center justify-center px-4"
+                aria-label="Show indexing progress"
+              >
+                <FontAwesomeIcon
+                  icon={faSpinner}
+                  spin
+                  className="w-6 h-6 text-indigo-600"
+                />
               </button>
-              ):(<FileUploader onFileUpload={(files) => setPromptsFile(files[0])} acceptedMimes={AcceptedMimes}>
-              <span className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow-md">
-                Add Prompts
-              </span>
-              </FileUploader>
-            )}           
+                )}
+                {promptsFile ? (
+                  <button
+                    onClick={handleFileUpload}
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow-md"
+                  >
+                    Upload Prompts
+                  </button>
+                ) : (
+                  <FileUploader
+                    onFileUpload={(files) => setPromptsFile(files[0])}
+                    acceptedMimes={AcceptedMimes}
+                  >
+                    <span className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow-md">
+                      Add Prompts
+                    </span>
+                  </FileUploader>
+                )}
               </div>
           
               {promptsFile && (
@@ -104,11 +139,6 @@ export function DashboardOverview() {
               }
             </div>
           </div>
-
-          <div className='flex'>
-            Progress: {progress}
-          </div>
-
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {metrics.map((m) => (
               <MetricCard key={m.key} title={m.title} value={m.value} icon={m.icon}/>
@@ -216,13 +246,21 @@ export function DashboardOverview() {
 
         </div>
       </div>
+         {status != null  && <IndexProgressTrackerPopUp
+          progress={progress} 
+          status={status} 
+          title={"Indexing prompts"}
+          minimized = {trackerMinimized}
+          onMinimize={() => setTrackerMinimized(true)}
+          />
+          }
     </div>
   );
 }
 
+
 function formatCost(n: number | undefined | null) {
   if (n === null || n === undefined) return '—';
-  // assume n is token cost in cents or small integer: format as USD-like
   const asNumber = Number(n) || 0;
   if (asNumber === 0) return '0';
   return `$${(asNumber).toFixed(2)}`;

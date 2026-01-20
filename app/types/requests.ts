@@ -36,7 +36,7 @@ export type SocketMessage =
   | CompleteMessage;
 
 //Long-running jobs
-export const FINISHED_STATUSES = ["completed", "failed"] as const;
+export const FINISHED_STATUSES = ["complete", "failed"] as const;
 export type FinishedStatus = (typeof FINISHED_STATUSES)[number];
 
 export const STATUSES = [
