@@ -1,7 +1,7 @@
 'use client';
 
 import {  Cluster, PromptsOverviewInfo, Status } from '@/app/types';
-import  { useEffect, useMemo, useState } from 'react';
+import  { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faLayerGroup, faMoneyBill, faSpinner, faTag, faTerminal } from '@fortawesome/free-solid-svg-icons';
@@ -21,7 +21,7 @@ const N_TOP_CLUSTERS = 5
 
 export function DashboardOverview() {
   const [promptsFile, setPromptsFile] = useState<File | null>(null)
-  const { clusters, setClusters, promptsOverview: overview} = usePrompts()
+  const { clusters, setClusters, promptsOverview: overview, updatePromptsOverview} = usePrompts()
   const [clusterPlotUrl, setClusterPlotUrl] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
   const [status, setStatus] = useState<Status|null>(null);
@@ -38,15 +38,42 @@ export function DashboardOverview() {
   }, [overview]);
 
 
+  const handleTrackIndexProgress = (jobId: string) => {
+      const eventSource = reveliumClient.trackPromptsIndexProgress(jobId, {
+        onProgress: (p) => {
+          setProgress(p)
+        },
+        onComplete: async() => {
+          LocalStorage.remove(StorageKeys.indexingJobId)
+          const promptOverview = await reveliumClient.getPromptsOverview();
+          const clusters = await reveliumClient.getClusters()
+          updatePromptsOverview(promptOverview)
+          setClusters(clusters)
+          setStatus("complete")
+        },
+        onFail: (e) => {
+          setStatus("failed")
+          LocalStorage.remove(StorageKeys.indexingJobId)
+          alert(e)
+        },
+        onActive: () => setStatus('active'),
+      })
+  }
+
+const hasFetechPlot = useRef(false);
+
 useEffect(() => {
+  if (hasFetechPlot.current && status !== "complete") return;
+  hasFetechPlot.current = true;
+
   let url: string | null = null;
 
   const fetchPlot = async () => {
     const request = indexedDB.open("ClusterPlotDB", 1);
-    const cachedOverview = LocalStorage.get<PromptsOverviewInfo>(StorageKeys.overview) as PromptsOverviewInfo | null
-    const isTheSameOverview = cachedOverview?.total_prompts === overview.total_prompts
+    const cachedOverview = LocalStorage.get<PromptsOverviewInfo>(StorageKeys.overview) as PromptsOverviewInfo | null;
+    const isTheSameOverview = cachedOverview?.total_prompts === overview.total_prompts;
 
-    request.onupgradeneeded = (event) => {
+    request.onupgradeneeded = () => {
       const db = request.result;
       if (!db.objectStoreNames.contains("plots")) {
         db.createObjectStore("plots");
@@ -71,13 +98,12 @@ useEffect(() => {
 
       const blob = await reveliumClient.getClusterPlotBlob();
       if (blob) {
-        LocalStorage.set(StorageKeys.overview, JSON.stringify(overview))
+        LocalStorage.set(StorageKeys.overview, JSON.stringify(overview));
         url = URL.createObjectURL(blob);
         setClusterPlotUrl(url);
 
         const txWrite = db.transaction("plots", "readwrite");
-        const storeWrite = txWrite.objectStore("plots");
-        storeWrite.put(blob, "clusterPlot");
+        txWrite.objectStore("plots").put(blob, "clusterPlot");
       }
     };
 
@@ -89,7 +115,8 @@ useEffect(() => {
   return () => {
     if (url) URL.revokeObjectURL(url);
   };
-}, []);
+}, [status]);
+
 
 
   useEffect(() => {
@@ -107,47 +134,16 @@ useEffect(() => {
   useEffect(() => {
     const jobId = LocalStorage.get<string>(StorageKeys.indexingJobId)
     if(jobId){
-      const es = reveliumClient.trackPromptsIndexProgress(jobId, {
-        onProgress: (p) => {
-          setProgress(p)
-        },
-        onComplete: () => {
-          setStatus("complete")
-          LocalStorage.remove(StorageKeys.indexingJobId)
-        },
-        onFail: (e) => {
-          setStatus("failed")
-          LocalStorage.remove(StorageKeys.indexingJobId)
-          alert(e)
-        },
-        onActive: () => setStatus('active'),
-      })    
+      handleTrackIndexProgress(jobId)
     }
   }, [])
-
-
 
   const handleFileUpload = async() => {
     if(!promptsFile) return
     const res = await reveliumClient.addPromptsFile(promptsFile)
     setStatus(res.status)
     LocalStorage.set(StorageKeys.indexingJobId, res.job_id)
-
-    const es = reveliumClient.trackPromptsIndexProgress(res.job_id, {
-      onProgress: (p) => {
-        setProgress(p)
-      },
-      onComplete: () => {
-        setStatus("complete")
-        LocalStorage.remove(StorageKeys.indexingJobId)
-      },
-      onFail: (e) => {
-        setStatus("failed")
-        LocalStorage.remove(StorageKeys.indexingJobId)
-        alert(e)
-      },
-      onActive: () => setStatus('active'),
-    })    
+      handleTrackIndexProgress(res.job_id)
   }
 
   return (

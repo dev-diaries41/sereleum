@@ -75,7 +75,7 @@ const onLoadMorePrompts = async(limit: number, offset: number) => {
   setPrompts(prev => [...prev, ...result] )
 }
 
-const cachePromptsOverview =(promptOverview: PromptsOverviewInfo) => {
+const updatePromptsOverview =(promptOverview: PromptsOverviewInfo) => {
   setPromptsOverview(promptOverview)
 }
 
@@ -88,7 +88,7 @@ return {
     setPrompts,
     onUpdatePrompt,
     onLoadMorePrompts,
-    cachePromptsOverview
+    updatePromptsOverview
   };
 };
 
