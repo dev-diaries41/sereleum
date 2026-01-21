@@ -75,6 +75,12 @@ const onLoadMorePrompts = async(limit: number, offset: number) => {
   setPrompts(prev => [...prev, ...result] )
 }
 
+const onLoadMoreClusters = async(limit: number, offset: number) => {
+  if(prompts.length >= promptsOverview.total_prompts) return
+  const result = await reveliumClient.getClusters(undefined, limit, offset)
+  setClusters(prev => [...prev, ...result] )
+}
+
 const updatePromptsOverview =(promptOverview: PromptsOverviewInfo) => {
   setPromptsOverview(promptOverview)
 }
@@ -88,6 +94,7 @@ return {
     setPrompts,
     onUpdatePrompt,
     onLoadMorePrompts,
+    onLoadMoreClusters,
     updatePromptsOverview
   };
 };
