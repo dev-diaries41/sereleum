@@ -9,6 +9,7 @@ export const COUNT_PROMPTS_ENDPOINT = `${BASE_PROMPTS_ENDPOINT}/count`;
 export const SSE_PROMPTS_INDEX_PROGRESS = "sse/prompts/index/progress"
 
 export const BASE_CLUSTER_ENDPOINT = "/api/clusters";
+export const GET_TOP_CLUSTERS_ENDPOINT = `${BASE_CLUSTER_ENDPOINT}/top`;
 export const START_CLUSTER_ENDPOINT = `${BASE_CLUSTER_ENDPOINT}/start`;
 export const COUNT_CLUSTER_ENDPOINT = "/api/clusters/count";
 export const GET_LABELS_ENDPOINT = `${BASE_CLUSTER_ENDPOINT}/labels`;
