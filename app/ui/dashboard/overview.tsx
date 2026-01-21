@@ -31,7 +31,6 @@ export function DashboardOverview() {
   const metrics = useMemo(() => {
     return [
       { key: 'total_clusters', title: 'Total Clusters', value: overview.total_clusters, icon: faLayerGroup },
-      { key: 'label_clusters', title: 'Labelled Clusters', value: 0, icon: faTag },
       { key: 'total_prompts', title: 'Total Prompts', value: overview.total_prompts, icon: faTerminal },
       { key: 'average_prompt_cost', title: 'Average Token Cost', value: formatCost(overview.average_prompt_cost), icon: faMoneyBill },
     ];
@@ -200,7 +199,7 @@ useEffect(() => {
               }
             </div>
           </div>
-          <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
             {metrics.map((m) => (
               <MetricCard key={m.key} title={m.title} value={m.value} icon={m.icon}/>
             ))}
@@ -281,7 +280,7 @@ useEffect(() => {
           </div>
 
           {/* optional analytics footer */}
-          <div className="w-full mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="w-full mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
               <h4 className="text-sm font-semibold mb-2">Token Cost (7d)</h4>
               <div className="text-2xl font-extrabold">{formatCost(overview.average_prompt_cost)}</div>
