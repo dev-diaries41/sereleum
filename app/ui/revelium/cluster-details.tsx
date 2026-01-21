@@ -118,7 +118,7 @@ export function ClusterDetail({ id }: { id?: string }) {
         />
         <ClusterMetricsSummary metadata={cluster.metadata}/>
       </div>
-      {(topPrompts.length > 0 && isPromptsVisible) && <PromptsTable prompts={topPrompts}/>}
+      {(topPrompts.length > 0 && isPromptsVisible) && <PromptsTable prompts={topPrompts} cluster={cluster!}/>}
     </div>
   );
 }
@@ -262,7 +262,7 @@ function ClusterMetricsSummary({metadata, title = "Cluster metrics"}: {metadata:
 }
 
 
-function PromptsTable({ prompts }: { prompts: Prompt[] }) {
+function PromptsTable({ prompts, cluster }: { prompts: Prompt[], cluster: Omit<Cluster, "embedding"> }) {
   return (
     <div className="overflow-x-auto w-full bg-white mt-8">
       <table className="table-auto border-collapse border border-gray-300 w-full text-sm md:text-base">
@@ -291,7 +291,7 @@ function PromptsTable({ prompts }: { prompts: Prompt[] }) {
                   onClick={(e) => e.stopPropagation()}
                 >
                   <span className="w-full px-2 py-1 text-sm border rounded">
-                    {clusterId}
+                    {cluster.label}
                   </span>
                 </td>
                 <td className="border px-4 py-2">{prompt.content}</td>
