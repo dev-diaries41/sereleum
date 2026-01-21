@@ -111,7 +111,8 @@ export function ClusterDetail({ id }: { id?: string }) {
         <ClusterLabelForm 
         cluster={cluster} 
         labelDraft={labelDraft} 
-        enabled={saving} 
+        enabled={saving}
+        isPromptsVisible={isPromptsVisible}
         onLabelDraftChange={(e) => setLabelDraft(e.target.value)} 
         onSaveLabel={saveLabel}
         onShowPrompts={showPrompts}
@@ -126,6 +127,7 @@ export function ClusterDetail({ id }: { id?: string }) {
 interface ClusterLabelFormPromptsProps {
   cluster:  Omit<Cluster, "embedding">;
   labelDraft: string, enabled:boolean;
+  isPromptsVisible: boolean;
   onLabelDraftChange: (e:  ChangeEvent<HTMLInputElement>) => void;
   onSaveLabel: () => Promise<void>;
   onShowPrompts:() => Promise<void>;
@@ -134,6 +136,7 @@ function ClusterLabelForm({
   cluster, 
   labelDraft,
   enabled,
+  isPromptsVisible,
   onShowPrompts,
   onSaveLabel, 
   onLabelDraftChange}: ClusterLabelFormPromptsProps
@@ -200,7 +203,7 @@ function ClusterLabelForm({
             type="button"
             className="text-sm text-indigo-600 hover:underline"
           >
-            Show prompts
+            {isPromptsVisible? "Hide": "Show"} sample prompts
           </button>
         </div>
   </div>
