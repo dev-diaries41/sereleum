@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import PopUp from '../common/popup';
 import { Prompt, UNLABELLED_CLUSTER, UNCLUSTERED } from '@/app/types/prompts';
@@ -8,75 +8,33 @@ import usePopUp from '@/app/hooks/usePopUp';
 import { usePrompts } from '@/app/providers/prompts';
 
 interface PromptsTableViewProps {
-  scrollLoadThreshold?: number;
+  pageSize?: number;
 }
 
-export default function PromptsTableView({
-  scrollLoadThreshold = 0.8,
-}: PromptsTableViewProps) {
+export default function PromptsTableView({ pageSize = 10 }: PromptsTableViewProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const { popUpCta, popUpDescription, popUpTitle, showPopUp, closePopUp } = usePopUp();
-  const { prompts, clusters, onUpdatePrompt, onLoadMorePrompts } = usePrompts();
+  const [page, setPage] = useState(0);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const loadingRef = useRef(false);
-  const limit = 10;
-  let offset = useRef(prompts.length); // already loaded first batch
+  const { popUpCta, popUpDescription, popUpTitle, showPopUp, closePopUp } = usePopUp();
+  const { prompts, clusters, promptsOverview, onUpdatePrompt, onLoadMorePrompts } = usePrompts();
 
   const handleLabelChange = (prompt: Prompt, newClusterId: string) => {
     const updatedPrompt = {
       ...prompt,
       metadata: { ...prompt.metadata, cluster_id: newClusterId },
     };
-
     onUpdatePrompt(updatedPrompt, newClusterId);
   };
 
-  // Reset the loading flag when prompts array changes (so subsequent loads can be requested)
-  useEffect(() => {
-    loadingRef.current = false;
-  }, [prompts.length]);
-
-  useEffect(() => {
-    const handler = () => {
-      const el = containerRef.current;
-      if (el && el.scrollHeight > 0) {
-        const { scrollTop, scrollHeight, clientHeight } = el;
-        const ratio = (scrollTop + clientHeight) / scrollHeight;
-        if (ratio >= scrollLoadThreshold && !loadingRef.current) {
-          loadingRef.current = true;
-          onLoadMorePrompts(limit, offset.current);
-          offset.current = offset.current + limit
-        }
-        return;
-      }
-
-      // Fallback to window/document scrolling
-      // const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      // const scrollHeight = document.documentElement.scrollHeight;
-      // const clientHeight = window.innerHeight;
-      // const ratio = (scrollTop + clientHeight) / scrollHeight;
-      // if (ratio >= scrollLoadThreshold && !loadingRef.current) {
-      //   loadingRef.current = true;
-      //     onLoadMorePrompts(limit, offset.current);
-      //     offset.current = offset.current + limit
-      // }
-    };
-
-    // Attach listeners
-    window.addEventListener('scroll', handler, { passive: true });
-    const containerEl = containerRef.current;
-    if (containerEl) {
-      containerEl.addEventListener('scroll', handler, { passive: true });
-    }
-
-    return () => {
-      window.removeEventListener('scroll', handler);
-      if (containerEl) {
-        containerEl.removeEventListener('scroll', handler);
-      }
-    };
-  }, [onLoadMorePrompts, scrollLoadThreshold]);
+  const toggleExpanded = (promptId: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(promptId)) next.delete(promptId);
+      else next.add(promptId);
+      return next;
+    });
+  };
 
   const filteredPrompts = prompts.filter(
     (p) =>
@@ -85,6 +43,26 @@ export default function PromptsTableView({
       p.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Compute pagination
+  const start = page * pageSize;
+  const end = start + pageSize;
+  const pagePrompts = filteredPrompts.slice(start, end);
+  const totalPages = promptsOverview.total_prompts;
+
+  const handleNext = () => {
+    if (page + 1 < totalPages) {
+      setPage(page + 1);
+      const needMore = end >= prompts.length;
+      if (needMore) {
+        onLoadMorePrompts(pageSize, prompts.length);
+      }
+    }
+  };
+
+  const handlePrev = () => {
+    if (page > 0) setPage(page - 1);
+  };
+
   return (
     <div className="flex flex-col mx-auto w-full items-center justify-center p-8">
       <div className="w-full flex flex-col gap-8 md:flex-row justify-between mb-6">
@@ -92,50 +70,65 @@ export default function PromptsTableView({
         <input
           type="text"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setPage(0); // reset to first page when searching
+          }}
           placeholder="Search by prompt ID, cluster, label, or content..."
           className="border border-gray-300 rounded px-4 py-2 w-full max-w-md"
         />
       </div>
 
-      <div
-        ref={containerRef}
-        className="overflow-x-auto w-full bg-white"
-      >
-        <table className="table-auto border-collapse border border-gray-300 w-full text-sm md:text-base">
+      <div className="overflow-x-auto w-full bg-white">
+        <table className="table-fixed border-collapse border border-gray-300 w-full text-sm md:text-base">
+          <colgroup>
+            <col style={{ width: '18%' }} />
+            <col style={{ width: '18%' }} />
+            <col style={{ width: '18%' }} />
+            <col style={{ width: '46%' }} />
+          </colgroup>
           <thead>
             <tr className="uppercase text-sm">
               <th className="border px-4 py-2 text-left">Prompt ID</th>
               <th className="border px-4 py-2 text-left">Cluster</th>
-              <th className="border px-4 py-2 text-left w-[120px]">Label</th>
+              <th className="border px-4 py-2 text-left">Label</th>
               <th className="border px-4 py-2 text-left">Content</th>
             </tr>
           </thead>
           <tbody>
-            {filteredPrompts.length === 0 ? (
+            {pagePrompts.length === 0 ? (
               <tr>
                 <td colSpan={4} className="text-center py-6 text-gray-500">
-                 { searchTerm? "No prompts match the current filters.": "No prompts stored."}
+                  {searchTerm ? "No prompts match the current filters." : "No prompts stored."}
                 </td>
               </tr>
             ) : (
-              filteredPrompts.map((prompt) => {
+              pagePrompts.map((prompt) => {
                 const clusterId = prompt.metadata.cluster_id;
                 const isLinkable = clusterId !== UNCLUSTERED;
+                const isExpanded = expandedIds.has(prompt.prompt_id);
+
+                const collapsedStyle: React.CSSProperties = {
+                  display: '-webkit-box',
+                  WebkitLineClamp: 4,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                  whiteSpace: 'normal',
+                  wordBreak: 'break-word',
+                };
+
+                const expandedStyle: React.CSSProperties = {
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                };
 
                 return (
-                  <tr
-                    key={prompt.prompt_id}
-                    className="hover:bg-gray-50 transition-all duration-200"
-                  >
-                    <td className="border px-4 py-2">{prompt.prompt_id}</td>
+                  <tr key={prompt.prompt_id} className="hover:bg-gray-50 transition-all duration-200 align-top">
+                    <td className="border px-4 py-2 break-words">{prompt.prompt_id}</td>
 
-                    <td className="border px-4 py-2">
+                    <td className="border px-4 py-2 break-words">
                       {isLinkable ? (
-                        <Link
-                          href={`/dashboard/clusters/cluster/${clusterId}`}
-                          className="text-blue-600 hover:underline"
-                        >
+                        <Link href={`/dashboard/clusters/cluster/${clusterId}`} className="text-blue-600 hover:underline">
                           {clusterId}
                         </Link>
                       ) : (
@@ -143,10 +136,7 @@ export default function PromptsTableView({
                       )}
                     </td>
 
-                    <td
-                      className="border px-4 py-2 w-1/6"
-                      onClick={(e) => e.stopPropagation()}
-                    >
+                    <td className="border px-4 py-2 w-1/6" onClick={(e) => e.stopPropagation()}>
                       <select
                         value={prompt.metadata.cluster_id}
                         onChange={(e) => handleLabelChange(prompt, e.target.value)}
@@ -161,13 +151,41 @@ export default function PromptsTableView({
                       </select>
                     </td>
 
-                    <td className="border px-4 py-2">{prompt.content}</td>
+                    <td
+                      className="border px-4 py-2 cursor-pointer"
+                      onClick={() => toggleExpanded(prompt.prompt_id)}
+                      title={isExpanded ? 'Click to collapse' : 'Click to expand'}
+                    >
+                      <div style={isExpanded ? expandedStyle : collapsedStyle}>
+                        {prompt.content}
+                      </div>
+                    </td>
                   </tr>
                 );
               })
             )}
           </tbody>
         </table>
+      </div>
+
+      <div className="flex gap-4 mt-4">
+        <button
+          onClick={handlePrev}
+          disabled={page === 0}
+          className="px-4 py-2 border rounded disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <span className="px-2 py-2">
+          Page {page + 1} of {totalPages || 1}
+        </span>
+        <button
+          onClick={handleNext}
+          disabled={page + 1 >= totalPages}
+          className="px-4 py-2 border rounded disabled:opacity-50"
+        >
+          Next
+        </button>
       </div>
 
       {popUpTitle && popUpDescription && (
