@@ -3,7 +3,7 @@
 import { usePrompts } from "@/app/providers/prompts";
 import { reveliumClient } from "@/app/revelium/client";
 import { Cluster, ClusterMetadata, Prompt } from "@/app/types";
-import { faCheck, faFlask } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faFlask, faTag } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
@@ -142,20 +142,17 @@ function ClusterLabelForm({
   onLabelDraftChange}: ClusterLabelFormPromptsProps
 ){
   return (
-  <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
-  <div className="flex items-center justify-between mb-4">
-    <div>
-      <h3 className="text-lg font-semibold">Label & Notes</h3>
-      <p className="text-sm text-gray-500">
-        Give this cluster a clear, searchable label and save it.
-      </p>
-    </div>
-    <div className="text-xs text-gray-400">
-      id: {cluster.prototype_id}
-    </div>
+  <div className="relative lg:col-span-2 bg-white border border-gray-100 rounded-2xl shadow-sm p-6 flex flex-col h-full">
+  {/* Header */}
+  <div className="mb-4">
+    <h3 className="text-lg font-semibold">Manage cluster label</h3>
+    <p className="text-sm text-gray-500">
+  Clusters are automatically labeled when possible. You can optionally edit the label below. Use the "Show sample prompts" button to see what this cluster contains.
+    </p>
   </div>
 
-  <div className="space-y-4">
+  {/* Main content grows to fill remaining space */}
+  <div className="flex-1 space-y-4">
     <div>
       <label className="block text-xs font-medium text-gray-600 mb-1">
         Cluster label
@@ -182,32 +179,25 @@ function ClusterLabelForm({
     </div>
 
     <div>
-      <label className="block text-xs font-medium text-gray-600 mb-1">
-        Quick actions
-      </label>
-
+      <button
+        onClick={onShowPrompts}
+        type="button"
+        className="text-sm text-indigo-600 hover:underline"
+      >
+        {isPromptsVisible ? "Hide" : "Show"} sample prompts
+      </button>
     </div>
+  </div>
 
-    <div>
-      <label className="block text-xs font-medium text-gray-600 mb-1">
-        Notes
-      </label>
-      <textarea
-        placeholder="Optional notes about this cluster — usage, findings, next steps..."
-        className="w-full min-h-[120px] p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-200 outline-none"
-      />
-    </div>
-     <div className="pt-2">
-          <button
-            onClick={onShowPrompts}
-            type="button"
-            className="text-sm text-indigo-600 hover:underline"
-          >
-            {isPromptsVisible? "Hide": "Show"} sample prompts
-          </button>
-        </div>
+  {/* Footer or notes (optional) */}
+  <div className="pt-4 text-xs text-gray-400">
+    Use this form to clearly identify your cluster.
+  </div>
+    <div className="absolute bottom-4 right-4 opacity-50 text-3xl pointer-events-none">
+    <FontAwesomeIcon icon={faTag} />
   </div>
 </div>
+
   )
 }
 
