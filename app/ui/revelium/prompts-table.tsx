@@ -47,7 +47,7 @@ export default function PromptsTableView({ pageSize = 10 }: PromptsTableViewProp
   const start = page * pageSize;
   const end = start + pageSize;
   const pagePrompts = filteredPrompts.slice(start, end);
-  const totalPages = promptsOverview.total_prompts;
+  const totalPages = Math.max(1, Math.ceil(promptsOverview.total_prompts / pageSize));
 
   const handleNext = () => {
     if (page + 1 < totalPages) {
