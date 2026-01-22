@@ -314,18 +314,3 @@ useEffect(() => {
     </div>
   );
 }
-
-
-function formatCost(n: number | undefined | null) {
-  if (n === null || n === undefined) return '—';
-  const asNumber = Number(n) || 0;
-  if (asNumber === 0) return '0';
-  return `$${(asNumber).toFixed(2)}`;
-}
-
-function calculateCoverage(clusters: Cluster[]) {
-  if (!clusters || clusters.length === 0) return 0;
-  const totalPrototypes = clusters.reduce((s, c) => s + (c.metadata.prototype_size || 0), 0);
-  const coverage = Math.min(100, Math.round((totalPrototypes / Math.max(1, totalPrototypes + 4)) * 100));
-  return coverage;
-}
