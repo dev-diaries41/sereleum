@@ -94,9 +94,6 @@ export function ClusterDetail({ id }: { id?: string }) {
           <h2 className="text-2xl font-semibold">
             {cluster.label || 'Untitled cluster'}
           </h2>
-          <p className="text-sm text-gray-500">
-            Cluster · {cluster.metadata.prototype_size ?? 0} prototype(s)
-          </p>
         </div>
 
         <button
@@ -204,7 +201,6 @@ function ClusterLabelForm({
 function ClusterMetricsSummary({metadata, title = "Cluster metrics"}: {metadata: ClusterMetadata, title?: string}){
   const {
     mean_similarity,
-    max_similarity,
     nearest_other_similarity,
     separation_margin,
     prototype_size,
@@ -224,9 +220,8 @@ function ClusterMetricsSummary({metadata, title = "Cluster metrics"}: {metadata:
           value={pct(mean_similarity)}
           largeValue={`${cohesionPercent}%`}
         />
-        <MetricsItem label="Max similarity" value={pct(max_similarity)} />
         <MetricsItem
-          label="Prototype size"
+          label="Cluster size"
           value={String(prototype_size ?? 0)}
         />
         <MetricsItem
@@ -245,7 +240,7 @@ function ClusterMetricsSummary({metadata, title = "Cluster metrics"}: {metadata:
         <div className="pt-3">
           <div className="text-xs text-gray-500">Notes</div>
           <div className="text-xs text-gray-400 mt-2">
-            Cohesion close to 100% means prototypes in this cluster are very
+            Cohesion close to 100% means items in this cluster are very
             similar. Nearest cluster similarity indicates overlap risk.
           </div>
         </div>
