@@ -17,7 +17,7 @@ export default async function Layout({
   (a, b) => b.metadata.prototype_size - a.metadata.prototype_size
 );
 
-    const prompts = await reveliumClient.getPrompts(undefined, 10)
+    const prompts = await reveliumClient.getPrompts(undefined, 25)
     const promptOverview = await reveliumClient.getPromptsOverview();
 
   return (

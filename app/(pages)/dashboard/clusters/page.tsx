@@ -14,7 +14,7 @@ export default function Page() {
   return (
     <ErrorBoundary errorComponent={ErrorComponent}>
       <Suspense fallback={<Loading />}>
-        <ClustersWrapper/>
+        <ClustersWrapper pageSize={25}/>
       </Suspense>
     </ErrorBoundary>
   );

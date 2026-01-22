@@ -16,7 +16,7 @@ export default async function Page() {
     return (
         <ErrorBoundary errorComponent={ErrorComponent}>
             <Suspense fallback={<Loading />}>
-            <PromptsTableView/>
+            <PromptsTableView pageSize={25}/>
             </Suspense>
         </ErrorBoundary>
     );
