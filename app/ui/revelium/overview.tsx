@@ -130,8 +130,9 @@ useEffect(() => {
     if(!promptsFile) return
     const res = await reveliumClient.addPromptsFile(promptsFile)
     setStatus(res.status)
+    setPromptsFile(null)
     LocalStorage.set(StorageKeys.indexingJobId, res.job_id)
-      handleTrackIndexProgress(res.job_id)
+    handleTrackIndexProgress(res.job_id)
   }
 
   return (
