@@ -142,7 +142,7 @@ export default function PromptsTableView({ pageSize = 10 }: PromptsTableViewProp
                         onChange={(e) => handleLabelChange(prompt, e.target.value)}
                         className="w-full px-2 py-1 text-sm border rounded"
                       >
-                        <option value={UNCLUSTERED}>{UNCLUSTERED}</option>
+                        <option value={UNLABELLED_CLUSTER}>{UNLABELLED_CLUSTER}</option>
                         {clusters.map((c) => (
                           <option key={c.prototype_id} value={c.prototype_id}>
                             {c.label === UNLABELLED_CLUSTER ? c.prototype_id : c.label}
