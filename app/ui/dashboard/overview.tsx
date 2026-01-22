@@ -198,8 +198,8 @@ useEffect(() => {
             </div>
           </div>
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
-           <OverviewSummary overview={overview}/>
-             <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 w-full flex flex-col">
+            <OverviewSummary overview={overview}/>
+            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 w-full flex flex-col">
               <div className='flex justify-between'>
                 <p className="text-sm font-semibold text-gray-700 mb-2">
                   Summary Insights
