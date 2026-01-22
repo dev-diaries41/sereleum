@@ -8,13 +8,13 @@ import { faClose, faLayerGroup, faLightbulb, faMoneyBill, faSpinner, faTerminal 
 import FileUploader from '../common/upload';
 import {  AcceptedMimes, StorageKeys } from '@/app/constants/global';
 import { reveliumClient } from '@/app/revelium/client';
-import { ClusterRow } from '../revelium/cluster-row';
+import { ClusterRow } from './cluster-row';
 import { usePrompts } from '@/app/providers/prompts';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { IndexProgressTrackerPopUp } from '../common/progress-tracker';
 import * as LocalStorage from "@/app/lib/client/storage/local"
-import { OverviewSummary } from '../revelium/overview-summary';
+import { OverviewSummary } from './overview-summary';
 
 
 export function DashboardOverview() {
