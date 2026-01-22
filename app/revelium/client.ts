@@ -123,7 +123,7 @@ export class ReveliumClient {
     return data.updated_label;
   }
 
-  async getClusters(clusterId?: string, offset: number = 0, limit: number = 25): Promise<Omit<Cluster, "embedding">[]> {
+  async getClusters(clusterId?: string, offset: number = 0, limit: number = 25): Promise<Cluster[]> {
       const query = { 
         clusterId: clusterId || "",
         offset: offset, 
@@ -137,14 +137,14 @@ export class ReveliumClient {
     );
     const url = `${this.baseUrl}${BASE_CLUSTER_ENDPOINT}?${params.toString()}`;
     const res = await fetch(url, { method: "GET" });
-    const data = await this.handleResponse<Record<"clusters", Omit<Cluster, "embedding">[]>>(res);
+    const data = await this.handleResponse<Record<"clusters", Cluster[]>>(res);
     return data.clusters;
   }
 
-  async getTopClusters(): Promise<Omit<Cluster, "embedding">[]> {    
+  async getTopClusters(): Promise<Cluster[]> {    
     const url = `${this.baseUrl}${GET_TOP_CLUSTERS_ENDPOINT}`;
     const res = await fetch(url, { method: "GET" });
-    const data = await this.handleResponse<Record<"clusters", Omit<Cluster, "embedding">[]>>(res);
+    const data = await this.handleResponse<Record<"clusters", Cluster[]>>(res);
     return data.clusters;
   }
 

@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 
 interface ClusterListSideNavWrapperProps {
   title?: string;
-  clusters: Omit<Cluster, 'embedding'>[];
+  clusters: Cluster[];
   onDelete: (clusterId: string) => void;
 }
 

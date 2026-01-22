@@ -22,7 +22,7 @@ export function ClusterDetail({ id }: { id?: string }) {
     if (!id) return undefined;
     return clusters.find(
       (c) => c.prototype_id === id || (c as any).id === id || c.label === id
-    ) as Omit<Cluster, 'embedding'> | undefined;
+    ) as Cluster | undefined;
   }, [clusters, id]);
   
 
@@ -125,7 +125,7 @@ export function ClusterDetail({ id }: { id?: string }) {
 }
 
 interface ClusterLabelFormPromptsProps {
-  cluster:  Omit<Cluster, "embedding">;
+  cluster:  Cluster;
   labelDraft: string, enabled:boolean;
   isPromptsVisible: boolean;
   onLabelDraftChange: (e:  ChangeEvent<HTMLInputElement>) => void;
@@ -255,7 +255,7 @@ function ClusterMetricsSummary({metadata, title = "Cluster metrics"}: {metadata:
 }
 
 
-function PromptsTable({ prompts, cluster }: { prompts: Prompt[], cluster: Omit<Cluster, "embedding"> }) {
+function PromptsTable({ prompts, cluster }: { prompts: Prompt[], cluster: Cluster }) {
   return (
     <div className="overflow-x-auto w-full bg-white mt-8">
       <table className="table-auto border-collapse border border-gray-300 w-full text-sm md:text-base">

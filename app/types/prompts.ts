@@ -24,7 +24,8 @@ export interface Prompt {
 export interface PromptsOverviewInfo {
   total_prompts: number;
   total_clusters: number;
-  average_prompt_cost: number;
+  top_clusters: Cluster[];
+  top_cluster_token_counts: Record<string , number>;
 }
 
 export interface ClusterMetrics {
@@ -38,9 +39,9 @@ export interface ClusterMetadata extends ClusterMetrics {
   label: string;
 }
 
+//Embedding omitted
 export interface Cluster {
   prototype_id: string;
-  embedding: number[]; // ndarray equivalent
   metadata: ClusterMetadata;
   label: string;
 }

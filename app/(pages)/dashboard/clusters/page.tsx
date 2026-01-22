@@ -7,7 +7,7 @@ import { ClusterRow } from '@/app/ui/revelium/cluster-row';
 import { ClustersWrapper } from '@/app/ui/revelium/clusters-lists';
 
 interface ClustersPageProps {
-  clusters: Omit<Cluster, 'embedding'>[];
+  clusters: Cluster[];
 }
 
 export default function Page() {

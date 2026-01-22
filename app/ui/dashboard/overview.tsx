@@ -4,17 +4,17 @@ import {  Cluster, PromptsOverviewInfo, Status } from '@/app/types';
 import  { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose, faLayerGroup, faMoneyBill, faSpinner, faTerminal } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faLayerGroup, faLightbulb, faMoneyBill, faSpinner, faTerminal } from '@fortawesome/free-solid-svg-icons';
 import FileUploader from '../common/upload';
 import {  AcceptedMimes, StorageKeys } from '@/app/constants/global';
 import { reveliumClient } from '@/app/revelium/client';
 import { ClusterRow } from '../revelium/cluster-row';
-import { MetricCard } from './metric-card';
 import { usePrompts } from '@/app/providers/prompts';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { IndexProgressTrackerPopUp } from '../common/progress-tracker';
 import * as LocalStorage from "@/app/lib/client/storage/local"
+import { OverviewSummary } from '../revelium/overview-summary';
 
 
 export function DashboardOverview() {
@@ -30,7 +30,7 @@ export function DashboardOverview() {
     return [
       { key: 'total_clusters', title: 'Total Clusters', value: overview.total_clusters, icon: faLayerGroup },
       { key: 'total_prompts', title: 'Total Prompts', value: overview.total_prompts, icon: faTerminal },
-      { key: 'average_prompt_cost', title: 'Average Token Cost', value: formatCost(overview.average_prompt_cost), icon: faMoneyBill },
+      // { key: 'average_prompt_cost', title: 'Average Token Cost', value: formatCost(overview.average_prompt_cost), icon: faMoneyBill },
     ];
   }, [overview]);
 
@@ -197,12 +197,36 @@ useEffect(() => {
               }
             </div>
           </div>
-          <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-            {metrics.map((m) => (
-              <MetricCard key={m.key} title={m.title} value={m.value} icon={m.icon}/>
-            ))}
+          <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
+           <OverviewSummary overview={overview}/>
+             <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 w-full flex flex-col">
+              <div className='flex justify-between'>
+                <p className="text-sm font-semibold text-gray-700 mb-2">
+                  Summary Insights
+                </p>
+                <FontAwesomeIcon
+                  icon={faLightbulb}
+                  className="w-6 h-6 opacity-50"
+                />
+              </div>
+              {overview.summary_insights ? (
+                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                  {overview.summary_insights}
+                </p>
+              ) : (
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-gray-400">
+                      No insights yet
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Insights will appear once clusters have been created
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-
           <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
@@ -277,32 +301,6 @@ useEffect(() => {
               </div>
             </div>
           </div>
-
-          {/* optional analytics footer */}
-          <div className="w-full mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
-              <h4 className="text-sm font-semibold mb-2">Token Cost (7d)</h4>
-              <div className="text-2xl font-extrabold">{formatCost(overview.average_prompt_cost)}</div>
-              <p className="text-xs text-gray-500 mt-2">Average token cost per prompt</p>
-            </div>
-
-            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
-              <h4 className="text-sm font-semibold mb-2">Prototype Coverage</h4>
-              <div className="flex items-center gap-3">
-                <div className="text-3xl font-extrabold">{calculateCoverage(clusters)}%</div>
-                <div className="text-xs text-gray-500">Prototypes across clusters</div>
-              </div>
-            </div>
-
-            {/* <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
-              <h4 className="text-sm font-semibold mb-2">Quick Actions</h4>
-              <div className="flex flex-col gap-2 mt-3">
-                <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Index prompts</button>
-                <button onClick = {handleClusterPrompts} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"> Cluster prompts</button>
-              </div>
-            </div> */}
-          </div>
-
         </div>
       </div>
          {progress > 0  && <IndexProgressTrackerPopUp
@@ -325,7 +323,7 @@ function formatCost(n: number | undefined | null) {
   return `$${(asNumber).toFixed(2)}`;
 }
 
-function calculateCoverage(clusters: Omit<Cluster, "embedding">[]) {
+function calculateCoverage(clusters: Cluster[]) {
   if (!clusters || clusters.length === 0) return 0;
   const totalPrototypes = clusters.reduce((s, c) => s + (c.metadata.prototype_size || 0), 0);
   const coverage = Math.min(100, Math.round((totalPrototypes / Math.max(1, totalPrototypes + 4)) * 100));

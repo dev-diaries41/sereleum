@@ -9,7 +9,7 @@ import Link from 'next/link';
 
 interface ClusterAccuracyPlaygroundProps {
   result: ClusterAccuracy | null;
-  clusters: Omit<Cluster, "embedding">[];
+  clusters: Cluster[];
   dropdownOpen: boolean;
   selectedClusterIds: string[];
   running: boolean;

@@ -6,10 +6,10 @@ import * as LocalStorage from "@/app/lib/client/storage/session"
 import { reveliumClient } from '../revelium/client';
  
 interface PromptsContextProps {
-    clusters: Omit<Cluster, "embedding">[];
-    setClusters: React.Dispatch<React.SetStateAction<Omit<Cluster, "embedding">[]>>;
-    topClusters: Omit<Cluster, "embedding">[];
-    setTopClusters: React.Dispatch<React.SetStateAction<Omit<Cluster, "embedding">[]>>;
+    clusters: Cluster[];
+    setClusters: React.Dispatch<React.SetStateAction<Cluster[]>>;
+    topClusters: Cluster[];
+    setTopClusters: React.Dispatch<React.SetStateAction<Cluster[]>>;
     prompts: Prompt[];
     setPrompts: React.Dispatch<React.SetStateAction<Prompt[]>>;
     promptsOverview: PromptsOverviewInfo;
@@ -19,19 +19,18 @@ interface PromptsContextProps {
 const PromptsContext = createContext<PromptsContextProps | undefined>(undefined);
 
 interface PromptsProviderProps extends ProviderProps {
-  initialClusters: Omit<Cluster, "embedding">[]; 
-  initialTopClusters: Omit<Cluster, "embedding">[]; 
+  initialClusters: Cluster[]; 
   initialPrompts: Prompt[];
   overview: PromptsOverviewInfo;
 }
-const PromptsProvider = ({ children, initialClusters, initialTopClusters, initialPrompts, overview }: PromptsProviderProps) => {
-    const [ clusters, setClusters ] = useState<Omit<Cluster, "embedding">[]>(initialClusters);
-    const [ topClusters, setTopClusters ] = useState<Omit<Cluster, "embedding">[]>(initialTopClusters);
+const PromptsProvider = ({ children, initialClusters, initialPrompts, overview }: PromptsProviderProps) => {
+    const [ clusters, setClusters ] = useState<Cluster[]>(initialClusters);
+    const [ topClusters, setTopClusters ] = useState<Cluster[]>(overview.top_clusters);
     const [ prompts, setPrompts ] = useState<Prompt[]>(initialPrompts);
     const [ promptsOverview, setPromptsOverview ] = useState<PromptsOverviewInfo>(overview);
 
     // useLayoutEffect(() => {
-    //     const clusters = LocalStorage.get<Omit<Cluster, "embedding">[]>(StorageKeys.clusters);
+    //     const clusters = LocalStorage.get<Cluster[]>(StorageKeys.clusters);
     //     if (clusters && Array.isArray(clusters) && clusters.length > 0 ) {
     //         setClusters(clusters); 
     //     }
