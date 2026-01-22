@@ -29,7 +29,7 @@ export function ClusterRow({ cluster}: { cluster: Omit<Cluster, "embedding"> }) 
         <div className="flex flex-col gap-1">
           <div className="text-sm font-medium">{(cluster.label === UNLABELLED_CLUSTER? `${cluster.prototype_id }`: cluster.label)}</div>
           { (cluster.label == UNLABELLED_CLUSTER) && <div className="text-xs text-gray-500">{cluster.label}</div>}
-          <div className="text-xs text-gray-500">{prototype_size ?? 0} item(s) in cluster</div>
+          <div className="text-xs text-gray-500">{prototype_size ?? 0} items in cluster</div>
         </div>
       </div>
 

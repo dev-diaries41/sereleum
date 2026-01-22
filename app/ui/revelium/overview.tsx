@@ -1,10 +1,10 @@
 'use client';
 
-import {  Cluster, PromptsOverviewInfo, Status } from '@/app/types';
-import  { useEffect, useMemo, useRef, useState } from 'react';
+import {  PromptsOverviewInfo, Status } from '@/app/types';
+import  { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose, faLayerGroup, faLightbulb, faMoneyBill, faSpinner, faTerminal } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faLayerGroup, faLightbulb, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import FileUploader from '../common/upload';
 import {  AcceptedMimes, StorageKeys } from '@/app/constants/global';
 import { reveliumClient } from '@/app/revelium/client';
@@ -24,16 +24,7 @@ export function DashboardOverview() {
   const [progress, setProgress] = useState<number>(0);
   const [status, setStatus] = useState<Status|null>(null);
   const [trackerMinimized, setTrackerMinimized] = useState(false);
-
   const router = useRouter();
-  const metrics = useMemo(() => {
-    return [
-      { key: 'total_clusters', title: 'Total Clusters', value: overview.total_clusters, icon: faLayerGroup },
-      { key: 'total_prompts', title: 'Total Prompts', value: overview.total_prompts, icon: faTerminal },
-      // { key: 'average_prompt_cost', title: 'Average Token Cost', value: formatCost(overview.average_prompt_cost), icon: faMoneyBill },
-    ];
-  }, [overview]);
-
 
   const handleTrackIndexProgress = (jobId: string) => {
       const eventSource = reveliumClient.trackPromptsIndexProgress(jobId, {
