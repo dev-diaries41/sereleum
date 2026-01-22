@@ -8,6 +8,8 @@ import { reveliumClient } from '../revelium/client';
 interface PromptsContextProps {
     clusters: Omit<Cluster, "embedding">[];
     setClusters: React.Dispatch<React.SetStateAction<Omit<Cluster, "embedding">[]>>;
+    topClusters: Omit<Cluster, "embedding">[];
+    setTopClusters: React.Dispatch<React.SetStateAction<Omit<Cluster, "embedding">[]>>;
     prompts: Prompt[];
     setPrompts: React.Dispatch<React.SetStateAction<Prompt[]>>;
     promptsOverview: PromptsOverviewInfo;
@@ -18,11 +20,13 @@ const PromptsContext = createContext<PromptsContextProps | undefined>(undefined)
 
 interface PromptsProviderProps extends ProviderProps {
   initialClusters: Omit<Cluster, "embedding">[]; 
+  initialTopClusters: Omit<Cluster, "embedding">[]; 
   initialPrompts: Prompt[];
   overview: PromptsOverviewInfo;
 }
-const PromptsProvider = ({ children, initialClusters, initialPrompts, overview }: PromptsProviderProps) => {
+const PromptsProvider = ({ children, initialClusters, initialTopClusters, initialPrompts, overview }: PromptsProviderProps) => {
     const [ clusters, setClusters ] = useState<Omit<Cluster, "embedding">[]>(initialClusters);
+    const [ topClusters, setTopClusters ] = useState<Omit<Cluster, "embedding">[]>(initialTopClusters);
     const [ prompts, setPrompts ] = useState<Prompt[]>(initialPrompts);
     const [ promptsOverview, setPromptsOverview ] = useState<PromptsOverviewInfo>(overview);
 
@@ -46,6 +50,8 @@ const PromptsProvider = ({ children, initialClusters, initialPrompts, overview }
     <PromptsContext.Provider value={{
       clusters,
       setClusters,
+      topClusters, 
+      setTopClusters,
       prompts,
       setPrompts,
       promptsOverview, 
@@ -62,7 +68,7 @@ const usePrompts = () => {
     throw new Error('usePrompts must be used within a PromptsProvider');
   }
 
-const { clusters, prompts, promptsOverview,  setClusters, setPrompts, setPromptsOverview } = context;
+const { clusters, topClusters, prompts, promptsOverview,  setTopClusters, setClusters, setPrompts, setPromptsOverview } = context;
 
 const onUpdatePrompt = async(prompt: Prompt, newClusterId: string) => {
   const res = await reveliumClient.updatePromptClusterId(prompt.prompt_id, newClusterId)
@@ -88,8 +94,10 @@ const updatePromptsOverview =(promptOverview: PromptsOverviewInfo) => {
 
 return {
     clusters,
+    topClusters,
     prompts, 
     promptsOverview,
+    setTopClusters,
     setClusters,
     setPrompts,
     onUpdatePrompt,

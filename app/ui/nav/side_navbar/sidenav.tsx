@@ -9,9 +9,13 @@ import Logo from '../../logo';
 import ClusterListSideNavWrapper from '../../revelium/clusters-sidenav';
 import { usePrompts } from '@/app/providers/prompts';
 
-export default React.memo(function SideNav({ email, credits }: { email: string | null | undefined, credits: number}) {
+interface SideNavProps { 
+  email: string | null | undefined, 
+  credits: number;
+}
+export default React.memo(function SideNav({ email, credits }: SideNavProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const {clusters} = usePrompts()
+  const {topClusters} = usePrompts()
 
   // Prevent background scrolling when the mobile menu is open
   useEffect(() => {
@@ -43,7 +47,7 @@ export default React.memo(function SideNav({ email, credits }: { email: string |
         <div className='flex h-full flex-col justify-between'>
           <NavLinks navItems={topSidebarLinks} />
           <div className="flex-1 max-h-[60vh] overflow-y-auto custom-scrollbar pb-24">
-             <ClusterListSideNavWrapper clusters={clusters}  onDelete={(id) => {
+             <ClusterListSideNavWrapper clusters={topClusters}  onDelete={(id) => {
               if (window.confirm("Are you sure you want to delete this item?")) {
                 // existing delete logic here
               }

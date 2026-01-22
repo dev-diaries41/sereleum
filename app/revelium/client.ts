@@ -123,11 +123,11 @@ export class ReveliumClient {
     return data.updated_label;
   }
 
-  async getClusters(clusterId: string | null = null, offset: number | null = null, limit: number | null = null): Promise<Omit<Cluster, "embedding">[]> {
+  async getClusters(clusterId?: string, offset: number = 0, limit: number = 25): Promise<Omit<Cluster, "embedding">[]> {
       const query = { 
         clusterId: clusterId || "",
-        offset: offset || 0, 
-        limit: limit  || 50
+        offset: offset, 
+        limit: limit
       };
       
     const params = new URLSearchParams(

@@ -4,7 +4,7 @@ import {  Cluster, PromptsOverviewInfo, Status } from '@/app/types';
 import  { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose, faLayerGroup, faMoneyBill, faSpinner, faTag, faTerminal } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faLayerGroup, faMoneyBill, faSpinner, faTerminal } from '@fortawesome/free-solid-svg-icons';
 import FileUploader from '../common/upload';
 import {  AcceptedMimes, StorageKeys } from '@/app/constants/global';
 import { reveliumClient } from '@/app/revelium/client';
@@ -17,11 +17,9 @@ import { IndexProgressTrackerPopUp } from '../common/progress-tracker';
 import * as LocalStorage from "@/app/lib/client/storage/local"
 
 
-const N_TOP_CLUSTERS = 5
-
 export function DashboardOverview() {
   const [promptsFile, setPromptsFile] = useState<File | null>(null)
-  const { clusters, setClusters, promptsOverview: overview, updatePromptsOverview} = usePrompts()
+  const { clusters, topClusters, setClusters, promptsOverview: overview, updatePromptsOverview} = usePrompts()
   const [clusterPlotUrl, setClusterPlotUrl] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
   const [status, setStatus] = useState<Status|null>(null);
@@ -206,21 +204,22 @@ useEffect(() => {
           </div>
 
           <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left: clusters list (span 2) */}
             <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold">Clusters</h3>
-                  <p className="text-sm text-gray-500">Top clusters and similarity metrics</p>
+                  <h3 className="text-lg font-semibold">Top Clusters</h3>
                 </div>
-                <div className="text-sm text-gray-500">{clusters.length} clusters</div>
+                  <FontAwesomeIcon
+                  icon={faLayerGroup}
+                  className="w-6 h-6 opacity-50"
+                />
               </div>
 
               <div className="flex flex-col gap-2">
-                {clusters.length === 0 ? (
+                {topClusters.length === 0 ? (
                   <div className="text-sm text-gray-500 py-6 text-center">No clusters yet — add prompts to generate clusters</div>
                 ) : (
-                  clusters.slice(0, N_TOP_CLUSTERS).map((cluster, i) => 
+                  topClusters.map((cluster, i) => 
                     <Link
                         key={cluster.prototype_id}
                         href={`/dashboard/clusters/cluster/${cluster.prototype_id}`}
@@ -234,7 +233,7 @@ useEffect(() => {
 
               <div className="mt-4 flex items-center justify-between">
                 <div className="text-xs text-gray-500">Prototype separation and similarity help you understand cluster cohesion</div>
-                { ( clusters.length > N_TOP_CLUSTERS) &&  <button
+                { ( clusters.length > topClusters.length) &&  <button
                   className="text-sm text-indigo-600"
                   onClick={() => {
                     setClusters(clusters);
