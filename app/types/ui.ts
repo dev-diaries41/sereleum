@@ -1,6 +1,7 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode, SelectHTMLAttributes } from "react";
 import { positions } from "../constants/layout/style";
+import { Status } from "./requests";
 
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement>   {
@@ -96,8 +97,8 @@ export interface ToastProps {
 export interface ToastOptions extends Omit<ToastProps, 'onClose'> {}
 
 export interface BasePopUpProps {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   position?: keyof typeof positions;
   children?: ReactNode;
   isError?: boolean;
@@ -156,4 +157,22 @@ export interface HeaderProps {
 
 export interface DashboardHeaderProps extends HeaderProps {
       credits: number;
+}
+
+export interface ProgressBarProps{
+  progress: number;
+  label?: string;
+}
+
+export interface StatusTrackerPopUpProps {
+  title?: string;
+  status: Status | null;
+  description?: string;
+  minimized: boolean;
+  onMinimize: () => void;
+}
+
+export interface ProgressTrackerPopUpProps extends StatusTrackerPopUpProps {
+  progress?: number;
+  label?: string;
 }
