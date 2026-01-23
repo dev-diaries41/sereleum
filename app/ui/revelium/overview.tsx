@@ -12,19 +12,21 @@ import { ClusterRow } from './cluster-row';
 import { usePrompts } from '@/app/providers/prompts';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { IndexProgressTrackerPopUp } from '../common/progress-tracker';
+import { ProgressTrackerPopUp } from '../common/progress-tracker';
 import * as LocalStorage from "@/app/lib/client/storage/local"
 import { OverviewSummary } from './overview-summary';
 
 
 export function DashboardOverview() {
   const [promptsFile, setPromptsFile] = useState<File | null>(null)
-  const { clusters, topClusters, setClusters, promptsOverview: overview, updatePromptsOverview} = usePrompts()
+  const { clusters, setClusters, promptsOverview: overview, updatePromptsOverview} = usePrompts()
   const [clusterPlotUrl, setClusterPlotUrl] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
-  const [status, setStatus] = useState<Status|null>(null);
+  const [indexingStatus, setIndexingStatus] = useState<Status|null>(null);
+  const [clusteringStatus, setClusteringStatus] = useState<Status|null>(null);
   const [trackerMinimized, setTrackerMinimized] = useState(false);
   const router = useRouter();
+  const hasFetechPlot = useRef(false);
 
   const handleTrackIndexProgress = (jobId: string) => {
       const eventSource = reveliumClient.trackPromptsIndexProgress(jobId, {
@@ -33,90 +35,117 @@ export function DashboardOverview() {
         },
         onComplete: async() => {
           LocalStorage.remove(StorageKeys.indexingJobId)
-          const promptOverview = await reveliumClient.getPromptsOverview();
-          const clusters = await reveliumClient.getClusters()
-          updatePromptsOverview(promptOverview)
-          setClusters(clusters)
-          setStatus("complete")
+          setIndexingStatus("complete")
+          const clusterJobId = "cluster_job_status" // DEV ONLY
+          handleTrackClusteringStatus(clusterJobId)
         },
         onFail: (e) => {
-          setStatus("failed")
+          setIndexingStatus("failed")
           LocalStorage.remove(StorageKeys.indexingJobId)
           alert(e)
         },
-        onActive: () => setStatus('active'),
+        onActive: () => setIndexingStatus('active'),
       })
   }
 
-const hasFetechPlot = useRef(false);
+  const handleTrackClusteringStatus = (jobId: string) => {
+    setClusteringStatus('queued')
+    const eventSource = reveliumClient.trackPromptsClusterStatus(jobId, {
+      onComplete: async() => {
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        const promptOverview = await reveliumClient.getPromptsOverview();
+        const clusters = await reveliumClient.getClusters()
+        updatePromptsOverview(promptOverview)
+        setClusters(clusters)
+        setClusteringStatus("complete")
+      },
+      onFail: (e) => {
+        setClusteringStatus("failed")
+        alert(e)
+      },
+      onActive: () => setClusteringStatus('active'),
+    })
+  }
 
-useEffect(() => {
-  if (hasFetechPlot.current && status !== "complete") return;
-  hasFetechPlot.current = true;
 
-  let url: string | null = null;
+  useEffect(() => {
+    if (clusteringStatus !== null) return;
+    hasFetechPlot.current = true;
 
-  const fetchPlot = async () => {
-    const request = indexedDB.open("ClusterPlotDB", 1);
-    const cachedOverview = LocalStorage.get<PromptsOverviewInfo>(StorageKeys.overview) as PromptsOverviewInfo | null;
-    const isTheSameOverview = cachedOverview?.total_prompts === overview.total_prompts;
+    let url: string | null = null;
 
-    request.onupgradeneeded = () => {
-      const db = request.result;
-      if (!db.objectStoreNames.contains("plots")) {
-        db.createObjectStore("plots");
-      }
+    const fetchPlot = async () => {
+      const request = indexedDB.open("ClusterPlotDB", 1);
+      const cachedOverview = LocalStorage.get<PromptsOverviewInfo>(StorageKeys.overview) as PromptsOverviewInfo | null;
+      const isTheSameOverview = cachedOverview?.total_prompts === overview.total_prompts;
+
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains("plots")) {
+          db.createObjectStore("plots");
+        }
+      };
+
+      request.onsuccess = async () => {
+        const db = request.result;
+        const tx = db.transaction("plots", "readonly");
+        const store = tx.objectStore("plots");
+        const cachedBlob = await new Promise<Blob | undefined>((resolve) => {
+          const getReq = store.get("clusterPlot");
+          getReq.onsuccess = () => resolve(getReq.result);
+          getReq.onerror = () => resolve(undefined);
+        });
+
+        if (cachedBlob && isTheSameOverview) {
+          url = URL.createObjectURL(cachedBlob);
+          setClusterPlotUrl(url);
+          return;
+        }
+
+        const blob = await reveliumClient.getClusterPlotBlob();
+        if (blob) {
+          LocalStorage.set(StorageKeys.overview, JSON.stringify(overview));
+          url = URL.createObjectURL(blob);
+          setClusterPlotUrl(url);
+
+          const txWrite = db.transaction("plots", "readwrite");
+          txWrite.objectStore("plots").put(blob, "clusterPlot");
+        }
+      };
+
+      request.onerror = (e) => console.error("IndexedDB error", e);
     };
 
-    request.onsuccess = async () => {
-      const db = request.result;
-      const tx = db.transaction("plots", "readonly");
-      const store = tx.objectStore("plots");
-      const cachedBlob = await new Promise<Blob | undefined>((resolve) => {
-        const getReq = store.get("clusterPlot");
-        getReq.onsuccess = () => resolve(getReq.result);
-        getReq.onerror = () => resolve(undefined);
-      });
+    fetchPlot();
 
-      if (cachedBlob && isTheSameOverview) {
-        url = URL.createObjectURL(cachedBlob);
-        setClusterPlotUrl(url);
-        return;
-      }
-
-      const blob = await reveliumClient.getClusterPlotBlob();
-      if (blob) {
-        LocalStorage.set(StorageKeys.overview, JSON.stringify(overview));
-        url = URL.createObjectURL(blob);
-        setClusterPlotUrl(url);
-
-        const txWrite = db.transaction("plots", "readwrite");
-        txWrite.objectStore("plots").put(blob, "clusterPlot");
-      }
+    return () => {
+      if (url) URL.revokeObjectURL(url);
     };
-
-    request.onerror = (e) => console.error("IndexedDB error", e);
-  };
-
-  fetchPlot();
-
-  return () => {
-    if (url) URL.revokeObjectURL(url);
-  };
-}, [status]);
+  }, [clusteringStatus]);
 
 
 
   useEffect(() => {
-    if(status === "complete" || status === "failed"){
+    if(indexingStatus === "complete" || indexingStatus === "failed"){
       setTimeout(()=>{
-        setStatus(null)
+        setIndexingStatus(null)
         setProgress(0)
+        setTrackerMinimized(false)
+      }, 750
+)
+    }
+  }, [indexingStatus])
+
+
+  useEffect(() => {
+    if(clusteringStatus === "complete" || clusteringStatus === "failed"){
+      setTimeout(()=>{
+        setClusteringStatus(null)
         setTrackerMinimized(false)
       }, 1000
 )
     }
-  }, [status, trackerMinimized])
+  }, [clusteringStatus])
 
 
   useEffect(() => {
@@ -129,8 +158,8 @@ useEffect(() => {
   const handleFileUpload = async() => {
     if(!promptsFile) return
     const res = await reveliumClient.addPromptsFile(promptsFile)
-    setStatus(res.status)
     setPromptsFile(null)
+    setIndexingStatus(res.status)
     LocalStorage.set(StorageKeys.indexingJobId, res.job_id)
     handleTrackIndexProgress(res.job_id)
   }
@@ -146,7 +175,7 @@ useEffect(() => {
             </div>
             <div className="flex flex-col items-start gap-3">
            <div className="flex flex-row gap-3 items-center">
-            {(status === "active") && trackerMinimized && (
+            {((indexingStatus === "active") || (clusteringStatus === "active")) && trackerMinimized && (
               <button
                 onClick={() => setTrackerMinimized(false)}
                 className="flex items-center justify-center px-4"
@@ -232,10 +261,19 @@ useEffect(() => {
               </div>
 
               <div className="flex flex-col gap-2">
-                {topClusters.length === 0 ? (
-                  <div className="text-sm text-gray-500 py-6 text-center">No clusters yet — add prompts to generate clusters</div>
+                {overview.top_clusters.length === 0 ? (
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-gray-400">
+                      No clusters yet
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Top cluster will be shown once prompts added
+                    </p>
+                  </div>
+                </div>
                 ) : (
-                  topClusters.map((cluster, i) => 
+                  overview.top_clusters.map((cluster, i) => 
                     <Link
                         key={cluster.prototype_id}
                         href={`/dashboard/clusters/cluster/${cluster.prototype_id}`}
@@ -249,7 +287,7 @@ useEffect(() => {
 
               <div className="mt-4 flex items-center justify-between">
                 <div className="text-xs text-gray-500">Prototype separation and similarity help you understand cluster cohesion</div>
-                { ( clusters.length > topClusters.length) &&  <button
+                { ( clusters.length > overview.top_clusters.length) &&  <button
                   className="text-sm text-indigo-600"
                   onClick={() => {
                     setClusters(clusters);
@@ -285,7 +323,7 @@ useEffect(() => {
                       />
                     </div>
                   ) : (
-                    <div className="text-sm text-gray-400">No plot available</div>
+                    <p className="text-sm font-medium text-gray-400">No plot available</p>
                   )}
                 </div>
 
@@ -295,14 +333,23 @@ useEffect(() => {
           </div>
         </div>
       </div>
-         {progress > 0  && <IndexProgressTrackerPopUp
+         {indexingStatus == "active"  && <ProgressTrackerPopUp
           progress={progress} 
-          status={status} 
+          status={indexingStatus} 
           title={"Indexing prompts"}
           minimized = {trackerMinimized}
           onMinimize={() => setTrackerMinimized(true)}
           />
           }
+
+        {clusteringStatus == 'active' && <ProgressTrackerPopUp
+          status={clusteringStatus} 
+          title={"Clustering prompts"}
+          minimized = {trackerMinimized}
+          description="Clustering is in progress. This may take a while depending on the number of prompts."
+          onMinimize={() => setTrackerMinimized(true)}
+          />
+        }
     </div>
   );
 }

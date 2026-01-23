@@ -1,9 +1,9 @@
-import { IndexProgressTrackerPopUpProps } from "@/app/types";
+import { ProgressTrackerPopUpProps } from "@/app/types";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ProgressBar } from "./progress-bar";
 
-export function IndexProgressTrackerPopUp({
+export function ProgressTrackerPopUp({
   progress,
   status,
   label,
@@ -11,7 +11,7 @@ export function IndexProgressTrackerPopUp({
   description,
   minimized,
   onMinimize,
-}: IndexProgressTrackerPopUpProps ) {
+}: ProgressTrackerPopUpProps ) {
 
 
   if (minimized) return null;
@@ -36,7 +36,7 @@ export function IndexProgressTrackerPopUp({
           </button>
         </div>
 
-        <ProgressBar progress={progress} label={label} />
+        {progress && <ProgressBar progress={progress} label={label} />}
 
         <div className="mt-3 flex items-center justify-between text-xs">
           <span className="text-gray-500">Status</span>
@@ -56,4 +56,3 @@ export function IndexProgressTrackerPopUp({
     </div>
   );
 }
-

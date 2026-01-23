@@ -9,9 +9,8 @@ import {
   ClusterAccuracy,
   UpdatePromptClusterIdParams,
   QueryPromptsRequest,
-  ClusterMetadata,
 } from "@/app/types";
-import { ADD_PROMPTS_ENDPOINT, ADD_PROMPTS_FILE_ENDPOINT, BASE_CLUSTER_ENDPOINT, COUNT_CLUSTER_ENDPOINT, GET_LABELS_ENDPOINT, COUNT_PROMPTS_ENDPOINT, BASE_PROMPTS_ENDPOINT, GET_PROMPTS_OVERVIEW_ENDPOINT, REVELIUM_BASE_URL, START_CLUSTER_ENDPOINT, CALC_CLUSTER_ACCURACY_ENDPOINT, GET_CLUSTER_PLOT_ENDPOINT, SSE_PROMPTS_INDEX_PROGRESS, QUERY_PROMPTS_ENDPOINT, GET_TOP_CLUSTERS_ENDPOINT } from "./constants";
+import { ADD_PROMPTS_ENDPOINT, ADD_PROMPTS_FILE_ENDPOINT, BASE_CLUSTER_ENDPOINT, COUNT_CLUSTER_ENDPOINT, GET_LABELS_ENDPOINT, COUNT_PROMPTS_ENDPOINT, BASE_PROMPTS_ENDPOINT, GET_PROMPTS_OVERVIEW_ENDPOINT, REVELIUM_BASE_URL, START_CLUSTER_ENDPOINT, CALC_CLUSTER_ACCURACY_ENDPOINT, GET_CLUSTER_PLOT_ENDPOINT, SSE_PROMPTS_INDEX_PROGRESS, QUERY_PROMPTS_ENDPOINT, GET_TOP_CLUSTERS_ENDPOINT, SSE_PROMPTS_CLUSTER_STATUS } from "./constants";
 
 export class ReveliumClient {
   private baseUrl: string;
@@ -236,7 +235,7 @@ trackPromptsIndexProgress(
     onComplete?: () => void;
   }
 ): EventSource {
-  const url = `${this.baseUrl}/${SSE_PROMPTS_INDEX_PROGRESS}?job_id=${encodeURIComponent(
+  const url = `${this.baseUrl}${SSE_PROMPTS_INDEX_PROGRESS}?job_id=${encodeURIComponent(
       jobId
     )}`;
   const es = new EventSource(url);
@@ -279,10 +278,60 @@ trackPromptsIndexProgress(
   };
 
   return es;
+  }  
+
+
+  trackPromptsClusterStatus(
+  jobId: string,
+  {
+    onFail,
+    onActive,
+    onOpen,
+    onError,
+    onComplete,
+  }: {
+    onFail?: (error: string) => void;
+    onActive?: () => void;
+    onOpen?: () => void;
+    onError?: (err: unknown) => void;
+    onComplete?: () => void;
   }
+): EventSource {
+  const url = `${this.baseUrl}${SSE_PROMPTS_CLUSTER_STATUS}?job_id=${encodeURIComponent(
+      jobId
+    )}`;
+  const es = new EventSource(url);
 
+  es.onopen = () => {
+    onOpen?.();
+  };
 
-  
+  es.addEventListener("active", () => {
+    onActive?.();
+  });
+
+  es.addEventListener("complete", () => {
+    onComplete?.();
+    es.close();
+  });
+
+  es.addEventListener("failed", (ev: MessageEvent) => {
+    try {
+      const payload = JSON.parse(ev.data);
+      onFail?.(String(payload.error));
+    } catch (err) {
+      onError?.(err);
+    } finally {
+      es.close();
+    }
+  });
+
+  es.onerror = (ev: Event | any) => {
+    onError?.(ev);
+  };
+
+  return es;
+  }  
 }
 
 

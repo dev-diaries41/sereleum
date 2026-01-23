@@ -164,7 +164,7 @@ export interface ProgressBarProps{
   label?: string;
 }
 
-export interface IndexProgressTrackerPopUpProps extends ProgressBarProps {
+export interface StatusTrackerPopUpProps {
   title?: string;
   status: Status | null;
   description?: string;
@@ -172,3 +172,7 @@ export interface IndexProgressTrackerPopUpProps extends ProgressBarProps {
   onMinimize: () => void;
 }
 
+export interface ProgressTrackerPopUpProps extends StatusTrackerPopUpProps {
+  progress?: number;
+  label?: string;
+}
