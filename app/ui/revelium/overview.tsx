@@ -26,7 +26,6 @@ export function DashboardOverview() {
   const [clusteringStatus, setClusteringStatus] = useState<Status|null>(null);
   const [trackerMinimized, setTrackerMinimized] = useState(false);
   const router = useRouter();
-  const hasFetechPlot = useRef(false);
 
   const handleTrackIndexProgress = (jobId: string) => {
       const eventSource = reveliumClient.trackPromptsIndexProgress(jobId, {
@@ -70,7 +69,6 @@ export function DashboardOverview() {
 
   useEffect(() => {
     if (clusteringStatus !== null) return;
-    hasFetechPlot.current = true;
 
     let url: string | null = null;
 
