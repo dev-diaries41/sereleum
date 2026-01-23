@@ -9,8 +9,9 @@ import {
   ClusterAccuracy,
   UpdatePromptClusterIdParams,
   QueryPromptsRequest,
+  MergeClustersRequest,
 } from "@/app/types";
-import { ADD_PROMPTS_ENDPOINT, ADD_PROMPTS_FILE_ENDPOINT, BASE_CLUSTER_ENDPOINT, COUNT_CLUSTER_ENDPOINT, GET_LABELS_ENDPOINT, COUNT_PROMPTS_ENDPOINT, BASE_PROMPTS_ENDPOINT, GET_PROMPTS_OVERVIEW_ENDPOINT, REVELIUM_BASE_URL, START_CLUSTER_ENDPOINT, CALC_CLUSTER_ACCURACY_ENDPOINT, GET_CLUSTER_PLOT_ENDPOINT, SSE_PROMPTS_INDEX_PROGRESS, QUERY_PROMPTS_ENDPOINT, GET_TOP_CLUSTERS_ENDPOINT, SSE_PROMPTS_CLUSTER_STATUS } from "./constants";
+import { ADD_PROMPTS_ENDPOINT, ADD_PROMPTS_FILE_ENDPOINT, BASE_CLUSTER_ENDPOINT, COUNT_CLUSTER_ENDPOINT, GET_LABELS_ENDPOINT, COUNT_PROMPTS_ENDPOINT, BASE_PROMPTS_ENDPOINT, GET_PROMPTS_OVERVIEW_ENDPOINT, REVELIUM_BASE_URL, START_CLUSTER_ENDPOINT, CALC_CLUSTER_ACCURACY_ENDPOINT, GET_CLUSTER_PLOT_ENDPOINT, SSE_PROMPTS_INDEX_PROGRESS, QUERY_PROMPTS_ENDPOINT, GET_TOP_CLUSTERS_ENDPOINT, SSE_PROMPTS_CLUSTER_STATUS, MERGE_CLUSTERS_ENDPOINT } from "./constants";
 
 export class ReveliumClient {
   private baseUrl: string;
@@ -216,6 +217,22 @@ export class ReveliumClient {
   const blob = await res.blob();
   return blob.size === 0 ? null : blob;
 }
+
+  async mergeClusters(merges: Record<string, string[]>): Promise<Cluster[]> {
+    const url = `${this.baseUrl}${MERGE_CLUSTERS_ENDPOINT}`;
+    const payload: MergeClustersRequest = { 
+      merges,
+    };
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await this.handleResponse<{updated_clusters: Cluster[]}>(res);
+    return data.updated_clusters
+  }
 
 trackPromptsIndexProgress(
   jobId: string,

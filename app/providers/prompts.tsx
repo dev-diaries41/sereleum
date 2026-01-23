@@ -67,7 +67,13 @@ const usePrompts = () => {
     throw new Error('usePrompts must be used within a PromptsProvider');
   }
 
+ 
+
 const { clusters, topClusters, prompts, promptsOverview,  setTopClusters, setClusters, setPrompts, setPromptsOverview } = context;
+
+ useEffect(() => {
+  setTopClusters(promptsOverview.top_clusters)
+  }, [promptsOverview])
 
 const onUpdatePrompt = async(prompt: Prompt, newClusterId: string) => {
   const res = await reveliumClient.updatePromptClusterId(prompt.prompt_id, newClusterId)

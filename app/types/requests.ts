@@ -108,3 +108,8 @@ export interface UpdatePromptClusterIdParams {
   cluster_id: string
   prompt_id: string;
 }
+
+
+export interface MergeClustersRequest {
+  merges: Record<string, string[]>;
+}
