@@ -36,7 +36,7 @@ export function ProgressTrackerPopUp({
           </button>
         </div>
 
-        {progress && <ProgressBar progress={progress} label={label} />}
+        {(progress !== undefined) && <ProgressBar progress={progress} label={label} />}
 
         <div className="mt-3 flex items-center justify-between text-xs">
           <span className="text-gray-500">Status</span>

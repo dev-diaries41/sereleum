@@ -19,7 +19,7 @@ import { OverviewSummary } from './overview-summary';
 
 export function DashboardOverview() {
   const [promptsFile, setPromptsFile] = useState<File | null>(null)
-  const { clusters, setClusters, promptsOverview: overview, updatePromptsOverview} = usePrompts()
+  const { clusters, setClusters, topClusters,promptsOverview: overview, updatePromptsOverview} = usePrompts()
   const [clusterPlotUrl, setClusterPlotUrl] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
   const [indexingStatus, setIndexingStatus] = useState<Status|null>(null);
@@ -259,7 +259,7 @@ export function DashboardOverview() {
               </div>
 
               <div className="flex flex-col gap-2">
-                {overview.top_clusters.length === 0 ? (
+                {topClusters.length === 0 ? (
                 <div className="flex-1 flex items-center justify-center">
                   <div className="text-center">
                     <p className="text-sm font-medium text-gray-400">
@@ -271,7 +271,7 @@ export function DashboardOverview() {
                   </div>
                 </div>
                 ) : (
-                  overview.top_clusters.map((cluster, i) => 
+                  topClusters.map((cluster, i) => 
                     <Link
                         key={cluster.prototype_id}
                         href={`/dashboard/clusters/cluster/${cluster.prototype_id}`}
@@ -285,7 +285,7 @@ export function DashboardOverview() {
 
               <div className="mt-4 flex items-center justify-between">
                 <div className="text-xs text-gray-500">Prototype separation and similarity help you understand cluster cohesion</div>
-                { ( clusters.length > overview.top_clusters.length) &&  <button
+                { ( clusters.length > topClusters.length) &&  <button
                   className="text-sm text-indigo-600"
                   onClick={() => {
                     setClusters(clusters);
