@@ -1,3 +1,5 @@
+"use client"
+
 import { useMemo } from "react";
 import { Data, Layout } from "plotly.js-dist-min";
 import { Cluster, UNLABELLED_CLUSTER } from "@/app/types";
