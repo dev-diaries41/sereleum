@@ -262,7 +262,7 @@ const isSameOverview = (
           </div>
         </div>
       </div>
-         {indexingStatus == "active"  && <ProgressTrackerPopUp
+         {indexingStatus  && <ProgressTrackerPopUp
           progress={progress} 
           status={indexingStatus} 
           title={"Indexing prompts"}
@@ -271,7 +271,7 @@ const isSameOverview = (
           />
           }
 
-        {clusteringStatus == 'active' && <ProgressTrackerPopUp
+        {clusteringStatus && <ProgressTrackerPopUp
           status={clusteringStatus} 
           title={"Clustering prompts"}
           minimized = {trackerMinimized}
