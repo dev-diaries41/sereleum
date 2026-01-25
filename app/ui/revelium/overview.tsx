@@ -1,6 +1,6 @@
 'use client';
 
-import {  PromptsOverviewInfo, Status } from '@/app/types';
+import {  Cluster, PromptsOverviewInfo, Status } from '@/app/types';
 import  { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,6 +15,8 @@ import Link from 'next/link';
 import { ProgressTrackerPopUp } from '../common/progress-tracker';
 import * as LocalStorage from "@/app/lib/client/storage/local"
 import { OverviewSummary } from './overview-summary';
+import { TokenUsageByClusterChart } from './charts/cluster-tokens';
+import { NumberPromptsPerClusterChart } from './charts/cluster-density';
 
 
 export function DashboardOverview() {
@@ -66,16 +68,46 @@ export function DashboardOverview() {
     })
   }
 
+  const goToClustersPage = () => {
+     router.push('/dashboard/clusters');
+  }
+
+
+const isSameOverview = (
+  a: PromptsOverviewInfo,
+  b: PromptsOverviewInfo
+): boolean => {
+  if (a.total_prompts !== b.total_prompts) return false;
+  if (a.total_clusters !== b.total_clusters) return false;
+
+  if (a.top_clusters.length !== b.top_clusters.length) return false;
+  for (let i = 0; i < a.top_clusters.length; i++) {
+    const clusterA = a.top_clusters[i];
+    const clusterB = b.top_clusters[i];
+    if (clusterA.prototype_id !== clusterB.prototype_id) return false;
+  }
+
+  const keysA = Object.keys(a.top_cluster_token_counts);
+  const keysB = Object.keys(b.top_cluster_token_counts);
+  if (keysA.length !== keysB.length) return false;
+
+  for (const key of keysA) {
+    if (a.top_cluster_token_counts[key] !== b.top_cluster_token_counts[key]) return false;
+  }
+
+  return true;
+}
+
 
   useEffect(() => {
-    if (clusteringStatus !== null) return;
+    if ( clusteringStatus !== null) return;
 
     let url: string | null = null;
+    
 
     const fetchPlot = async () => {
       const request = indexedDB.open("ClusterPlotDB", 1);
       const cachedOverview = LocalStorage.get<PromptsOverviewInfo>(StorageKeys.overview) as PromptsOverviewInfo | null;
-      const isTheSameOverview = cachedOverview?.total_prompts === overview.total_prompts;
 
       request.onupgradeneeded = () => {
         const db = request.result;
@@ -94,11 +126,12 @@ export function DashboardOverview() {
           getReq.onerror = () => resolve(undefined);
         });
 
-        if (cachedBlob && isTheSameOverview) {
+
+        if (cachedBlob && cachedOverview && isSameOverview(cachedOverview, overview)) {
           url = URL.createObjectURL(cachedBlob);
           setClusterPlotUrl(url);
-          return;
-        }
+          return
+        }        
 
         const blob = await reveliumClient.getClusterPlotBlob();
         if (blob) {
@@ -218,116 +251,14 @@ export function DashboardOverview() {
           </div>
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
             <OverviewSummary overview={overview}/>
-            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 w-full flex flex-col">
-              <div className='flex justify-between'>
-                <p className="text-sm font-semibold text-gray-700 mb-2">
-                  Summary Insights
-                </p>
-                <FontAwesomeIcon
-                  icon={faLightbulb}
-                  className="w-6 h-6 opacity-50"
-                />
-              </div>
-              {overview.summary_insights ? (
-                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                  {overview.summary_insights}
-                </p>
-              ) : (
-                <div className="flex-1 flex items-center justify-center">
-                  <div className="text-center">
-                    <p className="text-sm font-medium text-gray-400">
-                      No insights yet
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Insights will appear once clusters have been created
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
+            <ClustersPlot url={clusterPlotUrl}/>
           </div>
           <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold">Top Clusters</h3>
-                </div>
-                  <FontAwesomeIcon
-                  icon={faLayerGroup}
-                  className="w-6 h-6 opacity-50"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                {topClusters.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center">
-                  <div className="text-center">
-                    <p className="text-sm font-medium text-gray-400">
-                      No clusters yet
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Top cluster will be shown once prompts added
-                    </p>
-                  </div>
-                </div>
-                ) : (
-                  topClusters.map((cluster, i) => 
-                    <Link
-                        key={cluster.prototype_id}
-                        href={`/dashboard/clusters/cluster/${cluster.prototype_id}`}
-                        className="block"
-                      >
-                        <ClusterRow cluster={cluster} />
-                    </Link>
-                )
-                )}
-              </div>
-
-              <div className="mt-4 flex items-center justify-between">
-                <div className="text-xs text-gray-500">Prototype separation and similarity help you understand cluster cohesion</div>
-                { ( clusters.length > topClusters.length) &&  <button
-                  className="text-sm text-indigo-600"
-                  onClick={() => {
-                    setClusters(clusters);
-                    router.push('/dashboard/clusters');
-                  }}
-                >
-                  View all clusters
-                </button>}              
-              </div>
-            </div>
-
-            {/* Right: cluster plot image */}
-            <div className="lg:col-span-1">
-              <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4 h-full flex flex-col">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <h4 className="text-sm font-semibold">Cluster Plot</h4>
-                    <p className="text-xs text-gray-500">2D visualization of prompt clusters</p>
-                  </div>
-                </div>
-
-                <div className="flex-1 w-full min-h-[220px] flex items-center justify-center">
-                  {clusterPlotUrl ? (
-                    <div className="w-full h-full relative rounded-lg overflow-hidden border border-gray-50">
-                      <Image
-                        src={clusterPlotUrl}
-                        alt="Cluster plot"
-                        width={800}
-                        height={480}
-                        style={{ objectFit: 'contain' }}
-                        className="w-full h-full"
-                        priority={false}
-                      />
-                    </div>
-                  ) : (
-                    <p className="text-sm font-medium text-gray-400">No plot available</p>
-                  )}
-                </div>
-
-                <div className="mt-3 text-xs text-gray-500">Downloadable preview available</div>
-              </div>
-            </div>
+            <TopClustersDetails topClusters={topClusters} isViewAllVisible ={clusters.length > topClusters.length } onViewAllClusters={goToClustersPage}/>
+          </div>
+           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 my-6">
+            {topClusters.length > 0 && <NumberPromptsPerClusterChart clusters={topClusters} loading ={false}/>}
+            {topClusters.length > 0 && <TokenUsageByClusterChart overview={overview} loading ={false}/>}
           </div>
         </div>
       </div>
@@ -350,4 +281,99 @@ export function DashboardOverview() {
         }
     </div>
   );
+}
+
+interface ClustersPlotProps {
+  url: string | null
+}
+
+function ClustersPlot({url}: ClustersPlotProps){
+  return (
+    <div className="lg:col-span-1">
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4 h-full flex flex-col">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h4 className="text-sm font-semibold">Cluster Plot</h4>
+              <p className="text-xs text-gray-500">2D visualization of prompt clusters</p>
+            </div>
+          </div>
+
+          <div className="flex-1 w-full min-h-[220px] flex items-center justify-center">
+            {url ? (
+              <div className="w-full h-full relative rounded-lg overflow-hidden border border-gray-50">
+                <Image
+                  src={url}
+                  alt="Cluster plot"
+                  width={800}
+                  height={480}
+                  style={{ objectFit: 'contain' }}
+                  className="w-full h-full"
+                  priority={false}
+                />
+              </div>
+            ) : (
+              <p className="text-sm font-medium text-gray-400">No plot available</p>
+            )}
+          </div>
+        </div>
+      </div>
+  )
+}
+
+interface TopClustersDetailsProps {
+  topClusters: Cluster[];
+  isViewAllVisible: boolean;
+  onViewAllClusters: () => void;
+}
+
+function TopClustersDetails({topClusters, isViewAllVisible, onViewAllClusters }: TopClustersDetailsProps){
+  return (
+    <div className="lg:col-span-3 bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-lg font-semibold">Top Clusters</h3>
+          </div>
+            <FontAwesomeIcon
+            icon={faLayerGroup}
+            className="w-6 h-6 opacity-50"
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          {topClusters.length === 0 ? (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <p className="text-sm font-medium text-gray-400">
+                No clusters yet
+              </p>
+              <p className="text-xs text-gray-400 mt-1">
+                Top cluster will be shown once prompts added
+              </p>
+            </div>
+          </div>
+          ) : (
+            topClusters.map((cluster, i) => 
+              <Link
+                  key={cluster.prototype_id}
+                  href={`/dashboard/clusters/cluster/${cluster.prototype_id}`}
+                  className="block"
+                >
+                  <ClusterRow cluster={cluster} />
+              </Link>
+          )
+          )}
+        </div>
+
+        <div className="mt-4 flex items-center justify-between">
+          <div className="text-xs text-gray-500">Cluster separation and similarity help you understand cluster cohesion</div>
+          { isViewAllVisible &&  <button
+            className="text-sm text-indigo-600"
+            onClick={onViewAllClusters}
+          >
+            View all clusters
+          </button>
+          }              
+        </div>
+      </div>
+  )
 }

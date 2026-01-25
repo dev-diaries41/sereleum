@@ -11,7 +11,7 @@ import { MetricsItem } from "../dashboard/metrics-item";
 
 export function ClusterDetail({ id }: { id?: string }) {
   const router = useRouter();
-  const { clusters, setClusters } = usePrompts();
+  const { clusters, setClusters, setTopClusters } = usePrompts();
   const [labelDraft, setLabelDraft] = useState<string>('');
   const [saving, setSaving] = useState(false);
   const [topPrompts, setTopPrompts] = useState<Prompt[]>([]);
@@ -53,7 +53,7 @@ export function ClusterDetail({ id }: { id?: string }) {
 
 
   const getTopPrompts = async() => {
-    const fetchedPrompts = await reveliumClient.getPrompts(undefined, 10, 0, cluster?.prototype_id)
+    const fetchedPrompts = await reveliumClient.getPrompts(undefined, 10, 0, [cluster?.prototype_id!])
     setTopPrompts(fetchedPrompts)
   }
 
@@ -65,17 +65,12 @@ export function ClusterDetail({ id }: { id?: string }) {
   }
 
 
-  if (!id) {
-    return (
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="text-sm text-gray-500">No cluster selected.</div>
-      </div>
-    );
-  }
-
-  if (!cluster) {
-    return (
-      <div className="max-w-6xl mx-auto p-6">
+return (
+    <div className="mx-auto">
+    {!id ? (
+      <div className="text-sm text-gray-500">No cluster selected.</div>
+    ) : !cluster ? (
+      <>
         <button
           onClick={() => router.push('/dashboard/clusters')}
           className="mb-4 inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm bg-gray-100"
@@ -83,42 +78,45 @@ export function ClusterDetail({ id }: { id?: string }) {
           Back
         </button>
         <div className="text-sm text-gray-500">Cluster not found.</div>
-      </div>
-    );
-  }
+      </>
+    ) : (
+      <div className="p-8 max-w-full">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-semibold">
+              {cluster.label || 'Untitled cluster'}
+            </h2>
+          </div>
 
-  return (
-    <div className="mx-auto p-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-2xl font-semibold">
-            {cluster.label || 'Untitled cluster'}
-          </h2>
+          <button
+            onClick={() => router.push('/dashboard/clusters')}
+            className="px-3 py-2 rounded-md text-sm bg-gray-100"
+          >
+            Back to all clusters
+          </button>
         </div>
 
-        <button
-          onClick={() => router.push('/dashboard/clusters')}
-          className="px-3 py-2 rounded-md text-sm bg-gray-100"
-        >
-          Back to all clusters
-        </button>
-      </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <ClusterLabelForm
+            cluster={cluster}
+            labelDraft={labelDraft}
+            enabled={saving}
+            isPromptsVisible={isPromptsVisible}
+            onLabelDraftChange={(e) => setLabelDraft(e.target.value)}
+            onSaveLabel={saveLabel}
+            onShowPrompts={showPrompts}
+          />
+          <ClusterMetricsSummary metadata={cluster.metadata} />
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <ClusterLabelForm 
-        cluster={cluster} 
-        labelDraft={labelDraft} 
-        enabled={saving}
-        isPromptsVisible={isPromptsVisible}
-        onLabelDraftChange={(e) => setLabelDraft(e.target.value)} 
-        onSaveLabel={saveLabel}
-        onShowPrompts={showPrompts}
-        />
-        <ClusterMetricsSummary metadata={cluster.metadata}/>
+        {topPrompts.length > 0 && isPromptsVisible && (
+          <PromptsTable prompts={topPrompts} cluster={cluster} />
+        )}
       </div>
-      {(topPrompts.length > 0 && isPromptsVisible) && <PromptsTable prompts={topPrompts} cluster={cluster!}/>}
-    </div>
-  );
+    )}
+  </div>
+);
+
 }
 
 interface ClusterLabelFormPromptsProps {

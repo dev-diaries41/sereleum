@@ -54,11 +54,11 @@ export class ReveliumClient {
     return this.handleResponse(res);
   }
 
-  async getPrompts(ids?: string[], limit?: number, offset?: number, clusterId?: string): Promise<Prompt[]> {
+  async getPrompts(ids?: string[], limit?: number, offset?: number, clusterIds?: string[]): Promise<Prompt[]> {
     const url = `${this.baseUrl}${BASE_PROMPTS_ENDPOINT}`;
     const payload: GetPromptsRequest = { 
       prompt_ids: ids,
-      cluster_id: clusterId,
+      clusterIds: clusterIds,
       limit: limit, 
       offset: offset
     };
@@ -73,11 +73,11 @@ export class ReveliumClient {
     return data.prompts ?? [];
   }
 
-  async queryPrompts(query: string, limit?: number, clusterId?: string): Promise<Prompt[]> {
+  async queryPrompts(query: string, limit?: number, clusterIds?: string[]): Promise<Prompt[]> {
     const url = `${this.baseUrl}${QUERY_PROMPTS_ENDPOINT}`;
     const payload: QueryPromptsRequest = { 
       query,
-      cluster_id: clusterId,
+      clusterIds: clusterIds,
       limit: limit, 
     };
 
