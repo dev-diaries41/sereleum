@@ -29,19 +29,11 @@ const PromptsProvider = ({ children, initialClusters, initialPrompts, overview }
     const [ prompts, setPrompts ] = useState<Prompt[]>(initialPrompts);
     const [ promptsOverview, setPromptsOverview ] = useState<PromptsOverviewInfo>(overview);
 
-    // useLayoutEffect(() => {
-    //     const clusters = LocalStorage.get<Cluster[]>(StorageKeys.clusters);
-    //     if (clusters && Array.isArray(clusters) && clusters.length > 0 ) {
-    //         setClusters(clusters); 
-    //     }
-    // }, []);
-
-      useEffect(() => {
+    useEffect(() => {
         if(initialClusters.length > 0){
           LocalStorage.set(StorageKeys.clusters, JSON.stringify(initialClusters));
         }
-       
-    }, []);
+  }, []);
     
     
    
@@ -73,6 +65,7 @@ const { clusters, topClusters, prompts, promptsOverview,  setTopClusters, setClu
 
  useEffect(() => {
   setTopClusters(promptsOverview.top_clusters)
+    LocalStorage.set(StorageKeys.overview, JSON.stringify(promptsOverview));
   }, [promptsOverview])
 
 const onUpdatePrompt = async(prompt: Prompt, newClusterId: string) => {

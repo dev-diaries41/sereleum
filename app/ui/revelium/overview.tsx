@@ -73,15 +73,41 @@ export function DashboardOverview() {
   }
 
 
+const isSameOverview = (
+  a: PromptsOverviewInfo,
+  b: PromptsOverviewInfo
+): boolean => {
+  if (a.total_prompts !== b.total_prompts) return false;
+  if (a.total_clusters !== b.total_clusters) return false;
+
+  if (a.top_clusters.length !== b.top_clusters.length) return false;
+  for (let i = 0; i < a.top_clusters.length; i++) {
+    const clusterA = a.top_clusters[i];
+    const clusterB = b.top_clusters[i];
+    if (clusterA.prototype_id !== clusterB.prototype_id) return false;
+  }
+
+  const keysA = Object.keys(a.top_cluster_token_counts);
+  const keysB = Object.keys(b.top_cluster_token_counts);
+  if (keysA.length !== keysB.length) return false;
+
+  for (const key of keysA) {
+    if (a.top_cluster_token_counts[key] !== b.top_cluster_token_counts[key]) return false;
+  }
+
+  return true;
+}
+
+
   useEffect(() => {
-    if (clusteringStatus !== null) return;
+    if ( clusteringStatus !== null) return;
 
     let url: string | null = null;
+    
 
     const fetchPlot = async () => {
       const request = indexedDB.open("ClusterPlotDB", 1);
       const cachedOverview = LocalStorage.get<PromptsOverviewInfo>(StorageKeys.overview) as PromptsOverviewInfo | null;
-      const isTheSameOverview = cachedOverview?.total_prompts === overview.total_prompts;
 
       request.onupgradeneeded = () => {
         const db = request.result;
@@ -100,11 +126,12 @@ export function DashboardOverview() {
           getReq.onerror = () => resolve(undefined);
         });
 
-        if (cachedBlob && isTheSameOverview) {
+
+        if (cachedBlob && cachedOverview && isSameOverview(cachedOverview, overview)) {
           url = URL.createObjectURL(cachedBlob);
           setClusterPlotUrl(url);
-          return;
-        }
+          return
+        }        
 
         const blob = await reveliumClient.getClusterPlotBlob();
         if (blob) {
@@ -227,11 +254,11 @@ export function DashboardOverview() {
             <ClustersPlot url={clusterPlotUrl}/>
           </div>
           <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <TopClustersDetails topClusters={overview.top_clusters} isViewAllVisible ={clusters.length > overview.top_clusters.length } onViewAllClusters={goToClustersPage}/>
+            <TopClustersDetails topClusters={topClusters} isViewAllVisible ={clusters.length > topClusters.length } onViewAllClusters={goToClustersPage}/>
           </div>
            <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 my-6">
-            {overview.top_clusters.length > 0 && <NumberPromptsPerClusterChart clusters={overview.top_clusters} loading ={false}/>}
-            {overview.top_clusters.length > 0 && <TokenUsageByClusterChart overview={overview} loading ={false}/>}
+            {topClusters.length > 0 && <NumberPromptsPerClusterChart clusters={topClusters} loading ={false}/>}
+            {topClusters.length > 0 && <TokenUsageByClusterChart overview={overview} loading ={false}/>}
           </div>
         </div>
       </div>
