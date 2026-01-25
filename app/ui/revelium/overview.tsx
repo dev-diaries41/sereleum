@@ -230,8 +230,8 @@ export function DashboardOverview() {
             <TopClustersDetails topClusters={overview.top_clusters} isViewAllVisible ={clusters.length > overview.top_clusters.length } onViewAllClusters={goToClustersPage}/>
           </div>
            <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 my-6">
-            <NumberPromptsPerClusterChart clusters={overview.top_clusters} loading ={false}/>
-            <TokenUsageByClusterChart overview={overview} loading ={false}/>
+            {overview.top_clusters.length > 0 && <NumberPromptsPerClusterChart clusters={overview.top_clusters} loading ={false}/>}
+            {overview.top_clusters.length > 0 && <TokenUsageByClusterChart overview={overview} loading ={false}/>}
           </div>
         </div>
       </div>
