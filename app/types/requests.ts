@@ -58,9 +58,6 @@ export interface PromptsPayload {
   prompts: Prompt[];
 }
 
-export interface ClusterIdParam {
-  cluster_id: string;
-}
 
 export interface AddPromptsRequest extends PromptsPayload {}
 
@@ -68,14 +65,14 @@ export interface AddPromptsResponse extends JobReceipt {}
 
 export interface GetPromptsRequest {
   prompt_ids?: string[];
-  cluster_id?: string;
+  clusterIds?: string[];
   limit?: number;
   offset?: number
 }
 
 export interface QueryPromptsRequest {
   query: string;
-  cluster_id?: string;
+  clusterIds?: string[];
   limit?: number;
 }
 
