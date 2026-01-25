@@ -78,8 +78,8 @@ export function ClustersWrapper({ pageSize = 10 }: ClustersWrapperProps) {
 
     try {
       const updatedClusters = await reveliumClient.mergeClusters(payload);
-      setClusters(prev => prev.filter( cluster => cluster.prototype_id !== updatedClusters[0].prototype_id))
-      setTopClusters(prev => prev.filter( cluster => cluster.prototype_id !== updatedClusters[0].prototype_id))
+      setClusters(prev => [updatedClusters[0], ...prev.filter(cluster => targetClusters.some( t => t === cluster.prototype_id))])
+      setTopClusters(prev => [updatedClusters[0], ...prev.filter(cluster => targetClusters.some( t => t === cluster.prototype_id))])
       clearSelection();
       setIsSelecting(false);
     } catch (err) {
