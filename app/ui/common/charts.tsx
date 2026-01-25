@@ -18,14 +18,6 @@ export function ChartDisplay({
   loading,
   onRemoveChart,
 }: ChartDisplayProps) {
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-2">
-        <p>Loading chart data...</p>
-        <LoadingIndicator />
-      </div>
-    );
-  }
 
   useEffect(() => {
     const Plotly = require("plotly.js-dist-min");
@@ -51,6 +43,12 @@ export function ChartDisplay({
 
   return (
     <div className="relative w-full h-full overflow-hidden rounded-2xl">
+      {loading && (
+        <div className="flex flex-col items-center justify-center gap-2 absolute inset-0 z-10 bg-white/50">
+          <p>Loading chart data...</p>
+          <LoadingIndicator />
+        </div>
+      )}
       <div id={chartId} className="w-full h-full" />
       {onRemoveChart && (
         <button

@@ -2,7 +2,12 @@
 import { useMemo } from "react";
 import { Data, Layout } from "plotly.js-dist-min";
 import { PromptsOverviewInfo, UNLABELLED_CLUSTER } from "@/app/types";
-import { ChartDisplay } from "../../common/charts";
+import dynamic from "next/dynamic";
+
+const ChartDisplay = dynamic(
+  () => import("@/app/ui/common/charts").then(mod => mod.ChartDisplay),
+  { ssr: false }
+);
 
 interface TokenUsageByClusterChartProps {
   overview: PromptsOverviewInfo;
