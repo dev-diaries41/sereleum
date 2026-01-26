@@ -1,4 +1,5 @@
 import {  SectionItem } from '@/app/types';
+import { faMoneyBill } from '@fortawesome/free-solid-svg-icons';
 
 export const Features: SectionItem[] = [
   {
@@ -27,35 +28,43 @@ export const Features: SectionItem[] = [
   },
 ];
 
+import { 
+  faUsers, 
+  faMagic, 
+  faCog, 
+  faProjectDiagram 
+} from "@fortawesome/free-solid-svg-icons";
+
 export const UseCases: SectionItem[] = [
   {
     title: "Use Case Segmentation & Discoverability",
     description:
       "Understand how users actually interact with your product by surfacing dominant intents and workflows.",
-    image: "/use_case_segmentation.png",
+    icon: faUsers,
   },
   {
     title: "Prompt Template Optimization",
     description:
       "Design and refine prompt templates based on real user behavior in high-volume clusters.",
-    image: "/use_case_segmentation.png",
+    icon: faMagic,
   },
   {
     title: "System Prompt Refinement",
     description:
       "Align system-level behavior with observed user demand rather than assumptions.",
-    image: "/use_case_segmentation.png",
+    icon: faCog,
   },
   {
     title: "Cost & Efficiency Optimization",
     description:
       "Identify expensive workflows and reduce LLM spend through targeted prompt standardization.",
-    image: "/use_case_segmentation.png",
+    icon: faMoneyBill,
   },
   {
     title: "From Chat to Product Workflows",
     description:
       "Turn repeated free-form prompts into reliable, structured product experiences.",
-    image: "/use_case_segmentation.png",
+    icon: faProjectDiagram,
   },
 ];
+

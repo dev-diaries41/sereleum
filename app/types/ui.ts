@@ -147,6 +147,7 @@ export interface SectionItem {
   title: string;
   description: string;
   image?: string
+  icon?: IconProp
 }
 export interface FeatureProps extends SectionItem {
 }

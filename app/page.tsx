@@ -122,7 +122,7 @@ const UseCasesSection = () => (
       index={idx}
       title={uc.title}
       description={uc.description}
-      image={uc.image}
+      icon={uc.icon}
     />
   ))}
 </div>
