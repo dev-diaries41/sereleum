@@ -149,9 +149,9 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
               setIsSelecting((s) => !s);
               if (isSelecting) clearSelection();
             }}
-            className={`px-4 py-2 rounded-md text-sm border ${isSelecting ? "bg-gray-900 text-white" : "bg-white text-gray-700"}`}
+            className={`px-4 py-2 rounded-md text-sm border-2 border-indigo-600`}
           >
-            {isSelecting ? "Selecting..." : "Select clusters"}
+           Manage clusters
           </button>
         </div>
       </div>
