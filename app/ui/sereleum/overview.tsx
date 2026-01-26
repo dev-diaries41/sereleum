@@ -206,7 +206,7 @@ function TopClustersDetails({topN = 5, topClusters, isViewAllVisible, onViewAllC
         <div className="mt-4 flex items-center justify-between">
           <div className="text-xs text-gray-500">Cluster separation and similarity help you understand cluster cohesion</div>
           { isViewAllVisible &&  <button
-            className="text-sm text-indigo-600"
+            className="text-sm text-indigo-600 hover:underline"
             onClick={onViewAllClusters}
           >
             View all clusters
