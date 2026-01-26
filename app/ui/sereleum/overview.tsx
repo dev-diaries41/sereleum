@@ -131,7 +131,7 @@ function ClustersPlot({url}: ClustersPlotProps){
         <div className="border border-gray-300 rounded-2xl shadow-sm p-4 h-full flex flex-col">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h4 className="text-sm text-gray-500 mb-3">Cluster Plot</h4>
+              <h4 className="text-sm text-gray-500 mb-3 font-semibold">Cluster Plot</h4>
               <p className="text-xs text-gray-500">2D visualization of prompt clusters</p>
             </div>
           </div>
@@ -170,7 +170,7 @@ function TopClustersDetails({topN = 5, topClusters, isViewAllVisible, onViewAllC
     <div className="lg:col-span-3 border border-gray-300 rounded-2xl shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-sm text-gray-500">{`Top ${topN} Clusters`}</h3>
+            <h3 className="text-sm text-gray-500 font-semibold">{`Top ${topN} Clusters`}</h3>
           </div>
             <FontAwesomeIcon
             icon={faLayerGroup}

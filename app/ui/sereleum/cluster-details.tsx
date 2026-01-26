@@ -137,10 +137,10 @@ function ClusterLabelForm({
   onLabelDraftChange}: ClusterLabelFormPromptsProps
 ){
   return (
-  <div className="relative lg:col-span-2 bg-white border border-gray-300 rounded-2xl shadow-sm p-6 flex flex-col h-full">
+  <div className="relative lg:col-span-2 border border-gray-300 rounded-2xl shadow-sm p-6 flex flex-col h-full">
   {/* Header */}
   <div className="mb-4">
-    <h3 className="text-lg font-semibold">Manage cluster label</h3>
+    <h3 className="text-lg font-medium">Manage cluster label</h3>
     <p className="text-sm text-gray-500">
   Clusters are automatically labeled when possible. You can optionally edit the label below. Use the "Show sample prompts" button to see what this cluster contains.
     </p>
@@ -209,9 +209,9 @@ function ClusterMetricsSummary({metadata, title = "Cluster metrics"}: {metadata:
   const cohesionPercent = Math.round((mean_similarity ?? 0) * 100);
 
   return (
-  <aside className="bg-white border border-gray-300 rounded-2xl shadow-sm p-6">
+  <aside className="border border-gray-300 rounded-2xl shadow-sm p-6">
     <div className="space-y-4">
-      <h4 className="text-sm font-semibold mb-4">{title}</h4>
+      <h4 className="text-sm text-gray-500 font-semibold mb-4">{title}</h4>
 
         <MetricsItem
           label="Cohesion (mean)"
@@ -250,14 +250,14 @@ function ClusterMetricsSummary({metadata, title = "Cluster metrics"}: {metadata:
 
 function PromptsTable({ prompts, cluster }: { prompts: Prompt[], cluster: Cluster }) {
   return (
-    <div className="overflow-x-auto w-full bg-white mt-8">
-      <table className="table-auto border-collapse border border-gray-300 w-full text-sm md:text-base">
+      <div className="overflow-x-auto border-collapse border border-gray-300 w-full rounded-2xl mt-8">
+        <table className="table-fixed w-full border-collapse border border-gray-300 text-sm md:text-base">
         <thead>
-          <tr className="uppercase text-sm">
-            <th className="border px-4 py-2 text-left">Prompt ID</th>
-            <th className="border px-4 py-2 text-left">Cluster</th>
-            <th className="border px-4 py-2 text-left w-[120px]">Label</th>
-            <th className="border px-4 py-2 text-left">Content</th>
+          <tr className=" bg-gray-100 text-sm text-gray-500">
+            <th className="border border-gray-300 px-4 py-2 text-left">Prompt ID</th>
+            <th className="border border-gray-300 px-4 py-2 text-left">Cluster</th>
+            <th className="border border-gray-300px-4 py-2 text-left w-[120px]">Label</th>
+            <th className="border border-gray-300 px-4 py-2 text-left">Content</th>
           </tr>
         </thead>
         <tbody>
@@ -268,19 +268,19 @@ function PromptsTable({ prompts, cluster }: { prompts: Prompt[], cluster: Cluste
                 key={prompt.prompt_id}
                 className="hover:bg-gray-50 transition-all duration-200"
               >
-                <td className="border px-4 py-2">{prompt.prompt_id}</td>
-                <td className="border px-4 py-2">
+                <td className="border border-gray-300 px-4 py-2">{prompt.prompt_id}</td>
+                <td className="border border-gray-300 px-4 py-2">
                   <span>{clusterId}</span>
                 </td>
                 <td
-                  className="border px-4 py-2 w-1/6"
+                  className="border border-gray-300 px-4 py-2 w-1/6"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <span className="w-full px-2 py-1 text-sm border rounded">
                     {cluster.label}
                   </span>
                 </td>
-                <td className="border px-4 py-2">{prompt.content}</td>
+                <td className="border border-gray-300 px-4 py-2">{prompt.content}</td>
               </tr>
             );
           })}

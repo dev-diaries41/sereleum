@@ -18,11 +18,11 @@ export function OverviewSummary({ overview }: OverviewSummaryProps) {
       {/* Totals */}
       <div className="flex items-center gap-12">
         <div>
-          <p className="text-sm text-gray-500">Total Prompts</p>
+          <p className="text-sm text-gray-500 font-semibold">Total Prompts</p>
           <p className="text-3xl font-extrabold">{overview.total_prompts}</p>
         </div>
         <div>
-          <p className="text-sm text-gray-500">Total Clusters</p>
+          <p className="text-sm text-gray-500 font-semibold">Total Clusters</p>
           <p className="text-3xl font-extrabold">{overview.total_clusters}</p>
         </div>
       </div>
@@ -31,7 +31,7 @@ export function OverviewSummary({ overview }: OverviewSummaryProps) {
 
       {/* Token breakdown */}
       <div>
-        <p className="text-sm text-gray-700 mb-3">
+        <p className="text-sm text-gray-500 mb-3 font-semibold">
           Token Breakdown (Top 5 Clusters)
         </p>
 
