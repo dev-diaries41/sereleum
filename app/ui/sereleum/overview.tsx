@@ -164,55 +164,57 @@ interface TopClustersDetailsProps {
   isViewAllVisible: boolean;
   onViewAllClusters: () => void;
 }
-
-function TopClustersDetails({topN = 5, topClusters, isViewAllVisible, onViewAllClusters }: TopClustersDetailsProps){
+function TopClustersDetails({ topN = 5, topClusters, isViewAllVisible, onViewAllClusters }: TopClustersDetailsProps) {
   return (
     <div className="lg:col-span-3 border border-gray-300 rounded-2xl shadow-sm p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-sm text-gray-500 font-semibold">{`Top ${topN} Clusters`}</h3>
-          </div>
-            <FontAwesomeIcon
-            icon={faLayerGroup}
-            className="w-6 h-6 opacity-50"
-          />
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h3 className="text-sm text-gray-500 font-semibold">{`Top ${topN} Clusters`}</h3>
         </div>
+        <FontAwesomeIcon
+          icon={faLayerGroup}
+          className="w-6 h-6 opacity-50"
+        />
+      </div>
 
-        <div className="flex flex-col gap-2">
-          {topClusters.length === 0 ? (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <p className="text-sm font-medium text-gray-400">
-                No clusters yet
-              </p>
-              <p className="text-xs text-gray-400 mt-1">
-                Top cluster will be shown once prompts added
-              </p>
-            </div>
+      {topClusters.length === 0 ? (
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-sm font-medium text-gray-400">No clusters yet</p>
+            <p className="text-xs text-gray-400 mt-1">
+              Top cluster will be shown once prompts added
+            </p>
           </div>
-          ) : (
-            topClusters.map((cluster, i) => 
-              <Link
-                  key={cluster.prototype_id}
-                  href={`/dashboard/clusters/cluster/${cluster.prototype_id}`}
-                  className="block"
-                >
-                  <ClusterRow cluster={cluster} />
-              </Link>
-          )
-          )}
         </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+          {topClusters.map((cluster) => (
+            <Link
+              key={cluster.prototype_id}
+              href={`/dashboard/clusters/cluster/${cluster.prototype_id}`}
+              className="w-full"
+            >
+              <div className="w-full">
+                <ClusterRow cluster={cluster} />
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
 
-        <div className="mt-4 flex items-center justify-between">
-          <div className="text-xs text-gray-500">Cluster separation and similarity help you understand cluster cohesion</div>
-          { isViewAllVisible &&  <button
+      <div className="mt-4 flex items-center justify-between">
+        <div className="text-xs text-gray-500">
+          Cluster separation and similarity help you understand cluster cohesion
+        </div>
+        {isViewAllVisible && (
+          <button
             className="text-sm text-indigo-600 hover:underline"
             onClick={onViewAllClusters}
           >
             View all clusters
           </button>
-          }              
-        </div>
+        )}
       </div>
-  )
+    </div>
+  );
 }
