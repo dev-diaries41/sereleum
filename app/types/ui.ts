@@ -31,7 +31,7 @@ export interface NavItemsProps {
 
 export interface LogoProps {
   src: string;
-  name: string;
+  name?: string;
   alt?: string;
   width?:  number | `${number}`;
   height?:  number | `${number}`;

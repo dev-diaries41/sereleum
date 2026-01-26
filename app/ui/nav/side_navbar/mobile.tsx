@@ -40,7 +40,6 @@ onToggleMenu
           <Logo
               src={'/smartscan-logo.png'}
               alt={'logo'}
-              name="Sereleum"
             />
           </Link>
           <div className='flex flex-row justify-end items-center ml-auto'>

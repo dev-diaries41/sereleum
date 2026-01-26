@@ -18,7 +18,7 @@ export default function Logo({
             height={height}
             // className="relative w-10 h-10"
           />
-        <h1 className='w-full mr-4 text-2xl font-bold'>{name}</h1>
+        {name && <h1 className='w-full mr-4 text-2xl font-bold'>{name}</h1>}
     </div>
   );
 };

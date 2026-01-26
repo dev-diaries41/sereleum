@@ -41,7 +41,6 @@ export default React.memo(function SideNav({ email, credits }: SideNavProps) {
           <Logo
             src={'/smartscan-logo.png'}
             alt={'logo'}
-            name="Sereleum"
           />
         </Link>
         <div className='flex h-full flex-col justify-between'>
