@@ -1,199 +1,37 @@
 'use client';
 
-import {  Cluster, PromptsOverviewInfo, Status } from '@/app/types';
-import  { useEffect, useRef, useState } from 'react';
+import {  Cluster } from '@/app/types';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose, faLayerGroup, faLightbulb, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faLayerGroup, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import FileUploader from '../common/upload';
-import {  AcceptedMimes, StorageKeys } from '@/app/constants/global';
-import { reveliumClient } from '@/app/revelium/client';
+import {  AcceptedMimes } from '@/app/constants/global';
 import { ClusterRow } from './cluster-row';
-import { usePrompts } from '@/app/providers/prompts';
-import { useRouter } from 'next/navigation';
+import { useDashboard } from '@/app/providers/prompts';
 import Link from 'next/link';
 import { ProgressTrackerPopUp } from '../common/progress-tracker';
-import * as LocalStorage from "@/app/lib/client/storage/local"
 import { OverviewSummary } from './overview-summary';
 import { TokenUsageByClusterChart } from './charts/cluster-tokens';
 import { NumberPromptsPerClusterChart } from './charts/cluster-density';
 
 
 export function DashboardOverview() {
-  const [promptsFile, setPromptsFile] = useState<File | null>(null)
-  const { clusters, setClusters, topClusters,promptsOverview: overview, updatePromptsOverview} = usePrompts()
-  const [clusterPlotUrl, setClusterPlotUrl] = useState<string | null>(null);
-  const [progress, setProgress] = useState<number>(0);
-  const [indexingStatus, setIndexingStatus] = useState<Status|null>(null);
-  const [clusteringStatus, setClusteringStatus] = useState<Status|null>(null);
-  const [trackerMinimized, setTrackerMinimized] = useState(false);
-  const router = useRouter();
+  const {
+    progress, 
+    indexingStatus, 
+    clusteringStatus, 
+    clusterPlotUrl, 
+    topClusters, 
+    promptsOverview: overview, 
+    trackerMinimized, 
+    promptsFile,
+    isViewAllVisible,  
+    handleFileUpload, 
+    goToClustersPage, 
+    updateTrackerVisibility, 
+    updatePromptsFile
+  } = useDashboard()
 
-  const handleTrackIndexProgress = (jobId: string) => {
-      const eventSource = reveliumClient.trackPromptsIndexProgress(jobId, {
-        onProgress: (p) => {
-          setProgress(p)
-        },
-        onComplete: async() => {
-          LocalStorage.remove(StorageKeys.indexingJobId)
-          setIndexingStatus("complete")
-          const clusterJobId = "cluster_job_status" // DEV ONLY
-          handleTrackClusteringStatus(clusterJobId)
-        },
-        onFail: (e) => {
-          setIndexingStatus("failed")
-          LocalStorage.remove(StorageKeys.indexingJobId)
-          alert(e)
-        },
-        onActive: () => setIndexingStatus('active'),
-      })
-  }
-
-  const handleTrackClusteringStatus = (jobId: string) => {
-    setClusteringStatus('queued')
-    const eventSource = reveliumClient.trackPromptsClusterStatus(jobId, {
-      onComplete: async() => {
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        const promptOverview = await reveliumClient.getPromptsOverview();
-        const clusters = await reveliumClient.getClusters()
-        updatePromptsOverview(promptOverview)
-        setClusters(clusters)
-        setClusteringStatus("complete")
-      },
-      onFail: (e) => {
-        setClusteringStatus("failed")
-        alert(e)
-      },
-      onActive: () => setClusteringStatus('active'),
-    })
-  }
-
-  const goToClustersPage = () => {
-     router.push('/dashboard/clusters');
-  }
-
-
-const isSameOverview = (
-  a: PromptsOverviewInfo,
-  b: PromptsOverviewInfo
-): boolean => {
-  if (a.total_prompts !== b.total_prompts) return false;
-  if (a.total_clusters !== b.total_clusters) return false;
-
-  if (a.top_clusters.length !== b.top_clusters.length) return false;
-  for (let i = 0; i < a.top_clusters.length; i++) {
-    const clusterA = a.top_clusters[i];
-    const clusterB = b.top_clusters[i];
-    if (clusterA.prototype_id !== clusterB.prototype_id) return false;
-  }
-
-  const keysA = Object.keys(a.top_cluster_token_counts);
-  const keysB = Object.keys(b.top_cluster_token_counts);
-  if (keysA.length !== keysB.length) return false;
-
-  for (const key of keysA) {
-    if (a.top_cluster_token_counts[key] !== b.top_cluster_token_counts[key]) return false;
-  }
-
-  return true;
-}
-
-
-  useEffect(() => {
-    if ( clusteringStatus !== null) return;
-
-    let url: string | null = null;
-    
-
-    const fetchPlot = async () => {
-      const request = indexedDB.open("ClusterPlotDB", 1);
-      const cachedOverview = LocalStorage.get<PromptsOverviewInfo>(StorageKeys.overview) as PromptsOverviewInfo | null;
-
-      request.onupgradeneeded = () => {
-        const db = request.result;
-        if (!db.objectStoreNames.contains("plots")) {
-          db.createObjectStore("plots");
-        }
-      };
-
-      request.onsuccess = async () => {
-        const db = request.result;
-        const tx = db.transaction("plots", "readonly");
-        const store = tx.objectStore("plots");
-        const cachedBlob = await new Promise<Blob | undefined>((resolve) => {
-          const getReq = store.get("clusterPlot");
-          getReq.onsuccess = () => resolve(getReq.result);
-          getReq.onerror = () => resolve(undefined);
-        });
-
-
-        if (cachedBlob && cachedOverview && isSameOverview(cachedOverview, overview)) {
-          url = URL.createObjectURL(cachedBlob);
-          setClusterPlotUrl(url);
-          return
-        }        
-
-        const blob = await reveliumClient.getClusterPlotBlob();
-        if (blob) {
-          LocalStorage.set(StorageKeys.overview, JSON.stringify(overview));
-          url = URL.createObjectURL(blob);
-          setClusterPlotUrl(url);
-
-          const txWrite = db.transaction("plots", "readwrite");
-          txWrite.objectStore("plots").put(blob, "clusterPlot");
-        }
-      };
-
-      request.onerror = (e) => console.error("IndexedDB error", e);
-    };
-
-    fetchPlot();
-
-    return () => {
-      if (url) URL.revokeObjectURL(url);
-    };
-  }, [clusteringStatus]);
-
-
-
-  useEffect(() => {
-    if(indexingStatus === "complete" || indexingStatus === "failed"){
-      setTimeout(()=>{
-        setIndexingStatus(null)
-        setProgress(0)
-        setTrackerMinimized(false)
-      }, 750
-)
-    }
-  }, [indexingStatus])
-
-
-  useEffect(() => {
-    if(clusteringStatus === "complete" || clusteringStatus === "failed"){
-      setTimeout(()=>{
-        setClusteringStatus(null)
-        setTrackerMinimized(false)
-      }, 1000
-)
-    }
-  }, [clusteringStatus])
-
-
-  useEffect(() => {
-    const jobId = LocalStorage.get<string>(StorageKeys.indexingJobId)
-    if(jobId){
-      handleTrackIndexProgress(jobId)
-    }
-  }, [])
-
-  const handleFileUpload = async() => {
-    if(!promptsFile) return
-    const res = await reveliumClient.addPromptsFile(promptsFile)
-    setPromptsFile(null)
-    setIndexingStatus(res.status)
-    LocalStorage.set(StorageKeys.indexingJobId, res.job_id)
-    handleTrackIndexProgress(res.job_id)
-  }
 
   return (
     <div className="flex-1 max-w-7xl mx-auto w-full">
@@ -208,7 +46,7 @@ const isSameOverview = (
            <div className="flex flex-row gap-3 items-center">
             {((indexingStatus === "active") || (clusteringStatus === "active")) && trackerMinimized && (
               <button
-                onClick={() => setTrackerMinimized(false)}
+                onClick={() => updateTrackerVisibility(false)}
                 className="flex items-center justify-center px-4"
                 aria-label="Show indexing progress"
               >
@@ -228,7 +66,7 @@ const isSameOverview = (
                   </button>
                 ) : (
                   <FileUploader
-                    onFileUpload={(files) => setPromptsFile(files[0])}
+                    onFileUpload={(files) => updatePromptsFile(files[0])}
                     acceptedMimes={AcceptedMimes}
                   >
                     <span className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow-md">
@@ -240,7 +78,7 @@ const isSameOverview = (
           
               {promptsFile && (
                 <div className='flex flex-row gap-2 items-center'>
-                  <button onClick={() => setPromptsFile(null)}>
+                  <button onClick={() => updatePromptsFile(null)}>
                     <FontAwesomeIcon icon={faClose} className="w-4 h-4 text-red-700" />
                   </button>
                   <p>{promptsFile.name}</p>
@@ -254,7 +92,7 @@ const isSameOverview = (
             <ClustersPlot url={clusterPlotUrl}/>
           </div>
           <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <TopClustersDetails topClusters={topClusters} isViewAllVisible ={clusters.length > topClusters.length } onViewAllClusters={goToClustersPage}/>
+            <TopClustersDetails topClusters={topClusters} isViewAllVisible ={isViewAllVisible } onViewAllClusters={goToClustersPage}/>
           </div>
            <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 my-6">
             {topClusters.length > 0 && <NumberPromptsPerClusterChart clusters={topClusters} loading ={false}/>}
@@ -267,7 +105,7 @@ const isSameOverview = (
           status={indexingStatus} 
           title={"Indexing prompts"}
           minimized = {trackerMinimized}
-          onMinimize={() => setTrackerMinimized(true)}
+          onMinimize={() => updateTrackerVisibility(true)}
           />
           }
 
@@ -276,7 +114,7 @@ const isSameOverview = (
           title={"Clustering prompts"}
           minimized = {trackerMinimized}
           description="Clustering is in progress. This may take a while depending on the number of prompts."
-          onMinimize={() => setTrackerMinimized(true)}
+          onMinimize={() => updateTrackerVisibility(true)}
           />
         }
     </div>
