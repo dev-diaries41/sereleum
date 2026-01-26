@@ -34,7 +34,7 @@ export function DashboardOverview() {
 
 
   return (
-    <div className="flex-1 max-w-7xl mx-auto w-full">
+    <div className="flex-1 mx-auto w-full">
       <div className="w-full flex flex-col mx-auto px-4">
         <div className="flex flex-col w-full min-h-screen items-center py-8 pt-24 lg:pt-8">
 
@@ -131,7 +131,7 @@ function ClustersPlot({url}: ClustersPlotProps){
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4 h-full flex flex-col">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h4 className="text-sm font-semibold">Cluster Plot</h4>
+              <h4 className="text-sm text-gray-500 mb-3">Cluster Plot</h4>
               <p className="text-xs text-gray-500">2D visualization of prompt clusters</p>
             </div>
           </div>
@@ -159,17 +159,18 @@ function ClustersPlot({url}: ClustersPlotProps){
 }
 
 interface TopClustersDetailsProps {
+  topN?: number;
   topClusters: Cluster[];
   isViewAllVisible: boolean;
   onViewAllClusters: () => void;
 }
 
-function TopClustersDetails({topClusters, isViewAllVisible, onViewAllClusters }: TopClustersDetailsProps){
+function TopClustersDetails({topN = 5, topClusters, isViewAllVisible, onViewAllClusters }: TopClustersDetailsProps){
   return (
     <div className="lg:col-span-3 bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-lg font-semibold">Top Clusters</h3>
+            <h3 className="text-sm text-gray-500">{`Top ${topN} Clusters`}</h3>
           </div>
             <FontAwesomeIcon
             icon={faLayerGroup}

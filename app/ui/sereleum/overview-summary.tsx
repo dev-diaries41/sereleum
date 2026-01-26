@@ -31,7 +31,7 @@ export function OverviewSummary({ overview }: OverviewSummaryProps) {
 
       {/* Token breakdown */}
       <div>
-        <p className="text-sm font-semibold text-gray-700 mb-3">
+        <p className="text-sm text-gray-700 mb-3">
           Token Breakdown (Top 5 Clusters)
         </p>
 
@@ -65,7 +65,7 @@ export function OverviewSummary({ overview }: OverviewSummaryProps) {
                     : cluster.label}
                 </p>
 
-                <div className="flex gap-6 text-sm font-medium">
+                <div className="flex gap-6 text-gray-500 text-sm">
                   <span>{clusterTokens.toLocaleString()}</span>
                   <span>{percentage}%</span>
                 </div>

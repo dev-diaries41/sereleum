@@ -48,8 +48,12 @@ export function NumberPromptsPerClusterChart({
         text: "Number of prompts per cluster",
         x: 0.5,
         xanchor: "center",
+        font: {
+      size: 16,       
+      weight: 600,
     },
-    margin: { t: 48, l: 60, r: 20, b: 80 },
+    },
+    margin: { t: 70, l: 60, r: 20, b: 80 },
     xaxis: {
         title: { text: "Cluster" },
         tickangle: -30,
