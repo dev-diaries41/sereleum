@@ -45,7 +45,7 @@ export default React.memo(function SideNav({ email, credits }: SideNavProps) {
         </Link>
         <div className='flex h-full flex-col justify-between'>
           <NavLinks navItems={topSidebarLinks} />
-          <div className="flex-1 max-h-[60vh] overflow-y-auto custom-scrollbar pb-24">
+          <div className="flex-1 max-h-[60vh] overflow-y-auto custom-scrollbar pb-24 mt-4">
              <ClusterListSideNavWrapper clusters={topClusters}  onDelete={(id) => {
               if (window.confirm("Are you sure you want to delete this item?")) {
                 // existing delete logic here

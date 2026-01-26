@@ -10,7 +10,7 @@ interface DropDownMenuProps {
 }
 
 export default function DropDownMenu({ title, children, icon }: DropDownMenuProps) {
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(true);
 
     const toggleExpand = () => {
         setIsExpanded(!isExpanded);
@@ -21,10 +21,10 @@ export default function DropDownMenu({ title, children, icon }: DropDownMenuProp
             <div className="w-full flex items-center cursor-pointer gap-2" onClick={toggleExpand}>
             <div className='flex flex-row items-center justify-center gap-2 opacity-80'>
                 { icon && <FontAwesomeIcon icon={icon} className='w-6 h-6'/>}
-                <h2 className="text-sm">{title}</h2>
+                <h2 className="text-sm text-gray-500">{title}</h2>
             </div>
-                <button className="text-sm">
-                    {isExpanded ? (<FontAwesomeIcon icon={faChevronDown} className='w-2 h-2 opacity-80'/>) : <FontAwesomeIcon icon={faChevronRight} className='w-2 h-2 opacity-80 '/>}
+                <button className="text-sm text-gray-500">
+                    {!isExpanded&& <FontAwesomeIcon icon={faChevronRight} className='w-2 h-2 opacity-80 '/>}
                 </button>
             </div>
             {isExpanded && (
