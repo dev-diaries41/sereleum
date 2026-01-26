@@ -3,7 +3,7 @@
 import { usePrompts } from "@/app/providers/prompts";
 import { sereleumClient } from "@/app/sereleum/client";
 import { Cluster, ClusterMetadata, Prompt } from "@/app/types";
-import { faCheck, faFlask, faTag } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faTag } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
@@ -90,7 +90,7 @@ return (
 
           <button
             onClick={() => router.push('/dashboard/clusters')}
-            className="px-3 py-2 rounded-md text-sm bg-gray-100"
+            className="text-sm text-indigo-600 hover:underline"
           >
             Back to all clusters
           </button>
