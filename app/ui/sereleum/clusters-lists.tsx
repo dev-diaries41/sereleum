@@ -1,7 +1,6 @@
 "use client";
 
 import { usePrompts } from "@/app/providers/prompts";
-import Link from "next/link";
 import { ClusterAccuracyPlayground } from "./cluster-accuracy";
 import { useEffect, useState } from "react";
 import { ClusterAccuracy, Cluster, UNLABELLED_CLUSTER } from "@/app/types";
@@ -12,8 +11,8 @@ interface ClustersWrapperProps {
   pageSize?: number;
 }
 
-export function ClustersWrapper({ pageSize = 10 }: ClustersWrapperProps) {
-  const { clusters, promptsOverview, topClusters, setTopClusters, setClusters, onLoadMoreClusters } = usePrompts();
+export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
+  const { clusters, promptsOverview, setTopClusters, setClusters, onLoadMoreClusters } = usePrompts();
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<ClusterAccuracy | null>(null);
   const [selectedClusterIds, setSelectedClusterIds] = useState<string[]>([]);
