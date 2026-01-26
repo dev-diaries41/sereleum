@@ -25,25 +25,24 @@ export default function Footer() {
           {/* Large responsive footer text with dots clipped to the letters */}
           <div className="w-full flex justify-center py-12 overflow-hidden relative">
             <h1 className="font-extrabold text-center text-[6rem] sm:text-[8rem] md:text-[12rem] lg:text-[16rem] leading-none select-none pointer-events-none max-w-full break-words relative z-10">
-              <span
-                className="relative z-10 block"
-                style={{
-                  // two-layer background: top = dot pattern, bottom = gradient color
-                  backgroundImage: `
-                    radial-gradient(circle, rgba(0,0,0,0.18) 1px, transparent 1px),
-                    linear-gradient(to bottom, #34d399, #8b5cf6)
-                  `,
-                  // size: first value controls dot spacing, second fills the text
-                  backgroundSize: '20px 20px, 100% 100%',
-                  backgroundPosition: '0 0, 0 0',
-                  WebkitBackgroundClip: 'text',
-                  backgroundClip: 'text',
-                  color: 'transparent',
-                  textShadow: '0 2px 4px rgba(0,0,0,0.15)'
-                }}
-              >
-                SERELEUM
-              </span>
+             <span
+  className="relative z-10 block"
+  style={{
+    backgroundImage: `
+      radial-gradient(circle, rgba(0,0,0,0.18) 1px, transparent 1px),
+      linear-gradient(to right, #4f46e5, #a78bfa, #818cf8)
+    `,
+    backgroundSize: '20px 20px, 100% 100%',
+    backgroundPosition: '0 0, 0 0',
+    WebkitBackgroundClip: 'text',
+    backgroundClip: 'text',
+    color: 'transparent',
+    textShadow: '0 2px 4px rgba(0,0,0,0.15)'
+  }}
+>
+  SERELEUM
+</span>
+
             </h1>
           </div>
         </>

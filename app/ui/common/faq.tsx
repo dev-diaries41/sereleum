@@ -4,56 +4,58 @@ import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faqData } from '@/app/constants/content/faq';
 
-export default function Faq(){
+export default function Faq({ faq }: { faq: { question: string; answer: string[] }[] }) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   const handleToggle = (index: number) => {
-    if (expandedIndex === index) {
-      setExpandedIndex(null);
-    } else {
-      setExpandedIndex(index);
-    }
+    setExpandedIndex(expandedIndex === index ? null : index);
   };
-  
 
   return (
-    <div className="max-w-7xl mx-auto flex flex-col gap-12">
-      <div className="flex flex-col text-center basis-1/2">
-        <h1 className="ttext-center text-4xl mb-4 px-3 font-bold">
-          Frequently Asked Questions
-        </h1>
-       
-      </div>
-      <ul className="basis-1/2 bg-gray-800 rounded-md p-4">
-        {faqData.map((item, index) => (
-          <li key={index}>
-            <button
-              className="relative flex gap-2 items-center w-full py-5 text-base font-semibold text-left border-t md:text-lg border-base-content/10"
-              aria-expanded={expandedIndex === index}
-              onClick={() => handleToggle(index)}
+    <section className="w-full py-24 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-6 flex flex-col gap-12">
+        <div className="flex flex-col text-center">
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-gray-900 tracking-tight">
+            Still have questions?
+          </h2>
+      
+        </div>
+
+        <ul className="flex flex-col gap-4">
+          {faq.map((item, index) => (
+            <li
+              key={index}
+              className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-gray-200"
             >
-              <span className="flex-1 text-base-content">{item.question}</span>
-              <FontAwesomeIcon
-                icon={expandedIndex === index ? faChevronUp : faChevronDown}
-                className="w-4 h-4 ml-auto text-base-content"
-              />
-            </button>
-            <div
-              className="transition-all duration-300 ease-in-out opacity-80 overflow-hidden"
-              style={{
-                maxHeight: expandedIndex === index ? '100%' : '0',
-                opacity: expandedIndex === index ? '1' : '0',
-              }}
-            >
-              <div className="pb-5 leading-relaxed">
-                {item.answer.map((paragraph, idx) => (
-                  <p key={idx}>{paragraph}</p>
-                ))}
+              <button
+                className={`w-full flex items-center justify-between px-6 py-5 text-left font-semibold text-gray-900 transition-all duration-300 hover:bg-gradient-to-r hover:from-indigo-50 hover:via-purple-50 hover:to-indigo-50`}
+                aria-expanded={expandedIndex === index}
+                onClick={() => handleToggle(index)}
+              >
+                <span className="flex-1 text-lg md:text-xl">{item.question}</span>
+                <FontAwesomeIcon
+                  icon={expandedIndex === index ? faChevronUp : faChevronDown}
+                  className="w-5 h-5 ml-4 text-indigo-600"
+                />
+              </button>
+
+              <div
+                className="transition-all duration-500 ease-in-out overflow-hidden"
+                style={{
+                  maxHeight: expandedIndex === index ? '1000px' : '0',
+                  opacity: expandedIndex === index ? 1 : 0,
+                }}
+              >
+                <div className="px-6 pb-6 text-gray-700 leading-relaxed space-y-2">
+                  {item.answer.map((paragraph, idx) => (
+                    <p key={idx}>{paragraph}</p>
+                  ))}
+                </div>
               </div>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
   );
-};
+}
