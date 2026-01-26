@@ -37,10 +37,12 @@ onToggleMenu
             className="flex items-center justify-start rounded-ful z-50"
             href="/"
           >
-          <Logo
-              src={'/smartscan-logo.png'}
-              alt={'logo'}
-            />
+           <Logo
+                    src={'/sereleum-logo-nobg.png'}
+                     width={50} 
+                     height={50}
+                    alt={'logo'}
+                  />
           </Link>
           <div className='flex flex-row justify-end items-center ml-auto'>
             <button

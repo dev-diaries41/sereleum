@@ -39,7 +39,9 @@ export default React.memo(function SideNav({ email, credits }: SideNavProps) {
           href="/"
         >
           <Logo
-            src={'/smartscan-logo.png'}
+            src={'/sereleum-logo-nobg.png'}
+             width={50} 
+             height={50}
             alt={'logo'}
           />
         </Link>

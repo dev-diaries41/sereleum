@@ -10,7 +10,8 @@ export default function Logo({
   height = 30,
 }: LogoProps) {
   return (
-    <div className='flex items-center space-x-1 p-2'>
+    <div className='flex items-center'>
+      {name && <h1 className='w-full text-2xl font-bold'>{name}</h1>}
        <Image
             src={src}
             alt={alt}
@@ -18,7 +19,6 @@ export default function Logo({
             height={height}
             // className="relative w-10 h-10"
           />
-        {name && <h1 className='w-full mr-4 text-2xl font-bold'>{name}</h1>}
     </div>
   );
 };
