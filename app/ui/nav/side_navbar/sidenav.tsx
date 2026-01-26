@@ -8,6 +8,8 @@ import MobileNav from './mobile';
 import Logo from '../../logo';
 import ClusterListSideNavWrapper from '../../sereleum/clusters-sidenav';
 import { usePrompts } from '@/app/providers/prompts';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGrip, faGripVertical } from '@fortawesome/free-solid-svg-icons';
 
 interface SideNavProps { 
   email: string | null | undefined, 
@@ -34,17 +36,23 @@ export default React.memo(function SideNav({ email, credits }: SideNavProps) {
     <>
       {/* Desktop SideNav */}
       <div className="fixed flex flex-col w-[240px] min-h-screen bg-gray-50 border-r border-gray-200 p-2 lg:block hidden z-[100]">
-        <Link
-          className="flex w-100 h-20 items-center justify-start rounded-3xl"
-          href="/"
-        >
-          <Logo
-            src={'/sereleum-logo-nobg.png'}
-             width={50} 
-             height={50}
-            alt={'logo'}
-          />
-        </Link>
+        <div className='w-full flex flex-row justify-between items-center'>
+          <Link
+            className="flex w-100 h-20 items-center justify-start rounded-3xl"
+            href="/"
+          >
+            <Logo
+              src={'/sereleum-logo-nobg.png'}
+              width={50} 
+              height={50}
+              alt={'logo'}
+            />
+          </Link>
+          <button>
+            <FontAwesomeIcon icon={faGripVertical} className='text-lg pr-4 text-gray-500'/>
+          </button>
+        </div>
+       
         <div className='flex h-full flex-col justify-between'>
           <NavLinks navItems={topSidebarLinks} />
           <div className="flex-1 max-h-[60vh] overflow-y-auto custom-scrollbar pb-24 mt-4">
