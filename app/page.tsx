@@ -115,7 +115,7 @@ const UseCasesSection = () => (
       </p>
     </div>
 
-    <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto px-6">
+    <div className="grid md:grid-cols-2 gap-16 mx-auto px-6">
   {UseCases.map((uc, idx) => (
     <UseCaseCard
       key={idx}
