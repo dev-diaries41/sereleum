@@ -38,7 +38,7 @@ export function DashboardOverview() {
       <div className="w-full flex flex-col mx-auto px-4">
         <div className="flex flex-col w-full min-h-screen items-center py-8 pt-24 lg:pt-8">
 
-          <div className="w-full flex items-center justify-between mb-6">
+          <div className="w-full flex items-center justify-between mb-12">
             <div>
               <h1 className="text-2xl md:text-3xl ">Overview</h1>
             </div>

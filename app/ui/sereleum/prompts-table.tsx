@@ -65,7 +65,7 @@ export default function PromptsTableView({ pageSize = 10 }: PromptsTableViewProp
 
   return (
     <div className="flex flex-col mx-auto w-full items-center justify-center p-8">
-      <div className="w-full flex flex-col gap-8 md:flex-row justify-between mb-6">
+      <div className="w-full flex flex-col gap-8 md:flex-row justify-between mb-12">
         <h1 className="text-2xl md:text-3xl">Prompts</h1>
         <input
           type="text"

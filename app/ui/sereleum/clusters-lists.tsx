@@ -132,7 +132,7 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
 
   return (
     <div className="flex flex-col mx-auto w-full items-center justify-center p-8 gap-4">
-      <div className="w-full flex flex-col gap-4 md:flex-row justify-between mb-6 items-center">
+      <div className="w-full flex flex-col gap-4 md:flex-row justify-between mb-12 items-center">
         <h1 className="text-2xl md:text-3xl">Clusters</h1>
 
         <div className="flex gap-3 items-center">
