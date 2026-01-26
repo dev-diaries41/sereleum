@@ -3,7 +3,7 @@ import React, { createContext, useState, useContext, useLayoutEffect, useEffect 
 import { Cluster, Prompt, PromptsOverviewInfo, ProviderProps, Status } from '@/app/types';
 import { StorageKeys } from '../constants/global';
 import * as LocalStorage from "@/app/lib/client/storage/session"
-import { reveliumClient } from '../revelium/client';
+import { sereleumClient } from '../sereleum/client';
 import { useRouter } from 'next/navigation';
 import cluster from 'cluster';
  
@@ -62,19 +62,19 @@ const usePrompts = () => {
 const { clusters, topClusters, prompts, promptsOverview,  setTopClusters, setClusters, setPrompts } = context;
 
 const onUpdatePrompt = async(prompt: Prompt, newClusterId: string) => {
-  const res = await reveliumClient.updatePromptClusterId(prompt.prompt_id, newClusterId)
+  const res = await sereleumClient.updatePromptClusterId(prompt.prompt_id, newClusterId)
   setPrompts(prev => prev.map(p => p.prompt_id === prompt.prompt_id? {...p, metadata: {...p.metadata, cluster_id: newClusterId}} : p))
 }
 
 const onLoadMorePrompts = async(limit: number, offset: number) => {
   if(prompts.length >= promptsOverview.total_prompts) return
-  const result = await reveliumClient.getPrompts(undefined, limit, offset)
+  const result = await sereleumClient.getPrompts(undefined, limit, offset)
   setPrompts(prev => [...prev, ...result] )
 }
 
 const onLoadMoreClusters = async(limit: number, offset: number) => {
   if(prompts.length >= promptsOverview.total_prompts) return
-  const result = await reveliumClient.getClusters(undefined, limit, offset)
+  const result = await sereleumClient.getClusters(undefined, limit, offset)
   setClusters(prev => [...prev, ...result] )
 }
 
@@ -115,7 +115,7 @@ const useDashboard = () => {
     setPromptsOverview(promptOverview)
   }
   const handleTrackIndexProgress = (jobId: string) => {
-      const eventSource = reveliumClient.trackPromptsIndexProgress(jobId, {
+      const eventSource = sereleumClient.trackPromptsIndexProgress(jobId, {
         onProgress: (p) => {
           setProgress(p)
         },
@@ -136,11 +136,11 @@ const useDashboard = () => {
 
   const handleTrackClusteringStatus = (jobId: string) => {
     setClusteringStatus('queued')
-    const eventSource = reveliumClient.trackPromptsClusterStatus(jobId, {
+    const eventSource = sereleumClient.trackPromptsClusterStatus(jobId, {
       onComplete: async() => {
         await new Promise(resolve => setTimeout(resolve, 1000))
-        const promptOverview = await reveliumClient.getPromptsOverview();
-        const clusters = await reveliumClient.getClusters()
+        const promptOverview = await sereleumClient.getPromptsOverview();
+        const clusters = await sereleumClient.getClusters()
         updatePromptsOverview(promptOverview)
         setClusters(clusters)
         setClusteringStatus("complete")
@@ -218,7 +218,7 @@ const useDashboard = () => {
           return
         }        
 
-        const blob = await reveliumClient.getClusterPlotBlob();
+        const blob = await sereleumClient.getClusterPlotBlob();
         if (blob) {
           LocalStorage.set(StorageKeys.overview, JSON.stringify(promptsOverview));
           url = URL.createObjectURL(blob);
@@ -273,7 +273,7 @@ const useDashboard = () => {
 
   const handleFileUpload = async() => {
     if(!promptsFile) return
-    const res = await reveliumClient.addPromptsFile(promptsFile)
+    const res = await sereleumClient.addPromptsFile(promptsFile)
     setPromptsFile(null)
     setIndexingStatus(res.status)
     LocalStorage.set(StorageKeys.indexingJobId, res.job_id)

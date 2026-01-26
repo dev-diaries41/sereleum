@@ -1,4 +1,4 @@
-import { BASE_CLUSTER_ENDPOINT, REVELIUM_BASE_URL, START_CLUSTER_ENDPOINT } from '@/app/revelium/constants';
+import { BASE_CLUSTER_ENDPOINT, SERELEUM_BASE_URL, START_CLUSTER_ENDPOINT } from '@/app/sereleum/constants';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
 
     // Prepare FormData to send to Python backend
     // Send to Python backend
-    const backendRes = await fetch(`${REVELIUM_BASE_URL}${START_CLUSTER_ENDPOINT}`, {
+    const backendRes = await fetch(`${SERELEUM_BASE_URL}${START_CLUSTER_ENDPOINT}`, {
       method: 'POST',
       body: null,
     });

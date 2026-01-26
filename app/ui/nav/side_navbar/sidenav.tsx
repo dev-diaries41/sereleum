@@ -6,7 +6,7 @@ import { topSidebarLinks } from '@/app/constants/navigation';
 import UserProfileWidget from '../../account/user-profile';
 import MobileNav from './mobile';
 import Logo from '../../logo';
-import ClusterListSideNavWrapper from '../../revelium/clusters-sidenav';
+import ClusterListSideNavWrapper from '../../sereleum/clusters-sidenav';
 import { usePrompts } from '@/app/providers/prompts';
 
 interface SideNavProps { 
@@ -41,7 +41,7 @@ export default React.memo(function SideNav({ email, credits }: SideNavProps) {
           <Logo
             src={'/smartscan-logo.png'}
             alt={'logo'}
-            name="Revelium"
+            name="Sereleum"
           />
         </Link>
         <div className='flex h-full flex-col justify-between'>

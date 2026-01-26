@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ClusterAccuracyPlayground } from "./cluster-accuracy";
 import { useEffect, useState } from "react";
 import { ClusterAccuracy, Cluster, UNLABELLED_CLUSTER } from "@/app/types";
-import { reveliumClient } from "@/app/revelium/client";
+import { sereleumClient } from "@/app/sereleum/client";
 import { ClusterRow } from "./cluster-row";
 
 interface ClustersWrapperProps {
@@ -33,7 +33,7 @@ export function ClustersWrapper({ pageSize = 10 }: ClustersWrapperProps) {
   const runAccuracy = async () => {
     setRunning(true);
     try {
-      const res = await reveliumClient.calculateClusterAccuracy();
+      const res = await sereleumClient.calculateClusterAccuracy();
       setResult(res);
     } finally {
       setRunning(false);
@@ -77,7 +77,7 @@ export function ClustersWrapper({ pageSize = 10 }: ClustersWrapperProps) {
     };
 
     try {
-      const updatedClusters = await reveliumClient.mergeClusters(payload);
+      const updatedClusters = await sereleumClient.mergeClusters(payload);
       setClusters(prev => [updatedClusters[0], ...prev.filter(cluster => targetClusters.some( t => t === cluster.prototype_id))])
       setTopClusters(prev => [updatedClusters[0], ...prev.filter(cluster => targetClusters.some( t => t === cluster.prototype_id))])
       clearSelection();

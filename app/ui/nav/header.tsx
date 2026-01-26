@@ -26,7 +26,7 @@ export default function Header({email}: HeaderProps) {
     >
       <div className='flex flex-row w-full max-w-7xl mx-auto items-center justify-between px-4'>
         <Link href={'/'} className='z-50'>
-          <Logo name="Revelium" src={'/smartscan-logo.png'}/>
+          <Logo name="Sereleum" src={'/smartscan-logo.png'}/>
         </Link>
         <NavBar email={email}/>
       </div>

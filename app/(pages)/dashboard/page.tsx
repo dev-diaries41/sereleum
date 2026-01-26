@@ -1,5 +1,5 @@
 import  { Suspense } from 'react';
-import  {DashboardOverview} from '@/app/ui/revelium/overview';
+import  {DashboardOverview} from '@/app/ui/sereleum/overview';
 import Loading from './loading';
 import ErrorComponent from './error';
 import { ErrorBoundary } from 'next/dist/client/components/error-boundary';

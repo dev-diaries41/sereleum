@@ -1,5 +1,5 @@
 import { PromptsProvider } from "@/app/providers/prompts";
-import { reveliumClient } from "@/app/revelium/client";
+import { sereleumClient } from "@/app/sereleum/client";
 import Sidenav from "@/app/ui/nav/side_navbar/sidenav";
 import { auth } from "@/auth";
 
@@ -11,10 +11,10 @@ export default async function Layout({
     const session = await auth();
     const email = session?.user?.email; 
     const credits = session?.user?.credits; 
-    const clusters = await reveliumClient.getClusters()
+    const clusters = await sereleumClient.getClusters()
 
-    const prompts = await reveliumClient.getPrompts(undefined, 25)
-    const promptOverview = await reveliumClient.getPromptsOverview();
+    const prompts = await sereleumClient.getPrompts(undefined, 25)
+    const promptOverview = await sereleumClient.getPromptsOverview();
 
   return (
     <PromptsProvider initialClusters={clusters} initialPrompts={prompts} overview={promptOverview}>

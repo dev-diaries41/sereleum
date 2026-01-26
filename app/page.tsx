@@ -67,7 +67,7 @@ const FeaturesSection = () => (
         Built for prompt intelligence
       </h2>
       <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
-        Revelium provides deep visibility into how prompts behave across your LLM systems.
+        Sereleum provides deep visibility into how prompts behave across your LLM systems.
       </p>
     </div>
 

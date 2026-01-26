@@ -13,16 +13,16 @@ const ibmPlex = IBM_Plex_Sans({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://revelium.vercel.app/'),
-  title: 'Revelium',
+  metadataBase: new URL('https://sereleum.vercel.app/'),
+  title: 'Sereleum',
   description: 'Prompt analytics platform that turns real user prompts into actionable insights',
   keywords: ['ai', 'llm', 'prompts', 'clusters', 'analysis', 'optimise'],
-  applicationName: 'Revelium',
+  applicationName: 'Sereleum',
   openGraph: {
     type: 'website',
-    url: 'https://revelium.vercel.app/',
+    url: 'https://sereleum.vercel.app/',
     description: 'Prompt analytics platform that turns real user prompts into actionable insights',
-    siteName: 'Revelium',
+    siteName: 'Sereleum',
     images: []
   }
 }

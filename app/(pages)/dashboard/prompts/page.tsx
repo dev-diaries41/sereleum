@@ -3,8 +3,8 @@ import { auth } from '@/auth';
 import { ErrorBoundary } from 'next/dist/client/components/error-boundary';
 import ErrorComponent from "./error"
 import Loading from "./loading"
-import PromptsTableView from '@/app/ui/revelium/prompts-table';
-import { reveliumClient } from '@/app/revelium/client';
+import PromptsTableView from '@/app/ui/sereleum/prompts-table';
+import { sereleumClient } from '@/app/sereleum/client';
 
 export const revalidate = 120;
 

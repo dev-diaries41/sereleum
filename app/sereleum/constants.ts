@@ -1,5 +1,5 @@
 
-export const REVELIUM_BASE_URL = process.env.REVELIUM_BASE_URL || "http://127.0.0.1:8000"
+export const SERELEUM_BASE_URL = process.env.SERELEUM_BASE_URL || "http://127.0.0.1:8000"
 export const BASE_PROMPTS_ENDPOINT = "/api/prompts";
 export const QUERY_PROMPTS_ENDPOINT = `${BASE_PROMPTS_ENDPOINT}/query`;
 export const ADD_PROMPTS_ENDPOINT = `${BASE_PROMPTS_ENDPOINT}/add`;

@@ -1,7 +1,7 @@
 'use client';
 
 import { usePrompts } from "@/app/providers/prompts";
-import { reveliumClient } from "@/app/revelium/client";
+import { sereleumClient } from "@/app/sereleum/client";
 import { Cluster, ClusterMetadata, Prompt } from "@/app/types";
 import { faCheck, faFlask, faTag } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -34,7 +34,7 @@ export function ClusterDetail({ id }: { id?: string }) {
   const saveLabel = async () => {
     setSaving(true);
     try {
-      const newLabel = await reveliumClient.updateClusterLabel(cluster?.prototype_id!, labelDraft)
+      const newLabel = await sereleumClient.updateClusterLabel(cluster?.prototype_id!, labelDraft)
       setClusters((prev) =>
         prev.map((c) =>
           c.prototype_id === cluster?.prototype_id
@@ -53,7 +53,7 @@ export function ClusterDetail({ id }: { id?: string }) {
 
 
   const getTopPrompts = async() => {
-    const fetchedPrompts = await reveliumClient.getPrompts(undefined, 10, 0, [cluster?.prototype_id!])
+    const fetchedPrompts = await sereleumClient.getPrompts(undefined, 10, 0, [cluster?.prototype_id!])
     setTopPrompts(fetchedPrompts)
   }
 

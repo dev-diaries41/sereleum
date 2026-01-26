@@ -15,7 +15,7 @@ export default function DashboardHeader({email, credits}: DashboardHeaderProps) 
     <div className={`fixed top-0 flex flex-row w-full mx-auto items-center justify-between pt-2 z-50`}>
       <div className='flex flex-row w-full max-w-7xl mx-auto items-center justify-between px-4'>
         <Link href={'/'} className='z-50'>
-          <Logo name="Revelium" src={'/smartscan-logo.png'}/>
+          <Logo name="Sereleum" src={'/smartscan-logo.png'}/>
         </Link>
         <DashboardNavBar email={email} credits={session?.user.credits || credits}/> 
       </div>

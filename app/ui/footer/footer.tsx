@@ -18,7 +18,7 @@ export default function Footer() {
             <FooterLinks />
 
             <p className="text-gray-400 mt-4">
-              Copyright © {new Date().getFullYear()} Revelium. All rights reserved.
+              Copyright © {new Date().getFullYear()} Sereleum. All rights reserved.
             </p>
           </div>
 
@@ -42,7 +42,7 @@ export default function Footer() {
                   textShadow: '0 2px 4px rgba(0,0,0,0.15)'
                 }}
               >
-                REVELIUM
+                SERELEUM
               </span>
             </h1>
           </div>
