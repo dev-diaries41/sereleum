@@ -83,7 +83,7 @@ return (
       <div className="p-8 max-w-full">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-semibold">
+            <h2 className="text-2xl md:text-3xl">
               {cluster.label || 'Untitled cluster'}
             </h2>
           </div>

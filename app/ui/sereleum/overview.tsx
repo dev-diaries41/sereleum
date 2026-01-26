@@ -40,7 +40,7 @@ export function DashboardOverview() {
 
           <div className="w-full flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold">Overview</h1>
+              <h1 className="text-2xl md:text-3xl ">Overview</h1>
             </div>
             <div className="flex flex-col items-start gap-3">
            <div className="flex flex-row gap-3 items-center">
