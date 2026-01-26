@@ -143,12 +143,12 @@ export interface ActionRowProps {
   shareUrl?: string | null;
 }
 
-export interface Feature {
+export interface SectionItem {
   title: string;
   description: string;
   image?: string
 }
-export interface FeatureProps extends Feature {
+export interface FeatureProps extends SectionItem {
 }
 
 export interface HeaderProps {
