@@ -16,6 +16,8 @@ export function ClusterRow({
 
   const mean_similarity = cluster.metadata.mean_similarity;
   const cohesionPercentage = Math.round(mean_similarity * 100);
+  const hue = Math.max(0, Math.min(120, cohesionPercentage * 1.2)); // 0=red, 120=green
+  const barColor = `hsl(${hue}, 70%, 50%)`;
 
   return (
     <div
@@ -77,13 +79,16 @@ export function ClusterRow({
           <div className="text-xs text-gray-400">Cohesion Score</div>
           <div className="text-sm font-medium">{cohesionPercentage}%</div>
 
-          <div className="w-28 h-2 bg-gray-100 rounded-full overflow-hidden mt-1">
-            <div
-              style={{ width: `${Math.min(100, cohesionPercentage)}%` }}
-              className="h-full bg-gradient-to-r from-indigo-500 to-cyan-400"
-              aria-hidden
-            />
-          </div>
+        <div className="w-28 h-2 bg-gray-100 rounded-full overflow-hidden mt-1">
+          <div
+            style={{
+              width: `${Math.min(100, cohesionPercentage)}%`,
+              background: `linear-gradient(90deg, ${barColor}, ${barColor})`,
+            }}
+            className="h-full transition-all"
+            aria-hidden
+          />
+        </div>
 
           <div className="mt-2 text-xs text-gray-500 flex gap-3">
             <div title="Similarity to nearest other cluster">
