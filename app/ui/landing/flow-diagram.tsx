@@ -1,5 +1,6 @@
 'use client'
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, useMotionValue, useAnimationFrame } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartLine, faLayerGroup, faCoins, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 
@@ -11,10 +12,43 @@ export const FlowDiagram = () => {
     { id: 4, title: 'Better UX & outcomes', icon: faShieldHalved },
   ];
 
+const trackRef = useRef<HTMLDivElement | null>(null);
+  const x = useMotionValue(0);
+  const [width, setWidth] = useState(0);
+
+  // px per second
+  const SPEED = 80;
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+
+    const measure = () => {
+      setWidth(el.scrollWidth / 2);
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+
+    return () => ro.disconnect();
+  }, []);
+
+ useAnimationFrame((_, delta) => {
+  if (!width) return;
+
+  const moveBy = (SPEED * delta) / 1000;
+  const next = x.get() + moveBy;
+
+  // modulo wrap — continuous, no reset
+  x.set(next >= 0 ? next - width : next);
+});
+
+
   return (
     <div className="mt-10 overflow-hidden">
       <div className="relative w-full">
-        <div className="flex w-max animate-flow gap-6">
+        <motion.div ref={trackRef} className="flex w-max" style={{ x }}>
           {[...steps, ...steps].map((step, idx) => (
             <div key={`${step.id}-${idx}`} className="flex items-center gap-6">
               <div className="flex flex-col items-center gap-3">
@@ -39,28 +73,12 @@ export const FlowDiagram = () => {
               </svg>
             </div>
           ))}
-        </div>
+        </motion.div>
       </div>
 
       <div className="mt-6 text-xs text-gray-500 max-w-xl mx-auto text-center">
         <span className="font-medium">Outcome:</span> Use real prompt signals to iterate on prompts and product flows that measurably improve user experience and reduce cost.
       </div>
-
-      <style jsx>{`
-        @keyframes flow {
-          100% {
-            transform: translateX(0);
-          }
-          0% {
-            transform: translateX(-50%);
-            will-change: transform;
-          }
-        }
-
-        .animate-flow {
-          animation: flow 20s linear infinite;
-        }
-      `}</style>
     </div>
   );
 };
