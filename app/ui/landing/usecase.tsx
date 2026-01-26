@@ -20,7 +20,7 @@ export const UseCaseCard = ({ title, description, index, icon }: UseCaseCardProp
       {icon && (
         <FontAwesomeIcon
         icon={icon}
-        className='my-2 text-indigo-600'
+        className='my-2 text-indigo-600 w-6, h-6'
         />
       )}
       <h3 className="text-lg font-semibold mb-2">{title}</h3>

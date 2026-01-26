@@ -53,7 +53,7 @@ const trackRef = useRef<HTMLDivElement | null>(null);
             <div key={`${step.id}-${idx}`} className="flex items-center gap-6">
               <div className="flex flex-col items-center gap-3">
                 <div className="w-20 h-20 rounded-2xl bg-white border border-gray-300 shadow-sm flex items-center justify-center text-indigo-600">
-                  <FontAwesomeIcon icon={step.icon} className="text-2xl" />
+                  <FontAwesomeIcon icon={step.icon} className="w-6 h-6" />
                 </div>
                 <div className="text-sm font-medium text-gray-700 whitespace-nowrap">
                   {step.title}
