@@ -79,7 +79,7 @@ export default function PromptsTableView({ pageSize = 10 }: PromptsTableViewProp
         />
       </div>
 
-      <div className="overflow-x-auto w-full bg-white">
+      <div className="overflow-x-auto w-full rounded-xl">
         <table className="table-fixed border-collapse border border-gray-300 w-full text-sm md:text-base">
           <colgroup>
             <col style={{ width: '18%' }} />
@@ -88,7 +88,7 @@ export default function PromptsTableView({ pageSize = 10 }: PromptsTableViewProp
             <col style={{ width: '46%' }} />
           </colgroup>
           <thead>
-            <tr className="uppercase text-sm">
+            <tr className=" bg-gray-100 text-sm text-gray-500">
               <th className="border px-4 py-2 text-left">Prompt ID</th>
               <th className="border px-4 py-2 text-left">Cluster</th>
               <th className="border px-4 py-2 text-left">Label</th>
