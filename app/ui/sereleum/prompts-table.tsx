@@ -80,7 +80,7 @@ export default function PromptsTableView({ pageSize = 10 }: PromptsTableViewProp
       </div>
 
       <div className="overflow-x-auto w-full rounded-xl">
-        <table className="table-fixed border-collapse border border-gray-300 w-full text-sm md:text-base">
+        <table className="table-fixed border-collapse border border-gray-300 w-full text-sm">
           <colgroup>
             <col style={{ width: '18%' }} />
             <col style={{ width: '18%' }} />
