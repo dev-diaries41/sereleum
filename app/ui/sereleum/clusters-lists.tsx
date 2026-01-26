@@ -139,7 +139,7 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
           <button
             onClick={() => setIsRunAccVisisble((prev) => !prev)}
             disabled={running}
-            className="px-4 py-2 rounded-md bg-indigo-600 text-white text-sm disabled:opacity-60"
+            className="px-4 py-2 rounded-md bg-indigo-600 text-white text-sm font-medium disabled:opacity-60"
           >
             Test accuracy
           </button>
@@ -149,7 +149,7 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
               setIsSelecting((s) => !s);
               if (isSelecting) clearSelection();
             }}
-            className={`px-4 py-2 rounded-md text-sm border-2 border-indigo-600`}
+            className={`px-4 py-2 rounded-md text-sm border-2 font-medium border-indigo-600`}
           >
            Manage clusters
           </button>
