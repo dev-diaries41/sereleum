@@ -38,7 +38,7 @@ export function ClusterAccuracyPlayground({
   
   return (
     <div className="max-w-6xl mr-auto py-6 space-y-6">   
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 space-y-4">
+      <div className="bg-white border border-gray-300 rounded-2xl shadow-sm p-6 space-y-4">
         <h3 className="text-lg font-semibold mb-2">
           Labelled assignment input
         </h3>
@@ -115,7 +115,7 @@ export function ClusterAccuracyPlayground({
 
       {result && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* <aside className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+          {/* <aside className="bg-white border border-gray-300 rounded-2xl shadow-sm p-6">
             <h4 className="text-sm font-semibold mb-4">Accuracy summary</h4>
             <MetricsItem
               label="Mean accuracy"
@@ -124,7 +124,7 @@ export function ClusterAccuracyPlayground({
             />
           </aside> */}
 
-          <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+          <div className="lg:col-span-2 bg-white border border-gray-300 rounded-2xl shadow-sm p-6">
             <div className="space-y-3">
               <h4 className="text-md font-semibold mb-4">Results</h4>
 

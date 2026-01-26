@@ -39,7 +39,7 @@ export default async function RootLayout({
     <html lang="en">
       <AuthProvider>
       <body className={`${ibmPlex.className}`}>
-        <main className='bg-gray-100 relative flex flex-col min-h-screen '>
+        <main className='bg-white relative flex flex-col min-h-screen '>
           <Header email={email}/>
           {children}
           <Footer/>

@@ -33,7 +33,7 @@ export default React.memo(function SideNav({ email, credits }: SideNavProps) {
   return (
     <>
       {/* Desktop SideNav */}
-      <div className="fixed flex flex-col w-[240px] min-h-screen bg-white border-r border-gray-200 p-2 lg:block hidden z-[100]">
+      <div className="fixed flex flex-col w-[240px] min-h-screen bg-gray-50 border-r border-gray-200 p-2 lg:block hidden z-[100]">
         <Link
           className="flex w-100 h-20 items-center justify-start rounded-3xl"
           href="/"

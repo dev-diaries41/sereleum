@@ -128,7 +128,7 @@ interface ClustersPlotProps {
 function ClustersPlot({url}: ClustersPlotProps){
   return (
     <div className="lg:col-span-1">
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4 h-full flex flex-col">
+        <div className="border border-gray-300 rounded-2xl shadow-sm p-4 h-full flex flex-col">
           <div className="flex items-center justify-between mb-3">
             <div>
               <h4 className="text-sm text-gray-500 mb-3">Cluster Plot</h4>
@@ -167,7 +167,7 @@ interface TopClustersDetailsProps {
 
 function TopClustersDetails({topN = 5, topClusters, isViewAllVisible, onViewAllClusters }: TopClustersDetailsProps){
   return (
-    <div className="lg:col-span-3 bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+    <div className="lg:col-span-3 border border-gray-300 rounded-2xl shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-sm text-gray-500">{`Top ${topN} Clusters`}</h3>

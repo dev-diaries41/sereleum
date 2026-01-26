@@ -28,7 +28,7 @@ export function ClusterRow({
       }}
       className={`block w-full ${isSelecting ? "cursor-pointer" : "cursor-pointer"}`}
     >
-      <div className="flex items-center justify-between gap-4 p-3 rounded-lg bg-white hover:bg-gray-50">
+      <div className="flex items-center justify-between gap-4 p-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50">
         <div className="flex items-center gap-3">
           {isSelecting && (
             <button

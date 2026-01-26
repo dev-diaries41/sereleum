@@ -137,7 +137,7 @@ function ClusterLabelForm({
   onLabelDraftChange}: ClusterLabelFormPromptsProps
 ){
   return (
-  <div className="relative lg:col-span-2 bg-white border border-gray-100 rounded-2xl shadow-sm p-6 flex flex-col h-full">
+  <div className="relative lg:col-span-2 bg-white border border-gray-300 rounded-2xl shadow-sm p-6 flex flex-col h-full">
   {/* Header */}
   <div className="mb-4">
     <h3 className="text-lg font-semibold">Manage cluster label</h3>
@@ -209,7 +209,7 @@ function ClusterMetricsSummary({metadata, title = "Cluster metrics"}: {metadata:
   const cohesionPercent = Math.round((mean_similarity ?? 0) * 100);
 
   return (
-  <aside className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+  <aside className="bg-white border border-gray-300 rounded-2xl shadow-sm p-6">
     <div className="space-y-4">
       <h4 className="text-sm font-semibold mb-4">{title}</h4>
 

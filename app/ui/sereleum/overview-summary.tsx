@@ -14,7 +14,7 @@ export function OverviewSummary({ overview }: OverviewSummaryProps) {
   }, 0);
 
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 w-full">
+    <div className="border border-gray-300 rounded-2xl shadow-sm p-6 w-full">
       {/* Totals */}
       <div className="flex items-center gap-12">
         <div>
@@ -27,7 +27,7 @@ export function OverviewSummary({ overview }: OverviewSummaryProps) {
         </div>
       </div>
 
-      <div className="my-6 border-t border-gray-100" />
+      <div className="my-6 border-t border-gray-300" />
 
       {/* Token breakdown */}
       <div>

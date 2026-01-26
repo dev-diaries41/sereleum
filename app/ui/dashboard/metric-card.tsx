@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export function MetricCard({ title, value, icon }: { title: string; value: React.ReactNode; icon?: any; }) {
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5 w-full">
+    <div className="bg-white border border-gray-300 rounded-2xl shadow-sm p-5 w-full">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-gray-600">{title}</p>

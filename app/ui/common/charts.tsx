@@ -42,7 +42,7 @@ export function ChartDisplay({
   if (chartData.length === 0) return null;
 
   return (
-    <div className="relative w-full h-full overflow-hidden rounded-2xl">
+    <div className="relative w-full h-full overflow-hidden rounded-2xl rounded-2xl border border-gray-300 bg-gray-50">
       {loading && (
         <div className="flex flex-col items-center justify-center gap-2 absolute inset-0 z-10 bg-white/50">
           <p>Loading chart data...</p>
