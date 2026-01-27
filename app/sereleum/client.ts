@@ -10,6 +10,7 @@ import {
   UpdatePromptClusterIdParams,
   QueryPromptsRequest,
   MergeClustersRequest,
+  ClusterOptions,
 } from "@/app/types";
 import { ADD_PROMPTS_ENDPOINT, ADD_PROMPTS_FILE_ENDPOINT, BASE_CLUSTER_ENDPOINT, COUNT_CLUSTER_ENDPOINT, GET_LABELS_ENDPOINT, COUNT_PROMPTS_ENDPOINT, BASE_PROMPTS_ENDPOINT, GET_PROMPTS_OVERVIEW_ENDPOINT, SERELEUM_BASE_URL, START_CLUSTER_ENDPOINT, CALC_CLUSTER_ACCURACY_ENDPOINT, GET_CLUSTER_PLOT_ENDPOINT, SSE_PROMPTS_INDEX_PROGRESS, QUERY_PROMPTS_ENDPOINT, GET_TOP_CLUSTERS_ENDPOINT, SSE_PROMPTS_CLUSTER_STATUS, MERGE_CLUSTERS_ENDPOINT } from "./constants";
 
@@ -41,10 +42,16 @@ export class ReveliumClient {
     return this.handleResponse(res);
   }
 
-  async addPromptsFile(file: File): Promise<AddPromptsResponse> {
+  async addPromptsFile(file: File, clusterOptions?: Partial<ClusterOptions>): Promise<AddPromptsResponse> {
     const url = `${this.baseUrl}${ADD_PROMPTS_FILE_ENDPOINT}`;
     const formData = new FormData();
+
+    const defaultOptions: ClusterOptions = {"autoLabel": false, "autoMergeThreshold": 0.9, "defaultThreshold": 0.2}
+    const options = {...defaultOptions, ...(clusterOptions || {})}
     formData.append("file", file);
+    formData.append("auto_label", String(options.autoLabel))
+    formData.append("auto_merge_threshold", String(options.autoMergeThreshold))
+    formData.append("initial_threshold", String(options.defaultThreshold))
 
     const res = await fetch(url, {
       method: "POST",

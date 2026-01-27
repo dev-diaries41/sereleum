@@ -52,5 +52,10 @@ export const UNCLUSTERED = "unclustered"; // TODO: lower case
 export interface ClusterAccuracy {
   per_label: Record<string, number>
   mean_accuracy: number
+}
 
+export interface ClusterOptions {
+  autoLabel:boolean; 
+  autoMergeThreshold:number;
+  defaultThreshold: number
 }
