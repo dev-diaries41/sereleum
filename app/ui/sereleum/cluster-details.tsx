@@ -199,8 +199,7 @@ function ClusterLabelForm({
 function ClusterMetricsSummary({metadata, title = "Cluster metrics"}: {metadata: ClusterMetadata, title?: string}){
   const {
     mean_similarity,
-    nearest_other_similarity,
-    separation_margin,
+    std_similarity,
     prototype_size,
   } = metadata || {};
 
@@ -212,34 +211,25 @@ function ClusterMetricsSummary({metadata, title = "Cluster metrics"}: {metadata:
   <aside className="border border-gray-300 rounded-2xl shadow-sm p-6">
     <div className="space-y-4">
       <h4 className="text-sm text-gray-500 font-semibold mb-4">{title}</h4>
-
         <MetricsItem
-          label="Cohesion (mean)"
+          label="Cohesion"
           value={pct(mean_similarity)}
           largeValue={`${cohesionPercent}%`}
         />
+
         <MetricsItem
           label="Cluster size"
           value={String(prototype_size ?? 0)}
         />
-        <MetricsItem
-          label="Nearest cluster similarity"
-          value={pct(nearest_other_similarity)}
-        />
-        <MetricsItem
-          label="Separation margin"
-          value={
-            separation_margin == null
-              ? '—'
-              : separation_margin.toFixed(2)
-          }
-        />
 
+        <MetricsItem
+          label="Similarity spread"
+          value={pct(std_similarity)}
+        />
         <div className="pt-3">
           <div className="text-xs text-gray-500">Notes</div>
           <div className="text-xs text-gray-400 mt-2">
-            Cohesion close to 100% means items in this cluster are very
-            similar. Nearest cluster similarity indicates overlap risk.
+            Cohesion shows average similarity within the cluster, while similarity spread indicates how consistent that similarity is.
           </div>
         </div>
       </div>

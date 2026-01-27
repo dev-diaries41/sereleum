@@ -203,8 +203,8 @@ function TopClustersDetails({ topN = 5, topClusters, isViewAllVisible, onViewAll
       )}
 
       <div className="mt-4 flex items-center justify-between">
-        <div className="text-xs text-gray-500">
-          Cluster separation and similarity help you understand cluster cohesion
+       <div className="text-xs text-gray-500">
+          Similarity and similarity spread help you understand cluster cohesion
         </div>
         {isViewAllVisible && (
           <button

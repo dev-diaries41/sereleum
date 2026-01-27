@@ -31,8 +31,7 @@ export interface PromptsOverviewInfo {
 export interface ClusterMetrics {
   prototype_size: number;
   mean_similarity: number;
-  nearest_other_similarity?: number | null;
-  separation_margin?: number | null;
+  std_similarity: number;
 }
 
 export interface ClusterMetadata extends ClusterMetrics {

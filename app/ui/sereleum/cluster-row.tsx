@@ -15,6 +15,7 @@ export function ClusterRow({
   const router = useRouter();
 
   const mean_similarity = cluster.metadata.mean_similarity;
+  const std_similarity = cluster.metadata.std_similarity;
   const cohesionPercentage = Math.round(mean_similarity * 100);
   const hue = Math.max(0, Math.min(120, cohesionPercentage * 1.2));
   const barColor = `hsl(${hue}, 70%, 50%)`;
@@ -82,19 +83,9 @@ export function ClusterRow({
           </div>
 
           <div className="mt-2 text-xs text-gray-500 flex flex-wrap sm:flex-nowrap gap-3">
-            <div title="Similarity to nearest other cluster" className="truncate">
-              nearest:{" "}
-              {cluster.metadata?.nearest_other_similarity == null
-                ? "—"
-                : `${Math.round(cluster.metadata.nearest_other_similarity * 100)}%`}
-            </div>
             <div title="Separation margin between clusters" className="truncate">
-              sep:{" "}
-              {cluster.metadata?.separation_margin == null
-                ? "—"
-                : Number.isFinite(cluster.metadata.separation_margin)
-                ? cluster.metadata.separation_margin.toFixed(2)
-                : String(cluster.metadata.separation_margin)}
+              similarity spread:{" "}
+              {std_similarity.toFixed(3)}
             </div>
           </div>
         </div>
