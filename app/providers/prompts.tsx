@@ -30,9 +30,19 @@ const PromptsProvider = ({ children, initialClusters, initialPrompts, overview }
   const [ topClusters, setTopClusters ] = useState<Cluster[]>(overview.top_clusters);
   const [ prompts, setPrompts ] = useState<Prompt[]>(initialPrompts);
   const [ promptsOverview, setPromptsOverview ] = useState<PromptsOverviewInfo>(overview);
+  
+  useLayoutEffect(() => {
+    async function fetchInitialPrompts(){
+      const initialPrompts = await sereleumClient.getPrompts(undefined, 25)
+      setPrompts(initialPrompts)
+    }
+    if(prompts.length == 0 && promptsOverview.total_prompts > 0) {
+        fetchInitialPrompts();
+      }
+  }, [promptsOverview])
 
   useEffect(() => {
-    setTopClusters(promptsOverview.top_clusters)
+      setTopClusters(promptsOverview.top_clusters)
       LocalStorage.set(StorageKeys.overview, JSON.stringify(promptsOverview));
     }, [promptsOverview])
 
@@ -273,7 +283,7 @@ const useDashboard = () => {
 
   const handleFileUpload = async() => {
     if(!promptsFile) return
-    const res = await sereleumClient.addPromptsFile(promptsFile)
+    const res = await sereleumClient.addPromptsFile(promptsFile, {autoLabel: true})
     setPromptsFile(null)
     setIndexingStatus(res.status)
     LocalStorage.set(StorageKeys.indexingJobId, res.job_id)
