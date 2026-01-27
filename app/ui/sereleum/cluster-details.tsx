@@ -247,17 +247,22 @@ function ClusterMetricsSummary({metadata, title = "Cluster metrics"}: {metadata:
   )
 }
 
-
-function PromptsTable({ prompts, cluster }: { prompts: Prompt[], cluster: Cluster }) {
+function PromptsTable({ prompts, cluster }: { prompts: Prompt[]; cluster: Cluster }) {
   return (
-      <div className="overflow-x-auto border-collapse border border-gray-300 w-full rounded-2xl mt-8">
-        <table className="table-fixed w-full border-collapse border border-gray-300 text-sm md:text-base">
+    <div className="overflow-x-auto w-full rounded-xl mt-8">
+      <table className="table-fixed border-collapse border border-gray-300 w-full text-sm">
+        <colgroup>
+          <col style={{ width: '18%' }} />
+          <col style={{ width: '18%' }} />
+          <col style={{ width: '18%' }} />
+          <col style={{ width: '46%' }} />
+        </colgroup>
         <thead>
-          <tr className=" bg-gray-100 text-sm text-gray-500">
-            <th className="border border-gray-300 px-4 py-2 text-left">Prompt ID</th>
-            <th className="border border-gray-300 px-4 py-2 text-left">Cluster</th>
-            <th className="border border-gray-300px-4 py-2 text-left w-[120px]">Label</th>
-            <th className="border border-gray-300 px-4 py-2 text-left">Content</th>
+          <tr className="bg-gray-100 text-sm text-gray-500">
+            <th className="border px-4 py-2 text-left">Prompt ID</th>
+            <th className="border px-4 py-2 text-left">Cluster</th>
+            <th className="border px-4 py-2 text-left">Label</th>
+            <th className="border px-4 py-2 text-left">Content</th>
           </tr>
         </thead>
         <tbody>
@@ -266,21 +271,28 @@ function PromptsTable({ prompts, cluster }: { prompts: Prompt[], cluster: Cluste
             return (
               <tr
                 key={prompt.prompt_id}
-                className="hover:bg-gray-50 transition-all duration-200"
+                className="hover:bg-gray-50 transition-all duration-200 align-top"
               >
-                <td className="border border-gray-300 px-4 py-2">{prompt.prompt_id}</td>
-                <td className="border border-gray-300 px-4 py-2">
+                <td className="border px-4 py-2 break-words">
+                  {prompt.prompt_id}
+                </td>
+
+                <td className="border px-4 py-2 break-words">
                   <span>{clusterId}</span>
                 </td>
+
                 <td
-                  className="border border-gray-300 px-4 py-2 w-1/6"
+                  className="border px-4 py-2 w-1/6"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <span className="w-full px-2 py-1 text-sm border rounded">
+                  <span className="w-full px-2 py-1 text-sm border rounded inline-block">
                     {cluster.label}
                   </span>
                 </td>
-                <td className="border border-gray-300 px-4 py-2">{prompt.content}</td>
+
+                <td className="border px-4 py-2 break-words">
+                  {prompt.content}
+                </td>
               </tr>
             );
           })}
