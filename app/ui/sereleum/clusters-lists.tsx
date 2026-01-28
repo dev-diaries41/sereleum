@@ -2,14 +2,19 @@
 
 import { usePrompts } from "@/app/providers/prompts";
 import { ClusterAccuracyPlayground } from "./cluster-accuracy";
-import { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ClusterAccuracy, Cluster, UNLABELLED_CLUSTER } from "@/app/types";
 import { sereleumClient } from "@/app/sereleum/client";
 import { ClusterRow } from "./cluster-row";
+import { motion, AnimatePresence } from "framer-motion";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSort, faChevronUp, faChevronDown, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 interface ClustersWrapperProps {
   pageSize?: number;
 }
+
+type SortKey = "mean" | "std" | "size" | null;
 
 export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
   const { clusters, promptsOverview, setTopClusters, setClusters, onLoadMoreClusters } = usePrompts();
@@ -28,6 +33,10 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const [page, setPage] = useState(0);
+
+  // Sorting state
+  const [sortBy, setSortBy] = useState<SortKey>(null);
+  const [sortDirection, setSortDirection] = useState<"desc" | "asc">("desc");
 
   const runAccuracy = async () => {
     setRunning(true);
@@ -98,7 +107,37 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
   const totalPages = Math.max(1, Math.ceil(totalClustersCount / pageSize));
   const start = page * pageSize;
   const end = start + pageSize;
-  const pageClusters = clusters.slice(start, end);
+
+  // Compute sorted clusters (keeps core logic intact; sorting happens before pagination)
+  const sortedClusters = useMemo(() => {
+    if (!sortBy) return clusters;
+    const copy = [...clusters];
+    copy.sort((a, b) => {
+      let av: number = 0;
+      let bv: number = 0;
+      switch (sortBy) {
+        case "mean":
+          av = a.metadata?.mean_similarity ?? 0;
+          bv = b.metadata?.mean_similarity ?? 0;
+          break;
+        case "std":
+          av = a.metadata?.std_similarity ?? 0;
+          bv = b.metadata?.std_similarity ?? 0;
+          break;
+        case "size":
+          av = a.metadata?.prototype_size ?? 0;
+          bv = b.metadata?.prototype_size ?? 0;
+          break;
+      }
+
+      if (av === bv) return 0;
+      const res = av < bv ? -1 : 1;
+      return sortDirection === "asc" ? res : -res;
+    });
+    return copy;
+  }, [clusters, sortBy, sortDirection]);
+
+  const pageClusters = sortedClusters.slice(start, end);
 
   useEffect(() => {
     const maxPage = Math.max(0, Math.ceil(totalClustersCount / pageSize) - 1);
@@ -130,9 +169,17 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
     .map((id) => clusters.find((c) => c.prototype_id === id))
     .filter(Boolean) as Cluster[];
 
+  // Minimalist label helper
+  const labelFor = (k: SortKey) => {
+    if (k === 'mean') return 'Cohesion';
+    if (k === 'std') return 'Spread';
+    if (k === 'size') return 'Cluster size';
+    return 'Default';
+  }
+
   return (
     <div className="flex flex-col mx-auto w-full items-center justify-center p-8 gap-4">
-      <div className="w-full flex flex-col gap-4 md:flex-row justify-between mb-12 items-center">
+      <div className="w-full flex flex-col gap-4 md:flex-row justify-between mb-2 items-center">
         <h1 className="text-2xl md:text-3xl">Clusters</h1>
 
         <div className="flex gap-3 items-center">
@@ -155,6 +202,15 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
           </button>
         </div>
       </div>
+
+      
+      <SortBySelector
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        sortDirection={sortDirection}
+        setSortDirection={setSortDirection}
+        labelFor={labelFor}
+      />
 
       {isRunAccVisisble && (
         <ClusterAccuracyPlayground
@@ -290,4 +346,84 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
       </div>
     </div>
   );
+}
+
+interface SortBySelectorProps {
+  sortBy: 'mean' | 'std' | 'size' | null;
+  setSortBy: (key: 'mean' | 'std' | 'size' | null) => void;
+  sortDirection: 'asc' | 'desc';
+  setSortDirection: React.Dispatch<React.SetStateAction<'asc' | 'desc'>>;
+  labelFor: (key: 'mean' | 'std' | 'size' | null) => string;
+}
+
+
+function SortBySelector({
+  sortBy,
+  setSortBy,
+  sortDirection,
+  setSortDirection,
+  labelFor,
+}: SortBySelectorProps) {
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
+
+  return (
+      <div className="w-full flex items-center justify-start mb-4">
+      <div className="relative flex items-center gap-2">
+        <span className="text-sm font-medium">Sort by:</span>
+        <button
+          className="flex items-center gap-2 px-3 py-2 bg-white border rounded-md shadow-sm hover:shadow-md text-sm"
+          onClick={() => setDropdownOpen(d => !d)}
+        >
+          <FontAwesomeIcon icon={faSort} />
+          <span className="text-sm font-medium">{labelFor(sortBy)}</span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setSortDirection(d => (d === 'desc' ? 'asc' : 'desc'));
+            }}
+            className="ml-2 text-gray-400 text-xs"
+          >
+            <FontAwesomeIcon icon={sortDirection === 'desc' ? faChevronDown : faChevronUp} />
+          </button>
+        </button>
+
+        <AnimatePresence>
+          {dropdownOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              className="absolute top-8 left-0 mt-2 w-56 bg-white rounded-md border z-20 shadow-sm"
+            >
+              <div className="p-3 flex flex-col gap-2">
+                {['mean', 'std', 'size'].map(k => (
+                  <label
+                    key={k}
+                    className={`flex items-center justify-between px-3 py-2 rounded cursor-pointer hover:bg-gray-50 ${sortBy === k ? 'bg-indigo-50' : ''}`}
+                  >
+                    <div>
+                      <div className="text-sm font-medium">{labelFor(k as SortKey)}</div>
+                      <div className="text-xs text-gray-500">
+                        {k === 'mean' ? 'mean similarity' : k === 'std' ? 'standard deviation' : 'prototype size'}
+                      </div>
+                    </div>
+                    <input
+                      type="radio"
+                      name="sort"
+                      checked={sortBy === k}
+                      onChange={() => {
+                        setSortBy(k as SortKey);
+                        setDropdownOpen(false);
+                      }}
+                      className="ml-2"
+                    />
+                  </label>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  )
 }
