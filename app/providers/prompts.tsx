@@ -5,7 +5,6 @@ import { StorageKeys } from '../constants/global';
 import * as LocalStorage from "@/app/lib/client/storage/session"
 import { sereleumClient } from '../sereleum/client';
 import { useRouter } from 'next/navigation';
-import cluster from 'cluster';
  
 interface PromptsContextProps {
     clusters: Cluster[];
@@ -43,7 +42,6 @@ const PromptsProvider = ({ children, initialClusters, initialPrompts, overview }
 
   useEffect(() => {
       setTopClusters(promptsOverview.top_clusters)
-      LocalStorage.set(StorageKeys.overview, JSON.stringify(promptsOverview));
     }, [promptsOverview])
 
    
@@ -203,7 +201,6 @@ const useDashboard = () => {
     const fetchPlot = async () => {
       const request = indexedDB.open("ClusterPlotDB", 1);
       const cachedOverview = LocalStorage.get<PromptsOverviewInfo>(StorageKeys.overview) as PromptsOverviewInfo | null;
-      
       request.onupgradeneeded = () => {
         const db = request.result;
         if (!db.objectStoreNames.contains("plots")) {
@@ -222,11 +219,17 @@ const useDashboard = () => {
         });
 
 
-        if (cachedBlob && cachedOverview && isSameOverview(cachedOverview, promptsOverview)) {
-          url = URL.createObjectURL(cachedBlob);
-          setClusterPlotUrl(url);
-          return
-        }        
+        if (cachedBlob) {
+          if(cachedOverview && isSameOverview(cachedOverview, promptsOverview)) {
+            url = URL.createObjectURL(cachedBlob);
+            setClusterPlotUrl(url);
+            console.log("Is the same")
+            return
+          }else{
+            const txWriteDelete = db.transaction("plots", "readwrite");
+            txWriteDelete.objectStore("plots").delete("clusterPlot");          
+          }    
+        }   
 
         const blob = await sereleumClient.getClusterPlotBlob();
         if (blob) {
@@ -234,7 +237,7 @@ const useDashboard = () => {
           url = URL.createObjectURL(blob);
           setClusterPlotUrl(url);
 
-          const txWrite = db.transaction("plots", "readwrite");
+        const txWrite = db.transaction("plots", "readwrite");
           txWrite.objectStore("plots").put(blob, "clusterPlot");
         }
       };
@@ -247,7 +250,7 @@ const useDashboard = () => {
     return () => {
       if (url) URL.revokeObjectURL(url);
     };
-  }, [clusteringStatus]);
+}, [clusteringStatus, promptsOverview]);
 
 
 
