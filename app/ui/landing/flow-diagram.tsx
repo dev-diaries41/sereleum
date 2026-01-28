@@ -3,14 +3,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, useMotionValue, useAnimationFrame } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartLine, faLayerGroup, faCoins, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
+import { SectionItem } from '@/app/types';
 
-export const FlowDiagram = () => {
-  const steps = [
-    { id: 1, title: 'Analyse prompts', icon: faChartLine },
-    { id: 2, title: 'Understand user intent', icon: faLayerGroup },
-    { id: 3, title: 'Optimise system prompts & product', icon: faCoins },
-    { id: 4, title: 'Better UX & outcomes', icon: faShieldHalved },
-  ];
+export const FlowDiagram = ({steps}: {steps: Partial<SectionItem>[]}) => {
 
 const trackRef = useRef<HTMLDivElement | null>(null);
   const x = useMotionValue(0);
@@ -50,10 +45,10 @@ const trackRef = useRef<HTMLDivElement | null>(null);
       <div className="relative w-full">
         <motion.div ref={trackRef} className="flex w-max" style={{ x }}>
           {[...steps, ...steps].map((step, idx) => (
-            <div key={`${step.id}-${idx}`} className="flex items-center gap-6">
+            <div key={`${step.title}-${idx}`} className="flex items-center gap-6">
               <div className="flex flex-col items-center gap-3">
                 <div className="w-20 h-20 rounded-2xl bg-white border border-gray-300 shadow-sm flex items-center justify-center text-indigo-600">
-                  <FontAwesomeIcon icon={step.icon} className="w-6 h-6" />
+                  {step.icon &&<FontAwesomeIcon icon={step.icon} className="w-6 h-6" />}
                 </div>
                 <div className="text-sm font-medium text-gray-700 whitespace-nowrap">
                   {step.title}

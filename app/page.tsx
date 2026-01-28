@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
-import { Features, UseCases } from './constants/content/hero';
+import { Features, UseCases, FlowDiagramSteps } from './constants/content/hero';
 import { FeatureCard } from './ui/landing/features';
 import { FlowDiagram } from './ui/landing/flow-diagram';
 import { motion } from "framer-motion"
@@ -61,7 +61,7 @@ const HeroSection = () => {
           </Link>
         </div>
 
-        <FlowDiagram />
+        <FlowDiagram steps={FlowDiagramSteps} />
       </div>
 
       {/* subtle urban accent */}

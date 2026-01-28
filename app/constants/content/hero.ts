@@ -1,5 +1,5 @@
 import {  SectionItem } from '@/app/types';
-import { faMoneyBill } from '@fortawesome/free-solid-svg-icons';
+import { faChartLine, faCoins, faLayerGroup, faMoneyBill, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 
 export const Features: SectionItem[] = [
   {
@@ -68,3 +68,9 @@ export const UseCases: SectionItem[] = [
   },
 ];
 
+  export const FlowDiagramSteps = [
+    { title: 'Analyse prompts', icon: faChartLine },
+    {title: 'Understand user intent', icon: faLayerGroup },
+    {title: 'Optimise product', icon: faCoins },
+    {title: 'Better UX & outcomes', icon: faShieldHalved },
+  ];
