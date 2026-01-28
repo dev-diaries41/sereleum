@@ -65,14 +65,14 @@ export interface AddPromptsResponse extends JobReceipt {}
 
 export interface GetPromptsRequest {
   prompt_ids?: string[];
-  clusterIds?: string[];
+  cluster_ids?: string[];
   limit?: number;
   offset?: number
 }
 
 export interface QueryPromptsRequest {
   query: string;
-  clusterIds?: string[];
+  cluster_ids?: string[];
   limit?: number;
 }
 

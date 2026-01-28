@@ -65,7 +65,7 @@ export class ReveliumClient {
     const url = `${this.baseUrl}${BASE_PROMPTS_ENDPOINT}`;
     const payload: GetPromptsRequest = { 
       prompt_ids: ids,
-      clusterIds: clusterIds,
+      cluster_ids: clusterIds,
       limit: limit, 
       offset: offset
     };
@@ -84,7 +84,7 @@ export class ReveliumClient {
     const url = `${this.baseUrl}${QUERY_PROMPTS_ENDPOINT}`;
     const payload: QueryPromptsRequest = { 
       query,
-      clusterIds: clusterIds,
+      cluster_ids: clusterIds,
       limit: limit, 
     };
 

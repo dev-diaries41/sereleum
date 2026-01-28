@@ -2,7 +2,7 @@
 
 import { usePrompts } from "@/app/providers/prompts";
 import { sereleumClient } from "@/app/sereleum/client";
-import { Cluster, ClusterMetadata, Prompt } from "@/app/types";
+import { Cluster, ClusterMetadata, Prompt, UNLABELLED_CLUSTER } from "@/app/types";
 import { faCheck, faTag } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
@@ -21,8 +21,8 @@ export function ClusterDetail({ id }: { id?: string }) {
   const cluster = useMemo(() => {
     if (!id) return undefined;
     return clusters.find(
-      (c) => c.prototype_id === id || (c as any).id === id || c.label === id
-    ) as Cluster | undefined;
+      (c) => ( c.prototype_id === id )|| (c.label === id)
+    );
   }, [clusters, id]);
   
 
@@ -84,7 +84,7 @@ return (
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl md:text-3xl">
-              {cluster.label || 'Untitled cluster'}
+              {cluster.label == UNLABELLED_CLUSTER? cluster.prototype_id: cluster.label}
             </h2>
           </div>
 

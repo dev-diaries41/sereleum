@@ -283,7 +283,7 @@ const useDashboard = () => {
 
   const handleFileUpload = async() => {
     if(!promptsFile) return
-    const res = await sereleumClient.addPromptsFile(promptsFile, {autoLabel: true})
+    const res = await sereleumClient.addPromptsFile(promptsFile, {autoLabel: false})
     setPromptsFile(null)
     setIndexingStatus(res.status)
     LocalStorage.set(StorageKeys.indexingJobId, res.job_id)
