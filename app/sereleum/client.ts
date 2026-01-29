@@ -46,7 +46,7 @@ export class ReveliumClient {
     const url = `${this.baseUrl}${ADD_PROMPTS_FILE_ENDPOINT}`;
     const formData = new FormData();
 
-    const defaultOptions: ClusterOptions = {"autoLabel": false, "autoMergeThreshold": 0.9, "defaultThreshold": 0.2}
+    const defaultOptions: ClusterOptions = {"autoLabel": false, "autoMergeThreshold": 0.9, "defaultThreshold": 0.3}
     const options = {...defaultOptions, ...(clusterOptions || {})}
     formData.append("file", file);
     formData.append("auto_label", String(options.autoLabel))
