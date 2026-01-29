@@ -2,19 +2,22 @@
 
 import { usePrompts } from "@/app/providers/prompts";
 import { ClusterAccuracyPlayground } from "./cluster-accuracy";
-import React, { useEffect, useMemo, useState } from "react";
-import { ClusterAccuracy, Cluster, UNLABELLED_CLUSTER } from "@/app/types";
+import  { useEffect, useMemo, useState } from "react";
+import { ClusterAccuracy, Cluster } from "@/app/types";
 import { sereleumClient } from "@/app/sereleum/client";
 import { ClusterRow } from "./cluster-row";
-import { motion, AnimatePresence } from "framer-motion";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSort, faChevronUp, faChevronDown, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { SortBySelector } from "../common/sort-by";
+import { MergeClustersView } from "./clusters/merger";
+
+
+const SortKeyOptions = ['mean', 'std', 'size'] as const;
+type SortKey = typeof SortKeyOptions[number];
+
 
 interface ClustersWrapperProps {
   pageSize?: number;
 }
 
-type SortKey = "mean" | "std" | "size" | null;
 
 export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
   const { clusters, promptsOverview, setTopClusters, setClusters, onLoadMoreClusters } = usePrompts();
@@ -35,7 +38,7 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
   const [page, setPage] = useState(0);
 
   // Sorting state
-  const [sortBy, setSortBy] = useState<SortKey>(null);
+  const [sortBy, setSortBy] = useState<SortKey>('mean');
   const [sortDirection, setSortDirection] = useState<"desc" | "asc">("desc");
 
   const runAccuracy = async () => {
@@ -203,8 +206,8 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
         </div>
       </div>
 
-      
       <SortBySelector
+        options = {SortKeyOptions}
         sortBy={sortBy}
         setSortBy={setSortBy}
         sortDirection={sortDirection}
@@ -226,94 +229,21 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
       )}
 
       {/* Selection header - visible only when selecting */}
-      {isSelecting && (
-        <div className="w-full flex flex-col gap-3">
-          <div className="w-full flex items-center justify-between gap-4 p-3 bg-white rounded-md shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="text-sm font-medium">Selected</div>
-              <div className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-sm font-semibold">{selectedClusterIds.length}</div>
-              <div className="text-sm text-gray-500">of {totalClustersCount}</div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                disabled={selectedClusterIds.length === 0}
-                onClick={handleMergeClustersClick}
-                className="px-4 py-2 rounded-md bg-rose-600 text-white text-sm disabled:opacity-60"
-              >
-                Merge clusters
-              </button>
-              <button
-                onClick={() => {
-                  clearSelection();
-                }}
-                className="px-3 py-2 rounded-md border text-sm"
-              >
-                Clear
-              </button>
-              <button
-                onClick={() => {
-                  setIsSelecting(false);
-                  clearSelection();
-                }}
-                className="px-3 py-2 rounded-md border text-sm"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-
-          {/* Parent chooser UI - compact select */}
-          {isChoosingParent && (
-            <div className="w-full bg-white rounded-md shadow-sm p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm font-medium">Choose parent cluster</div>
-                  <div className="text-xs text-gray-500">The selected parent will remain; other selected clusters will be merged into it.</div>
-                </div>
-                <div className="text-sm text-gray-600">{selectedClusterIds.length} clusters selected</div>
-              </div>
-
-              <div className="mt-3">
-                <select
-                  value={parentClusterId ?? ""}
-                  onChange={(e) => setParentClusterId(e.target.value)}
-                  className="rounded border px-3 py-2 mt-2"
-                  aria-label="Select parent cluster"
-                >
-                  <option value="" disabled>
-                    -- choose parent cluster --
-                  </option>
-                  {selectedClusters.map((c) => (
-                    <option key={c.prototype_id} value={c.prototype_id}>
-                      {c.label === UNLABELLED_CLUSTER ? c.prototype_id : c.label} — {c.metadata?.prototype_size ?? 0} items
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="mt-4 flex gap-2 justify-end">
-                <button
-                  onClick={() => {
-                    setIsChoosingParent(false);
-                    setParentClusterId(null);
-                  }}
-                  className="px-3 py-2 rounded-md border text-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleConfirmMerge}
-                  disabled={!parentClusterId}
-                  className="px-4 py-2 rounded-md bg-rose-600 text-white text-sm disabled:opacity-60"
-                >
-                  Confirm merge
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+    {isSelecting && (
+          <MergeClustersView
+            selectedClusterIds={selectedClusterIds}
+            totalClustersCount={totalClustersCount}
+            selectedClusters={selectedClusters}
+            parentClusterId={parentClusterId}
+            setParentClusterId={setParentClusterId}
+            handleMergeClustersClick={handleMergeClustersClick}
+            clearSelection={clearSelection}
+            setIsSelecting={setIsSelecting}
+            isChoosingParent={isChoosingParent}
+            setIsChoosingParent={setIsChoosingParent}
+            handleConfirmMerge={handleConfirmMerge}
+          />
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
         {pageClusters.map((cluster) => (
@@ -346,84 +276,4 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
       </div>
     </div>
   );
-}
-
-interface SortBySelectorProps {
-  sortBy: 'mean' | 'std' | 'size' | null;
-  setSortBy: (key: 'mean' | 'std' | 'size' | null) => void;
-  sortDirection: 'asc' | 'desc';
-  setSortDirection: React.Dispatch<React.SetStateAction<'asc' | 'desc'>>;
-  labelFor: (key: 'mean' | 'std' | 'size' | null) => string;
-}
-
-
-function SortBySelector({
-  sortBy,
-  setSortBy,
-  sortDirection,
-  setSortDirection,
-  labelFor,
-}: SortBySelectorProps) {
-  const [dropdownOpen, setDropdownOpen] = React.useState(false);
-
-  return (
-      <div className="w-full flex items-center justify-start mb-4">
-      <div className="relative flex items-center gap-2">
-        <span className="text-sm font-medium">Sort by:</span>
-        <div
-          className="flex items-center gap-2 px-3 py-2 bg-white border rounded-md shadow-sm hover:shadow-md text-sm"
-          onClick={() => setDropdownOpen(d => !d)}
-        >
-          <FontAwesomeIcon icon={faSort} />
-          <span className="text-sm font-medium">{labelFor(sortBy)}</span>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setSortDirection(d => (d === 'desc' ? 'asc' : 'desc'));
-            }}
-            className="ml-2 text-gray-400 text-xs"
-          >
-            <FontAwesomeIcon icon={sortDirection === 'desc' ? faChevronDown : faChevronUp} />
-          </button>
-        </div>
-
-        <AnimatePresence>
-          {dropdownOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              className="absolute top-8 left-0 mt-2 w-56 bg-white rounded-md border z-20 shadow-sm"
-            >
-              <div className="p-3 flex flex-col gap-2">
-                {['mean', 'std', 'size'].map(k => (
-                  <label
-                    key={k}
-                    className={`flex items-center justify-between px-3 py-2 rounded cursor-pointer hover:bg-gray-50 ${sortBy === k ? 'bg-indigo-50' : ''}`}
-                  >
-                    <div>
-                      <div className="text-sm font-medium">{labelFor(k as SortKey)}</div>
-                      <div className="text-xs text-gray-500">
-                        {k === 'mean' ? 'mean similarity' : k === 'std' ? 'standard deviation' : 'prototype size'}
-                      </div>
-                    </div>
-                    <input
-                      type="radio"
-                      name="sort"
-                      checked={sortBy === k}
-                      onChange={() => {
-                        setSortBy(k as SortKey);
-                        setDropdownOpen(false);
-                      }}
-                      className="ml-2"
-                    />
-                  </label>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
-  )
 }
