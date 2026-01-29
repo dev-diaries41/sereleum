@@ -60,12 +60,6 @@ export const UseCases: SectionItem[] = [
       "Identify expensive workflows and reduce LLM spend through targeted prompt standardization.",
     icon: faMoneyBill,
   },
-  {
-    title: "From Chat to Product Workflows",
-    description:
-      "Turn repeated free-form prompts into reliable, structured product experiences.",
-    icon: faProjectDiagram,
-  },
 ];
 
   export const FlowDiagramSteps = [
