@@ -1,24 +1,32 @@
 import React from 'react';
-import Image from 'next/image';
 import { LogoProps } from '@/app/types';
 
 export default function Logo({
   src,
   name,
-  alt = 'logo',
   width = 30,
   height = 30,
-}: LogoProps) {
+  color = '#4F46E5', // optional: allows tint color
+}: LogoProps & { color?: string }) {
   return (
-    <div className='flex items-center'>
-      {name && <h1 className='w-full text-2xl font-bold'>{name}</h1>}
-       <Image
-            src={src}
-            alt={alt}
-            width={width}
-            height={height}
-            // className="relative w-10 h-10"
-          />
+    <div className={`flex items-center -translate-x-4`}>
+      <div
+        className={``}
+        style={{
+          width: width,
+          height: height,
+          backgroundColor: color,
+          WebkitMaskImage: `url(${src})`,
+          WebkitMaskRepeat: 'no-repeat',
+          WebkitMaskSize: 'contain',
+          WebkitMaskPosition: 'center',
+          maskImage: `url(${src})`,
+          maskRepeat: 'no-repeat',
+          maskSize: 'contain',
+          maskPosition: 'center',
+        }}
+      />
+      {name && <h1 className="text-2xl font-bold -translate-x-5">{name}</h1>}
     </div>
   );
-};
+}

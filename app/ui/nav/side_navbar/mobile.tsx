@@ -38,9 +38,9 @@ onToggleMenu
             href="/"
           >
            <Logo
-                    src={'/sereleum-logo-nobg.png'}
-                     width={50} 
-                     height={50}
+                    src={'/sereleum-infinity-logo.png'}
+                     width={80} 
+                     height={80}
                     alt={'logo'}
                   />
           </Link>
