@@ -245,7 +245,7 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
           />
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+        <div className=" w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
         {pageClusters.map((cluster) => (
           <ClusterRow
             key={cluster.prototype_id}
