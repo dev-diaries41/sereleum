@@ -370,7 +370,7 @@ function SortBySelector({
       <div className="w-full flex items-center justify-start mb-4">
       <div className="relative flex items-center gap-2">
         <span className="text-sm font-medium">Sort by:</span>
-        <button
+        <div
           className="flex items-center gap-2 px-3 py-2 bg-white border rounded-md shadow-sm hover:shadow-md text-sm"
           onClick={() => setDropdownOpen(d => !d)}
         >
@@ -385,7 +385,7 @@ function SortBySelector({
           >
             <FontAwesomeIcon icon={sortDirection === 'desc' ? faChevronDown : faChevronUp} />
           </button>
-        </button>
+        </div>
 
         <AnimatePresence>
           {dropdownOpen && (
