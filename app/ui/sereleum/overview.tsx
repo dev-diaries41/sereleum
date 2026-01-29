@@ -171,10 +171,22 @@ function TopClustersDetails({ topN = 5, topClusters, isViewAllVisible, onViewAll
         <div>
           <h3 className="text-sm text-gray-500 font-semibold">{`Top ${topN} Clusters`}</h3>
         </div>
-        <FontAwesomeIcon
+        <div className='flex items-center gap-4'>
+          
+            {isViewAllVisible && (
+          <button
+            className="text-sm text-indigo-600 hover:underline"
+            onClick={onViewAllClusters}
+          >
+            View all clusters
+          </button>
+        )}
+          <FontAwesomeIcon
           icon={faLayerGroup}
           className="w-6 h-6 opacity-50"
         />
+        </div>
+      
       </div>
 
       {topClusters.length === 0 ? (
@@ -206,14 +218,7 @@ function TopClustersDetails({ topN = 5, topClusters, isViewAllVisible, onViewAll
        <div className="text-xs text-gray-500">
           Similarity and similarity spread help you understand cluster cohesion
         </div>
-        {isViewAllVisible && (
-          <button
-            className="text-sm text-indigo-600 hover:underline"
-            onClick={onViewAllClusters}
-          >
-            View all clusters
-          </button>
-        )}
+      
       </div>
     </div>
   );
