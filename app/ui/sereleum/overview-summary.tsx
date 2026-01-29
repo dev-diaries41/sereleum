@@ -13,6 +13,8 @@ export function OverviewSummary({ overview }: OverviewSummaryProps) {
     );
   }, 0);
 
+  const orderedClusters = overview.top_clusters.sort((a, b) => overview.top_cluster_token_counts[b.prototype_id] * b.metadata.prototype_size - overview.top_cluster_token_counts[a.prototype_id] * a.metadata.prototype_size)
+
   return (
     <div className="border border-gray-300 rounded-2xl shadow-sm p-6 w-full">
       {/* Totals */}
@@ -45,7 +47,7 @@ export function OverviewSummary({ overview }: OverviewSummaryProps) {
         </div>
 
         <div className="flex flex-col gap-1 mt-1">
-          {overview.top_clusters.map((cluster) => {
+          {orderedClusters.map((cluster) => {
             const clusterTokens =
               overview.top_cluster_token_counts[cluster.prototype_id] *
               cluster.metadata.prototype_size;

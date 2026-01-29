@@ -164,7 +164,8 @@ interface TopClustersDetailsProps {
   isViewAllVisible: boolean;
   onViewAllClusters: () => void;
 }
-function TopClustersDetails({ topN = 5, topClusters, isViewAllVisible, onViewAllClusters }: TopClustersDetailsProps) {
+function TopClustersDetails({ topN = 6, topClusters, isViewAllVisible, onViewAllClusters }: TopClustersDetailsProps) {
+  const sortedClusters = topClusters.sort((a, b) => b.metadata.prototype_size - a.metadata.prototype_size)
   return (
     <div className="lg:col-span-3 border border-gray-300 rounded-2xl shadow-sm p-6">
       <div className="flex items-center justify-between mb-4">
@@ -200,7 +201,7 @@ function TopClustersDetails({ topN = 5, topClusters, isViewAllVisible, onViewAll
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-          {topClusters.map((cluster) => (
+          {sortedClusters.map((cluster) => (
             <Link
               key={cluster.prototype_id}
               href={`/dashboard/clusters/cluster/${cluster.prototype_id}`}
