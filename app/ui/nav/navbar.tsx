@@ -68,7 +68,7 @@ export default function NavBar({ email }: NavBarProps) {
             <NavLinks navItems={filteredMobHeaderLinks} />
             <Link
               href={email ? '/dashboard' : '/login'}
-              className="w-auto ml-auto flex items-center justify-center mt-auto mb-8 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold p-2 px-4 rounded-full text-sm md:text-md"
+              className="w-auto ml-auto flex items-center justify-center mt-auto mb-8 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold p-2 px-4 rounded-lg text-sm md:text-md"
             >
               {email ? 'Analyse prompts' : 'Log in'}
             </Link>
@@ -79,7 +79,7 @@ export default function NavBar({ email }: NavBarProps) {
         <NavBarItems navItems={filteredHeaderLinks} />
         <Link
           href={email ? '/dashboard' : '/login'}
-          className="flex w-auto items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold p-2 px-4 rounded-full text-sm md:text-md"
+          className="flex w-auto items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold p-2 px-4 rounded-lg text-sm md:text-md"
         >
           {email ? 'Analyse prompts' : 'Log in'}
         </Link>

@@ -70,10 +70,6 @@ const trackRef = useRef<HTMLDivElement | null>(null);
           ))}
         </motion.div>
       </div>
-
-      <div className="mt-6 text-xs text-gray-500 max-w-xl mx-auto text-center">
-        <span className="font-medium">Outcome:</span> Use real prompt signals to iterate on prompts and product flows that measurably improve user experience and reduce cost.
-      </div>
     </div>
   );
 };
