@@ -1,63 +1,32 @@
-import React from 'react';
-import { NavButton } from '../buttons/button';
-import { CardProps } from '@/app/types';
-import { faLink, faPlay, faPlayCircle, faShare } from '@fortawesome/free-solid-svg-icons';
+'use client'
+import { motion } from 'framer-motion';
+import { SectionItem } from '@/app/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Spacer from '../utilities/spacer';
+import { ReactNode } from 'react';
 
-export default function Card ({ 
-  cta, 
-  link, 
-  title, 
-  description, 
-  tags, 
-  metadata,
-   ...props 
-  }: CardProps) {
+interface CardProps extends SectionItem {
+  index: number; // for staggered animation
+  children?: ReactNode
+}
+
+export const Card = ({ title, description, index, icon, children }: CardProps) => {
   return (
-    <div
-    className="flex flex-col min-h-[320px] opacity-90 bg-gray-700 text-gray-300 p-6 rounded-lg transform hover:scale-105 transition-transform duration-300 ease-in-out shadow-black shadow-lg hover:shadow-2xl border-gray-500"
-      {...props}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, ease: 'easeOut', delay: index * 0.1 }}
+      className="flex flex-col items-center md:items-start text-center md:text-left p-6 border border-gray-300 min-h-[200px] max-w-[400px] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300"
     >
-      <div className="text-left flex-grow" >
-        <h2 className="mb-2 text-xl font-semibold">
-          {title}
-        </h2>
-        <div className='border-b border-gray-500 mb-4'></div>
-        <p className="max-w-full text-left mb-4 text-md opacity-50 truncate-4-lines">
-          {description}
-        </p>
-        {tags && (
-          <div className="mb-8 max-w-full mx-auto justify-left items-left flex flex-wrap gap-2 overflow-hidden">
-            {tags.map((tag, index) => (
-              <span key={index} className="bg-gray-800 text-gray-200 p-1 rounded-md text-sm opacity-70">
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-
-
-      <div className="max-w-full flex justify-between items-center text-left mt-auto">
-        {metadata && (
-          <div className="w-full text-md font-semibold text-gray-400">
-            {metadata.map((item, index) => (
-              <span key={index} className="mr-2">
-                {item}
-              </span>
-            ))}
-          </div>
-        )}
-        <NavButton 
-          icon={faLink} 
-          href={link} target="_blank" rel="noopener noreferrer"
-          className="flex items-center h-12 w-12 justify-center bg-transparent border-2 border-emerald-500 hover:border-emerald-300 w-full  text-white font-semibold p-2 rounded-lg shadow-md gap-2"
-        >
-          {cta}
-          <FontAwesomeIcon icon={faPlayCircle} className="w-4 h-4" /> 
-        </NavButton>
-      </div>
-    </div>
+      {icon && (
+        <FontAwesomeIcon
+        icon={icon}
+        className='my-2 text-indigo-600 w-6, h-6'
+        />
+      )}
+      <h3 className="text-lg font-semibold mb-2">{title}</h3>
+      <p className="text-gray-500">{description}</p>
+      {children}
+    </motion.div>
   );
 };
