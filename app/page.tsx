@@ -115,7 +115,7 @@ export const HowItWorksSection = ({ steps }: { steps: SectionItem[] }) => {
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
           {steps.map((step, idx) => (
-            <Card title={step.title} description={step.description} index={idx} icon={step.icon}/>
+            <Card key={idx} title={step.title} description={step.description} index={idx} icon={step.icon}/>
           ))}
         </div>
       </div>
