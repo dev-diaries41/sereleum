@@ -10,13 +10,11 @@ import { useEffect, useRef, useState } from 'react';
 interface ClusterListSideNavWrapperProps {
   title?: string;
   clusters: Cluster[];
-  onDelete: (clusterId: string) => void;
 }
 
 export default function ClusterListSideNavWrapper({
   title = 'Top clusters',
   clusters,
-  onDelete,
 }: ClusterListSideNavWrapperProps) {
   const [openId, setOpenId] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -46,7 +44,7 @@ export default function ClusterListSideNavWrapper({
             {cluster.label == UNLABELLED_CLUSTER? cluster.prototype_id : cluster.label}
           </Link>
 
-          <button
+          {/* <button
             onClick={() =>
               setOpenId((prev) =>
                 prev === cluster.prototype_id ? null : cluster.prototype_id
@@ -63,14 +61,9 @@ export default function ClusterListSideNavWrapper({
               className="absolute right-0 top-8 z-10 bg-white rounded-md shadow-md w-40"
             >
               <ClusterActionMenu
-                onLabel={() => setOpenId(null)}
-                onDelete={() => {
-                  onDelete(cluster.prototype_id);
-                  setOpenId(null);
-                }}
-              />
+                />
             </div>
-          )}
+          )} */}
         </div>
       ))}
     </DropDownMenu>
