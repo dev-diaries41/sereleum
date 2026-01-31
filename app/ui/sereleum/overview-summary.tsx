@@ -2,9 +2,10 @@ import { PromptsOverviewInfo, UNLABELLED_CLUSTER } from "@/app/types";
 
 interface OverviewSummaryProps {
   overview: PromptsOverviewInfo;
+  topN?: number
 }
 
-export function OverviewSummary({ overview }: OverviewSummaryProps) {
+export function OverviewSummary({ overview, topN = 6 }: OverviewSummaryProps) {
   const totalTokens = overview.top_clusters.reduce((sum, cluster) => {
     return (
       sum +
@@ -17,7 +18,6 @@ export function OverviewSummary({ overview }: OverviewSummaryProps) {
 
   return (
     <div className="border border-gray-300 rounded-2xl shadow-sm p-6 w-full">
-      {/* Totals */}
       <div className="flex items-center gap-12">
         <div>
           <p className="text-sm text-gray-500 font-semibold">Total Prompts</p>
@@ -30,14 +30,10 @@ export function OverviewSummary({ overview }: OverviewSummaryProps) {
       </div>
 
       <div className="my-6 border-t border-gray-300" />
-
-      {/* Token breakdown */}
       <div>
         <p className="text-sm text-gray-500 mb-3 font-semibold">
-          Token Breakdown (Top 5 Clusters)
+          Token Breakdown — Top {topN} Clusters        
         </p>
-
-        {/* Column headers */}
         <div className="flex items-center justify-between px-3 py-1 text-xs font-medium text-gray-500">
           <span>Cluster</span>
           <div className="flex gap-6">
