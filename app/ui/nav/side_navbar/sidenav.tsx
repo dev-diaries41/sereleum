@@ -8,8 +8,18 @@ import MobileNav from './mobile';
 import Logo from '../../logo';
 import ClusterListSideNavWrapper from '../../sereleum/clusters-sidenav';
 import { usePrompts } from '@/app/providers/prompts';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGrip, faGripVertical } from '@fortawesome/free-solid-svg-icons';
+
+export const SidenavToggleIcon = ({ open = true }) => (
+  <div
+    className="relative w-4 h-4 border-2 border-gray-400 rounded-sm mr-4"
+    aria-hidden
+  >
+    {open && (
+      <div className="absolute left-0 top-0 h-full w-1 border-r-2 border-gray-400" />
+    )}
+  </div>
+);
+
 
 interface SideNavProps { 
   email: string | null | undefined, 
@@ -49,7 +59,7 @@ export default React.memo(function SideNav({ email, credits }: SideNavProps) {
             />
           </Link>
           <button>
-            <FontAwesomeIcon icon={faGripVertical} className='text-lg pr-4 text-gray-500'/>
+            <SidenavToggleIcon/>
           </button>
         </div>
        
