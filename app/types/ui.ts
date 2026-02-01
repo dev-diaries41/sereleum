@@ -1,6 +1,5 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode, SelectHTMLAttributes } from "react";
-import { positions } from "../constants/layout/style";
 import { Status } from "./requests";
 
 
@@ -99,9 +98,10 @@ export interface ToastOptions extends Omit<ToastProps, 'onClose'> {}
 export interface BasePopUpProps {
   title?: string;
   description?: string;
-  position?: keyof typeof positions;
   children?: ReactNode;
   isError?: boolean;
+  onClose?: () => void;
+  onConfirm?: () => void;
 }
 
 export interface LoaderDialogProps extends BasePopUpProps{
@@ -124,8 +124,6 @@ export interface CTAPopUpProps extends BasePopUpProps{
   onCloseCta?: string;
   onConfirmClassName?: string;
   onCloseClassName?: string;
-  onClose?: () => void;
-  onConfirm?: () => void;
 }
 
 export interface ProviderProps {

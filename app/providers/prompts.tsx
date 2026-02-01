@@ -115,7 +115,9 @@ const useDashboard = () => {
   const [clusteringStatus, setClusteringStatus] = useState<Status|null>(null);
   const [trackerMinimized, setTrackerMinimized] = useState(false);
   const [clusterPlotUrl, setClusterPlotUrl] = useState<string | null>(null);
-  const [promptsFile, setPromptsFile] = useState<File | null>(null)
+  const [promptsFile, setPromptsFile] = useState<File | null>(null);
+  const [error, setError] = useState<string|null>(null);
+
   const router = useRouter();
   const isViewAllVisible = promptsOverview.total_clusters > topClusters.length 
 
@@ -136,7 +138,7 @@ const useDashboard = () => {
         onFail: (e) => {
           setIndexingStatus("failed")
           LocalStorage.remove(StorageKeys.indexingJobId)
-          alert(e)
+          setError(e)
         },
         onActive: () => setIndexingStatus('active'),
       })
@@ -155,7 +157,7 @@ const useDashboard = () => {
       },
       onFail: (e) => {
         setClusteringStatus("failed")
-        alert(e)
+        setError(e)
       },
       onActive: () => setClusteringStatus('active'),
     })
@@ -297,7 +299,7 @@ const useDashboard = () => {
 
   const updateTrackerVisibility = (isMinimized: boolean) => setTrackerMinimized(isMinimized)
   
-
+  const resetError = () => setError(null)
 
   return {
     progress,
@@ -309,10 +311,12 @@ const useDashboard = () => {
     promptsFile,
     topClusters,
     isViewAllVisible,
+    error,
     handleFileUpload,
     goToClustersPage,
     updateTrackerVisibility,
-    updatePromptsFile
+    updatePromptsFile,
+    resetError
   }
     
 }

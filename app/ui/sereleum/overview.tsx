@@ -1,18 +1,19 @@
 'use client';
 
-import {  Cluster } from '@/app/types';
 import Image from 'next/image';
+import Link from 'next/link';
+import {  Cluster } from '@/app/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faLayerGroup, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import FileUploader from '../common/upload';
 import {  AcceptedMimes } from '@/app/constants/global';
 import { ClusterRow } from './cluster-row';
 import { useDashboard } from '@/app/providers/prompts';
-import Link from 'next/link';
 import { ProgressTrackerPopUp } from '../common/progress-tracker';
 import { OverviewSummary } from './overview-summary';
 import { TokenUsageByClusterChart } from './charts/cluster-tokens';
 import { NumberPromptsPerClusterChart } from './charts/cluster-density';
+import {InlinePopUp} from '../common/inline-popup';
 
 
 export function DashboardOverview() {
@@ -25,13 +26,14 @@ export function DashboardOverview() {
     promptsOverview: overview, 
     trackerMinimized, 
     promptsFile,
-    isViewAllVisible,  
+    isViewAllVisible,
+    error,  
     handleFileUpload, 
     goToClustersPage, 
     updateTrackerVisibility, 
-    updatePromptsFile
+    updatePromptsFile,
+    resetError
   } = useDashboard()
-
 
   return (
     <div className="flex-1 mx-auto w-full">
@@ -87,6 +89,7 @@ export function DashboardOverview() {
               }
             </div>
           </div>
+          {error && <InlinePopUp description={error} isError={true} onClose={resetError}/>}
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
             <OverviewSummary overview={overview}/>
             <ClustersPlot url={clusterPlotUrl}/>
@@ -219,7 +222,6 @@ function TopClustersDetails({ topN = 6, topClusters, isViewAllVisible, onViewAll
        <div className="text-xs text-gray-500">
           Similarity and similarity spread help you understand cluster cohesion
         </div>
-      
       </div>
     </div>
   );
