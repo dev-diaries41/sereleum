@@ -4,7 +4,7 @@
   <img src="public/screenshots/dashboard-page.png" alt="sereleum-dashboard" style="border-radius: 20px;">
 </div>
 
-| <img src="public/screenshots/clusters-page.png" alt="clusters-page" width="200px"> | <img src="public/screenshots/cluster-details-page.png" alt="cluster-details-page" width="200px"> | <img src="public/screenshots/prompts-page.png" alt="prompts-page" width="200px"> | <img src="public/screenshots/graphs.png" alt="dashboard-graphs" width="200px"> |
+| <img src="public/screenshots/clusters-page.png" alt="clusters-page" width="200px"> | <img src="public/screenshots/cluster-details-page.png" alt="cluster-details-page" width="400px"> | <img src="public/screenshots/prompts-page.png" alt="prompts-page" width="200px"> | <img src="public/screenshots/graphs.png" alt="dashboard-graphs" width="200px"> |
 |------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
 
 Sereleum is a prompts analytics platform that allows businesses to turn user prompts into actionable insights. It enables uncovering semantic patterns, and optimising LLM-powered products. 
