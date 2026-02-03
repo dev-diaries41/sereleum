@@ -8,7 +8,7 @@
 |-----------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
 | <img src="public/screenshots/prompts-page.png" alt="prompts-page" width="400px">  | <img src="public/screenshots/graphs.png" alt="dashboard-graphs" width="400px">            |
 
-Sereleum is a prompts analytics platform that allows businesses to turn user prompts into actionable insights. It enables uncovering semantic patterns, and optimising LLM-powered products. 
+Sereleum is a client web application for prompts analytics that allows businesses to turn user prompts into actionable insights. It enables uncovering semantic patterns and optimizing LLM-powered products. It depends on [sereleum-core](https://github.com/dev-diaries41/sereleum-core)
 
 ## Core Features
 
