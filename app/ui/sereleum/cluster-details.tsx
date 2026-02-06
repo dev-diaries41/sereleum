@@ -16,14 +16,14 @@ export function ClusterDetail({ id }: { id?: string }) {
   const [saving, setSaving] = useState(false);
   const [topPrompts, setTopPrompts] = useState<Prompt[]>([]);
   const [isPromptsVisible, setIsPromptsVisible] = useState(false);
-
-
   const cluster = useMemo(() => {
     if (!id) return undefined;
     return clusters.find(
       (c) => ( c.prototype_id === id )|| (c.label === id)
     );
   }, [clusters, id]);
+
+  const isUnlabelled = cluster?.label === UNLABELLED_CLUSTER
   
 
   useEffect(() => {
@@ -81,11 +81,14 @@ return (
       </>
     ) : (
       <div className="p-8 max-w-full">
-        <div className="flex items-center justify-between mb-6">
-          <div>
+        <div className="flex items-start justify-between mb-6">
+          <div className="flex flex-col gap-4">
             <h2 className="text-2xl md:text-3xl">
-              {cluster.label == UNLABELLED_CLUSTER? cluster.prototype_id: cluster.label}
+              {isUnlabelled? cluster.prototype_id: cluster.label}
             </h2>
+            {!isUnlabelled && <h3 className="text-sm md:text-md text-gray-500">
+              id: {cluster.prototype_id}
+            </h3>}
           </div>
 
           <button
