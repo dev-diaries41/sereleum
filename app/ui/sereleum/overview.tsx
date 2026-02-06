@@ -61,6 +61,7 @@ export function DashboardOverview() {
                 )}
                 {promptsFile ? (
                   <button
+                    disabled = {indexingStatus !== null || clusteringStatus !== null}
                     onClick={handleFileUpload}
                     className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow-md"
                   >
