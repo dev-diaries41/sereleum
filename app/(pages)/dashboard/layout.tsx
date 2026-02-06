@@ -20,7 +20,7 @@ export default async function Layout({
     <PromptsProvider initialClusters={clusters} initialPrompts={prompts} overview={promptOverview}>
       <div className={``}>
         <Sidenav email={email} credits={credits!}/>
-        <div className="flex flex-col max-w-7xl mx-auto lg:pl-[240px]">{children}</div>
+        <div className="flex flex-col max-w-7xl mx-auto lg:pl-[240px] pt-16 lg:pt-0">{children}</div>
       </div>
       </PromptsProvider>
   )
