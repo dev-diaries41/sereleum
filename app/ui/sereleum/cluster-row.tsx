@@ -13,13 +13,11 @@ export function ClusterRow({
   toggleSelection?: () => void;
 }) {
   const router = useRouter();
-
-  const mean_similarity = cluster.metadata.mean_similarity;
-  const std_similarity = cluster.metadata.std_similarity;
-  const cohesionPercentage = Math.round(mean_similarity * 100);
+  const cohesionPercentage = Math.round(cluster.metadata.mean_similarity * 100);
   const hue = Math.max(0, Math.min(120, cohesionPercentage * 1.2));
   const barColor = `hsl(${hue}, 70%, 50%)`;
-
+  const isUnlabelled = cluster.label === UNLABELLED_CLUSTER;
+  
   return (
     <div
       onClick={() => {
@@ -54,17 +52,13 @@ export function ClusterRow({
           <div className="flex flex-col gap-1 min-w-0 w-full">
             <div
               className="text-sm font-medium truncate"
-              title={cluster.label === UNLABELLED_CLUSTER ? cluster.prototype_id : cluster.label}
+              title={isUnlabelled ? cluster.prototype_id : cluster.label}
             >
-              {cluster.label === UNLABELLED_CLUSTER ? cluster.prototype_id : cluster.label}
+              {isUnlabelled ? cluster.prototype_id : cluster.label}
             </div>
-
-            {cluster.label === UNLABELLED_CLUSTER && (
-              <div className="text-xs text-gray-500 truncate">{cluster.label}</div>
-            )}
-
+            <div className="text-xs text-gray-500 truncate">{cluster.prototype_id}</div>
             <div className="text-xs text-gray-500 truncate">
-              {cluster.metadata?.prototype_size ?? 0} items in cluster
+              {cluster.metadata?.prototype_size ?? 0} items
             </div>
           </div>
         </div>
@@ -85,7 +79,7 @@ export function ClusterRow({
           <div className="mt-2 text-xs text-gray-500 flex flex-wrap sm:flex-nowrap gap-3">
             <div title="Separation margin between clusters" className="truncate">
               similarity spread:{" "}
-              {std_similarity.toFixed(3)}
+              {cluster.metadata.std_similarity.toFixed(3)}
             </div>
           </div>
         </div>
