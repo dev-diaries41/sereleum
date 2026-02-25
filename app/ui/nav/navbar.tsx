@@ -26,6 +26,9 @@ interface NavBarProps extends Omit<HeaderProps, 'credits'>{
 }
 
 export default function NavBar({ email }: NavBarProps) {
+  const stage = process.env.NEXT_PUBLIC_APP_STAGE;
+  const mainCTA = stage === "prelaunch"? "Get Free Report" : "Analyse Prompts";
+
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -81,7 +84,7 @@ export default function NavBar({ email }: NavBarProps) {
           href={email ? '/dashboard' : '/login'}
           className="flex w-auto items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold p-2 px-4 rounded-lg text-sm md:text-md"
         >
-          {email ? 'Analyse prompts' : 'Log in'}
+          {email ? mainCTA : 'Log in'}
         </Link>
       </div>
     </nav>

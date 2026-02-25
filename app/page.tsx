@@ -3,8 +3,6 @@ import Link from 'next/link';
 import { Features, FlowDiagramSteps, HowItWorksSteps } from './constants/content/hero';
 import { FeatureCard } from './ui/landing/features';
 import { FlowDiagram } from './ui/landing/flow-diagram';
-import Faq from './ui/common/faq';
-import { faqData } from './constants/content/faq';
 import { Card } from './ui/cards/card';
 import { SectionItem } from './types';
 
@@ -24,12 +22,14 @@ function Home() {
       <HeroSection />
       <FeaturesSection />
       <HowItWorksSection steps={HowItWorksSteps}/>
-      <Faq faq={faqData} />
     </div>
   );
 }
 
 const HeroSection = () => {
+  const stage = process.env.NEXT_PUBLIC_APP_STAGE;
+  const mainCTA = stage === "prelaunch"? "Get Free Report" : "Analyse Prompts";
+
   return (
     <section className="relative w-full min-h-screen pt-24 flex flex-col items-center justify-center text-center px-6 bg-gradient-to-b from-indigo-50 via-white to-white">
       <div className="relative z-10 max-w-5xl">
@@ -49,14 +49,7 @@ const HeroSection = () => {
             href="/dashboard"
             className="relative inline-flex items-center justify-center px-8 py-4 font-semibold rounded-xl bg-indigo-600 text-white shadow-2xl hover:bg-indigo-500 transform hover:-translate-y-1 transition-all duration-300"
           >
-            Analyse Prompts
-          </Link>
-
-          <Link
-            href="/docs"
-            className="inline-flex items-center justify-center px-8 py-4 font-semibold rounded-xl border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 hover:scale-105 transition-transform duration-300"
-          >
-            Learn How It Works
+            {mainCTA}
           </Link>
         </div>
 
