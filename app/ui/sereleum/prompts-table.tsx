@@ -40,7 +40,7 @@ export default function PromptsTableView({ pageSize = 10 }: PromptsTableViewProp
     (p) =>
       p.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.metadata.cluster_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.content.toLowerCase().includes(searchTerm.toLowerCase())
+      p.data.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Compute pagination
