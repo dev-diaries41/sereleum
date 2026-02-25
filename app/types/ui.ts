@@ -216,11 +216,9 @@ export interface MetricType {
     message: string | null;
   };
   
+  export type QuestionnaireAnswer = string[] | string | boolean;
 
-  export type QuestionValue = string[] | string | boolean;
-
-
-  export interface TQuestion<T extends Record<string, QuestionValue>> {
+  export interface TQuestion<T extends Record<string, QuestionnaireAnswer>> {
     questionCategory: keyof T;
     question: string;
     options?: string[]; // Optional choices for questions

@@ -1,3 +1,5 @@
+import { TQuestion } from "./ui";
+
 export interface PaymentDetails {
     email: string | null;
     name: string;
@@ -44,4 +46,16 @@ export type Usage = {
     metadata?: Record<string, any>;
   }
 
+  export type OnboardingAnswers = {
+    companySize?: string; 
+    industry?: string;         
+    promptStorage?: string;          
+    promptVolume?: string    
+    usageGoals?: string[];     
+  }
 
+  export interface UserMetadata {
+    answers?: OnboardingAnswers;
+    creationDate?: Date;
+    hasCompletedOnboarding?: boolean
+  }
