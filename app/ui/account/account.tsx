@@ -4,7 +4,7 @@ import { Usage } from '@/app/types';
 import 'react-circular-progressbar/dist/styles.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartLine } from '@fortawesome/free-solid-svg-icons';
-import MetricCard from './usage-card';
+import UsageCard from './usage-card';
 import AccountInformation from './account-info';
 
 interface AccountOverviewProps  { 
@@ -28,7 +28,7 @@ export default function AccountOverview({ usage , email, credits }: AccountOverv
           <div className='w-full flex flex-wrap gap-4 justify-between items-center mb-8'>
             {Object.entries(usage).map(([key, value], index) => (
               <div key={index} className="w-full sm:w-full lg:w-1/4 mb-6 sm:mb-0">
-                <MetricCard periodUsage={{ name: capitalizeFirstLetter(key), value: value }} />
+                <UsageCard periodUsage={{ name: capitalizeFirstLetter(key), value: value }} />
               </div>
             ))}
           </div>
