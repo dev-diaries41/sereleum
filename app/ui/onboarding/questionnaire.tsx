@@ -5,19 +5,19 @@ import { useQuestionaire } from '@/app/hooks/useQuestionaire';
 import { WelcomePage } from './welcome';
 
 
-interface QuestionnaireCarouselProps<T extends Record<string, QuestionnaireAnswer>> {
+interface QuestionnaireProps<T extends Record<string, QuestionnaireAnswer>> {
   onboardingQuestions: TQuestion<T>[];
   welcomeTitle: string;
   welcomeMessage: string;
   onComplete: (answers: T) => void;
 }
 
-export default function QuestionnaireCarousel<T extends Record<string, QuestionnaireAnswer>>({
+export function Questionnaire<T extends Record<string, QuestionnaireAnswer>>({
   onboardingQuestions,
   welcomeMessage,
   welcomeTitle,
   onComplete,
-}: QuestionnaireCarouselProps<T>) {
+}: QuestionnaireProps<T>) {
 
   const {
     isIntroVisible,
