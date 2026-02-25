@@ -17,6 +17,7 @@ export default function UserProfileWidget({ userId, credits }: UserProfileWidget
         setIsOpen(false);
       }
     }
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
@@ -25,7 +26,7 @@ export default function UserProfileWidget({ userId, credits }: UserProfileWidget
     <div ref={containerRef} className="relative">
       <button
         type="button"
-        onClick={() => setIsOpen(open => !open)}
+        onClick={() => setIsOpen(prev => !prev)}
         className="w-full flex items-center p-2 justify-start hover:bg-gray-200 rounded-md"
       >
         <FontAwesomeIcon icon={faUserCircle} className="w-4 h-4 rounded-full" />
@@ -35,14 +36,15 @@ export default function UserProfileWidget({ userId, credits }: UserProfileWidget
       </button>
 
       {isOpen && (
-        <div className="absolute top-10 right-0 w-48 p-4 bg-white rounded-md shadow-md z-50 flex flex-col gap-2 text-sm">
+        <div className="absolute bottom-full right-0 mb-2 w-48 p-4 bg-white rounded-md shadow-md z-50 flex flex-col gap-2 text-sm border border-gray-200">
           <Link
             href="/dashboard/account"
-            className="w-full flex items-center gap-2 p-2 rounded-md hover:bg-gray-200 dark:hover:bg-[#444]"
+            className="w-full flex items-center gap-2 p-2 rounded-md hover:bg-gray-200"
           >
             <FontAwesomeIcon icon={faUserCircle} className="w-4 h-4" />
             Account
           </Link>
+
           <form
             action={async () => {
               await logout();
@@ -50,12 +52,13 @@ export default function UserProfileWidget({ userId, credits }: UserProfileWidget
           >
             <button
               type="submit"
-              className="w-full flex items-center gap-2 p-2 rounded-md hover:bg-gray-200 dark:hover:bg-[#444]"
+              className="w-full flex items-center gap-2 p-2 rounded-md hover:bg-gray-200"
             >
               <FontAwesomeIcon icon={faSignOut} className="w-4 h-4" />
               <span>Log out</span>
             </button>
           </form>
+
           <span className="sm:hidden w-full p-2 rounded-md opacity-50 font-medium">
             {credits} Credits
           </span>
