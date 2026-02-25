@@ -1,5 +1,5 @@
 'use client'
-import Image from 'next/image';
+import Logo from '../logo';
 
 interface WelcomePageProps {
   welcomeTitle: string;
@@ -15,15 +15,13 @@ export const WelcomePage = ({
   onSkip,
 }: WelcomePageProps) => {
   return (
-    <div className="bg-white dark:bg-gray-700 relative w-full max-w-5xl mx-auto rounded-md shadow-md shadow-black group animate-fadeIn">
+    <div className="bg-white relative w-full max-w-5xl mx-auto rounded-md shadow-md group animate-fadeIn">
       <div className="flex flex-col rounded-lg p-6 min-h-[400px]">
-        <Image
-          src={'/grademe-logo.png'}
+        <Logo
+          src={'/sereleum-infinity-logo.png'}
+          width={80} 
+          height={80}
           alt={'logo'}
-          width={40}
-          height={40}
-          className="max-w-9 max-h-9 md:max-w-12 md:max-h-12 mb-4"
-          priority={true}
         />
         <h2 className="text-2xl md:text-3xl font-semibold text-center mb-4">
           {welcomeTitle}

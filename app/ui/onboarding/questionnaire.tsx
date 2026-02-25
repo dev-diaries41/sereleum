@@ -3,6 +3,7 @@
 import { TQuestion, QuestionnaireAnswer } from '@/app/types';
 import { useQuestionaire } from '@/app/hooks/useQuestionaire';
 import { WelcomePage } from './welcome';
+import { useEffect } from 'react';
 
 
 interface QuestionnaireProps<T extends Record<string, QuestionnaireAnswer>> {
@@ -34,8 +35,15 @@ export function Questionnaire<T extends Record<string, QuestionnaireAnswer>>({
     goTo,
   } = useQuestionaire<T>(onboardingQuestions, onComplete);
 
+  useEffect(() => {
+  document.body.style.overflow = 'hidden';
+  return () => {
+    document.body.style.overflow = '';
+  };
+}, []);
+
   return (
-    <div className="absolute p-4 inset-0 mx-auto flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300 ease-in-out">
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-hidden">
       {isIntroVisible ? (
         <WelcomePage
           onContinue={startQuestionnaire}
@@ -44,7 +52,7 @@ export function Questionnaire<T extends Record<string, QuestionnaireAnswer>>({
           welcomeTitle={welcomeTitle}
         />
       ) : (
-        <div className="bg-white dark:bg-gray-700 relative w-full max-w-5xl rounded-md shadow-md shadow-black group">
+        <div className="bg-white relative w-full max-w-5xl rounded-md shadow-md shadow-black group">
           <div className="relative overflow-hidden rounded-lg p-6 min-h-[400px]">
             <div>
               <div className="flex flex-col gap-2 items-center mb-4">
