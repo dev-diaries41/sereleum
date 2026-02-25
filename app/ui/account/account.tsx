@@ -14,14 +14,13 @@ interface AccountOverviewProps  {
 }
 export default function AccountOverview({ usage , email, credits }: AccountOverviewProps) {
   return (
-    <div className=" flex-1 max-w-7xl mx-auto w-full">
-      <div className=" w-full flex flex-col  mx-auto  items-center text-center px-4 " >
-        <div className="flex flex-col w-full min-h-screen items-center py-8 pt-24 lg:pt-8">
+      <div className="w-full flex flex-col px-4 pt-24 sm:pt-8">        
+      <h1 className="text-xl md:text-2xl">Account overview</h1>
+        <div className="flex flex-col w-full min-h-screen items-center">
           <AccountInformation email={email} credits={credits}/>
           <div className="flex flex-col justify-center items-start gap-2 w-full mb-4">
             <div className="w-full flex flex-row items-center justify-start gap-2">
-              <FontAwesomeIcon icon={faChartLine} className="w-4 h-4"/>
-              <h1 className="text-xl md:text-2xl font-bold">Usage</h1>
+              {/* <h1 className="text-xl md:text-2xl">Usage</h1> */}
             </div>
           </div>
 
@@ -34,6 +33,5 @@ export default function AccountOverview({ usage , email, credits }: AccountOverv
           </div>
         </div>
       </div>
-    </div>
   );
 }
