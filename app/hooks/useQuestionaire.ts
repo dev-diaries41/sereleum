@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { TQuestion, QuestionValue } from "@/app/types";
+import { TQuestion, QuestionnaireAnswer } from "@/app/types";
 
-export function useQuestionaire<T extends Record<string, QuestionValue>>(
+export function useQuestionaire<T extends Record<string, QuestionnaireAnswer>>(
     onboardingQuestions: TQuestion<T>[],
     onComplete: (answers: T) => void
   ) {
@@ -27,14 +27,14 @@ export function useQuestionaire<T extends Record<string, QuestionValue>>(
           return {
             ...prevAnswers,
             [key]: isSelected
-              ? (currentOptions.filter((opt) => opt !== selectedOption) as QuestionValue)
-              : ([...currentOptions, selectedOption] as QuestionValue),
+              ? (currentOptions.filter((opt) => opt !== selectedOption) as QuestionnaireAnswer)
+              : ([...currentOptions, selectedOption] as QuestionnaireAnswer),
           };
         } else {
           // For single-answer questions, set the value directly
           return {
             ...prevAnswers,
-            [key]: selectedOption as QuestionValue,
+            [key]: selectedOption as QuestionnaireAnswer,
           };
         }
       });
