@@ -70,8 +70,8 @@ const usePrompts = () => {
 const { clusters, topClusters, prompts, promptsOverview,  setTopClusters, setClusters, setPrompts } = context;
 
 const onUpdatePrompt = async(prompt: Prompt, newClusterId: string) => {
-  const res = await sereleumClient.updatePromptClusterId(prompt.prompt_id, newClusterId)
-  setPrompts(prev => prev.map(p => p.prompt_id === prompt.prompt_id? {...p, metadata: {...p.metadata, cluster_id: newClusterId}} : p))
+  const res = await sereleumClient.updatePromptClusterId(prompt.id, newClusterId)
+  setPrompts(prev => prev.map(p => p.id === prompt.id? {...p, metadata: {...p.metadata, cluster_id: newClusterId}} : p))
 }
 
 const onLoadMorePrompts = async(limit: number, offset: number) => {

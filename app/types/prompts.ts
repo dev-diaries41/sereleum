@@ -16,8 +16,8 @@ export const createPromptMetadata = (): PromptMetadata => {
 };
 
 export interface Prompt {
-  prompt_id: string;
-  content: string;
+  id: string;
+  data: string;
   metadata: PromptMetadata;
 }
 

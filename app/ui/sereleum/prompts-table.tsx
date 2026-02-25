@@ -38,7 +38,7 @@ export default function PromptsTableView({ pageSize = 10 }: PromptsTableViewProp
 
   const filteredPrompts = prompts.filter(
     (p) =>
-      p.prompt_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.metadata.cluster_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -106,7 +106,7 @@ export default function PromptsTableView({ pageSize = 10 }: PromptsTableViewProp
               pagePrompts.map((prompt) => {
                 const clusterId = prompt.metadata.cluster_id;
                 const isLinkable = clusterId !== UNCLUSTERED;
-                const isExpanded = expandedIds.has(prompt.prompt_id);
+                const isExpanded = expandedIds.has(prompt.id);
 
                 const collapsedStyle: React.CSSProperties = {
                   display: '-webkit-box',
@@ -123,8 +123,8 @@ export default function PromptsTableView({ pageSize = 10 }: PromptsTableViewProp
                 };
 
                 return (
-                  <tr key={prompt.prompt_id} className="hover:bg-gray-50 transition-all duration-200 align-top">
-                    <td className="border px-4 py-2 break-words">{prompt.prompt_id}</td>
+                  <tr key={prompt.id} className="hover:bg-gray-50 transition-all duration-200 align-top">
+                    <td className="border px-4 py-2 break-words">{prompt.id}</td>
 
                     <td className="border px-4 py-2 break-words">
                       {isLinkable ? (
@@ -153,11 +153,11 @@ export default function PromptsTableView({ pageSize = 10 }: PromptsTableViewProp
 
                     <td
                       className="border px-4 py-2 cursor-pointer"
-                      onClick={() => toggleExpanded(prompt.prompt_id)}
+                      onClick={() => toggleExpanded(prompt.id)}
                       title={isExpanded ? 'Click to collapse' : 'Click to expand'}
                     >
                       <div style={isExpanded ? expandedStyle : collapsedStyle}>
-                        {prompt.content}
+                        {prompt.data}
                       </div>
                     </td>
                   </tr>

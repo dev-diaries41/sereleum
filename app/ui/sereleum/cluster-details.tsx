@@ -263,11 +263,11 @@ function PromptsTable({ prompts, cluster }: { prompts: Prompt[]; cluster: Cluste
             const clusterId = prompt.metadata.cluster_id;
             return (
               <tr
-                key={prompt.prompt_id}
+                key={prompt.id}
                 className="hover:bg-gray-50 transition-all duration-200 align-top"
               >
                 <td className="border px-4 py-2 break-words">
-                  {prompt.prompt_id}
+                  {prompt.id}
                 </td>
 
                 <td className="border px-4 py-2 break-words">
@@ -284,7 +284,7 @@ function PromptsTable({ prompts, cluster }: { prompts: Prompt[]; cluster: Cluste
                 </td>
 
                 <td className="border px-4 py-2 break-words">
-                  {prompt.content}
+                  {prompt.data}
                 </td>
               </tr>
             );

@@ -112,7 +112,7 @@ export class ReveliumClient {
 
 
   async updatePromptClusterId( promptId: string, clusterId: string): Promise<string> {
-    const payload: UpdatePromptClusterIdParams = { cluster_id: clusterId, prompt_id: promptId };
+    const payload: UpdatePromptClusterIdParams = { cluster_id: clusterId, id: promptId };
          
     const params = new URLSearchParams(
       Object.fromEntries(
