@@ -14,9 +14,9 @@ export const onboardingQuestions: TQuestion<OnboardingAnswers>[] = [
   },
   {
     question: "Industry / Sector",
-    options: ["Tech", "Finance", "Education", "Healthcare", "Retail", "Other"],
     questionCategory: 'industry',
     allowMultipleAnswers: false,
+    isTextInput: true
   },
   {
     question: "How do you currently store or manage user prompts?",
