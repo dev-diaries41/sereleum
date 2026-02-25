@@ -38,6 +38,7 @@ export const StorageKeys = {
   indexingProgress: "indexingProgress",
   clusters: "clusters",
   overview: "overview",
+  onboarding: "onboarding"
 }
 
 // Usage
