@@ -20,6 +20,8 @@ import {
   onboardingQuestions
 } from '@/app/constants/content/onboarding';
 import { useState } from 'react';
+import { upload } from '@/app/lib/server/cloudinary';
+import LoadingIndicator from '../utilities/circle-loading-indicator';
 
 interface DashboardOverviewProps {
   email?: string | null;
@@ -32,15 +34,37 @@ export function MVPDashboard({ email, hasCompletedOnboarding }: DashboardOvervie
   const [promptsFile, setPromptsFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        if (typeof reader.result === 'string') resolve(reader.result);
+        else reject(new Error('FileReader result is not a string'));
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  }
 
   const handleFileUpload = async () => {
     if (!promptsFile) return;
 
-    // Simulate upload (replace with real logic later)
-    await new Promise((r) => setTimeout(r, 600));
+    setLoading(true)
 
-    setPromptsFile(null);
-    setIsSubmitted(true);
+    try {
+      const base64 = await fileToBase64(promptsFile)
+      const url = await upload(base64, {folder: `prompts`})
+      setPromptsFile(null);
+      setIsSubmitted(true);
+    }catch(error){
+      setError("Error uploading file")
+      console.error(error)
+    }
+    finally{
+      setLoading(false)
+    }
   };
 
   const updatePromptsFile = (file: File | null) => setPromptsFile(file);
@@ -150,9 +174,10 @@ export function MVPDashboard({ email, hasCompletedOnboarding }: DashboardOvervie
                       <div className="flex gap-3 mt-2">
                         <button
                           onClick={handleFileUpload}
-                          className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow hover:bg-indigo-700 transition"
+                          className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow hover:bg-indigo-700 transition items-center flex gap-2"
                         >
                           Submit File
+                         {loading && <LoadingIndicator size={18}/>}
                         </button>
 
                         <button
