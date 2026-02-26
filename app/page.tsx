@@ -28,7 +28,7 @@ function Home() {
 
 const HeroSection = () => {
   const stage = process.env.NEXT_PUBLIC_APP_STAGE;
-  const mainCTA = stage === "prelaunch"? "Get Free Report" : "Analyse Prompts";
+  const mainCTA = stage === "mvp"? "Get Free Report" : "Analyse Prompts";
 
   return (
     <section className="relative w-full min-h-screen pt-24 flex flex-col items-center justify-center text-center px-6 bg-gradient-to-b from-indigo-50 via-white to-white">
