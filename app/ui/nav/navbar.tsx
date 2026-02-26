@@ -27,7 +27,7 @@ interface NavBarProps extends Omit<HeaderProps, 'credits'>{
 
 export default function NavBar({ email }: NavBarProps) {
   const stage = process.env.NEXT_PUBLIC_APP_STAGE;
-  const mainCTA = stage === "prelaunch"? "Get Free Report" : "Analyse Prompts";
+  const mainCTA = stage === "mvp"? "Get Free Report" : "Analyse Prompts";
 
   const [isOpen, setIsOpen] = useState(false);
 
