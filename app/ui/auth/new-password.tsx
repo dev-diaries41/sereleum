@@ -6,7 +6,7 @@ import InputError from '@/app/ui/common/form-error';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/navigation';
-import {RESET_SUCCESS} from '@/app/constants/messages';
+import {RESET_SUCCESS} from '@/app/constants/account';
 import CircleLoadingIndicator from '../common/circle-loading-indicator';
 import { CompleteResetState } from '@/app/types';
 

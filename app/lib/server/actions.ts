@@ -3,7 +3,7 @@ import { CompletePasswordResetFormSchema, ContactFormSchema, RegistrationFormSch
 import { CompleteResetState, NewUser, RegistrationState, ResetState } from '@/app/types';
 import { signIn, signOut } from '@/auth';
 import { RequestErrors } from '@/app/constants/errors';
-import {ACCOUNT_EXISTS, CHECK_EMAIL_MESSAGE, EMAIL_MESSAGE, PASSWORDS_DO_NOT_MATCH, REGISTRATION_FAILED, REGISTRATION_SUCCESS, RESET_FAILED, RESET_SUCCESS} from '@/app/constants/messages';
+import {ACCOUNT_EXISTS, CHECK_EMAIL_MESSAGE, EMAIL_MESSAGE, PASSWORDS_DO_NOT_MATCH, REGISTRATION_FAILED, REGISTRATION_SUCCESS, RESET_FAILED, RESET_SUCCESS} from '@/app/constants/account';
 import { isValidUser, signUp, updatePassword } from '@/app/lib/server/data/user';
 import { generateAccessUrl } from './jwt';
 import { sendEmail } from './email';
