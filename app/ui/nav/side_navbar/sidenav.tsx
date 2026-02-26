@@ -53,8 +53,8 @@ export default React.memo(function SideNav({ email, credits }: SideNavProps) {
           >
             <Logo
               src={'/sereleum-infinity-logo.png'}
-              width={80} 
-              height={80}
+              width={50} 
+              height={50}
               alt={'logo'}
             />
           </Link>

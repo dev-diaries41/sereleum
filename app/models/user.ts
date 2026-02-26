@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import { User } from '@/app/types';
-import { FREE_CREDITS } from '../constants/global';
 
 const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
@@ -11,6 +10,8 @@ const UserSchema = new mongoose.Schema({
   credits: { type: Number, default: 0 },
   metadata: {
     creationDate: { type: Date, default: Date.now },
+    answers: { type: mongoose.Schema.Types.Mixed },
+    hasCompletedOnboarding: { type: Boolean, default: false },
   }         
 }, {
   toJSON: {

@@ -1,3 +1,5 @@
+import { TQuestion } from "./ui";
+
 export interface PaymentDetails {
     email: string | null;
     name: string;
@@ -27,11 +29,6 @@ export type Usage = {
   period: string;
 }
   
-  export interface MetricType {
-    name: string;
-    value: number;
-  }
-
   export interface NewUser {
     email: string;
     password: string;
@@ -49,39 +46,16 @@ export type Usage = {
     metadata?: Record<string, any>;
   }
 
+  export type OnboardingAnswers = {
+    companySize?: string; 
+    industry?: string;         
+    promptStorage?: string;          
+    promptVolume?: string    
+    usageGoals?: string[];     
+  }
 
-   export type RegistrationState = {
-    errors?: {
-      email?: string[];
-      passowrd?: string[];
-      confirmPassword?: string[];
-    };
-    message: string | null;
-  };
-
-  export type CompleteResetState = {
-    errors?: {
-      passowrd?: string[];
-      confirmPassword?: string[];
-    };
-    message: string | null;
-  };
-
-  export type ResetState = {
-    errors?: {
-      email?: string[];
-    };
-    message: string | null;
-  };
-  
-   export type LoginState = {
-    success: boolean;
-    error?: string;
-  };
-
-  export type UpgradeState = {
-    message: string | null;
-  };
-  
-
-
+  export interface UserMetadata {
+    answers?: OnboardingAnswers;
+    creationDate?: Date;
+    hasCompletedOnboarding?: boolean
+  }

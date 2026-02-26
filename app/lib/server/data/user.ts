@@ -1,6 +1,6 @@
 'use server'
 import crypto from 'crypto'
-import { FindOneAndUpdateResponse, AddDocResponse, NewUser, User } from "@/app/types";
+import { FindOneAndUpdateResponse, AddDocResponse, NewUser, User, OnboardingAnswers } from "@/app/types";
 import { hashPassword } from '@/app/lib/server/cryptography';
 import { getDoc } from '@/app/lib/server/mongo/get';
 import { addDoc } from '@/app/lib/server/mongo/add';
@@ -70,3 +70,15 @@ export async function updateCredits(email: string, creditDelta: number): Promise
 
   return result.updatedDoc?.credits!;
 }
+
+
+export async function completedOnboarding(email: string, answers:OnboardingAnswers): Promise<FindOneAndUpdateResponse<User>> {
+  await dbConnect()
+    const filter = { email };
+    const update = {
+      'metadata.answers': answers,
+      'metadata.hasCompletedOnboarding': true,
+    };
+  
+    return await findOneAndUpdateDoc<User>(UserModel, filter, update);
+  }

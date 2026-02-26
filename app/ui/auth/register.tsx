@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import {REGISTRATION_SUCCESS} from '@/app/constants/messages';
+import {REGISTRATION_SUCCESS} from '@/app/constants/account';
 import CircleLoadingIndicator from '@/app/ui/utilities/circle-loading-indicator';
 
 

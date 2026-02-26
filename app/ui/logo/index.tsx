@@ -9,7 +9,7 @@ export default function Logo({
   color = '#4F46E5', // optional: allows tint color
 }: LogoProps & { color?: string }) {
   return (
-    <div className={`flex items-center -translate-x-4`}>
+    <div className={`flex items-center -translate-x-2`}>
       <div
         className={``}
         style={{

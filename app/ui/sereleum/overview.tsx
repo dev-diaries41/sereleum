@@ -14,9 +14,16 @@ import { OverviewSummary } from './overview-summary';
 import { TokenUsageByClusterChart } from './charts/cluster-tokens';
 import { NumberPromptsPerClusterChart } from './charts/cluster-density';
 import {InlinePopUp} from '../common/inline-popup';
+import useOnboarding from '@/app/hooks/useOnboarding';
+import { Questionnaire } from '../onboarding/questionnaire';
+import { ONBOARDING_WELCOME_MESSAGE, ONBOARDING_WELCOME_TITLE, onboardingQuestions } from '@/app/constants/content/onboarding';
 
+interface DashboardOverviewProps {
+  email?: string | null;
+  hasCompletedOnboarding?: boolean
+}
 
-export function DashboardOverview() {
+export function DashboardOverview({email, hasCompletedOnboarding}: DashboardOverviewProps) {
   const {
     progress, 
     indexingStatus, 
@@ -34,10 +41,19 @@ export function DashboardOverview() {
     updatePromptsFile,
     resetError
   } = useDashboard()
+  
+  const {isVisible, isOnboarded, onCompleteOnboarding} = useOnboarding(email);
 
   return (
     <div className="flex-1 mx-auto w-full">
-      <div className="w-full flex flex-col mx-auto px-4">
+      {( !hasCompletedOnboarding && isVisible && !isOnboarded ) &&(
+      <Questionnaire 
+      onComplete={onCompleteOnboarding} 
+      onboardingQuestions={onboardingQuestions} 
+      welcomeMessage={ONBOARDING_WELCOME_MESSAGE} 
+      welcomeTitle={ONBOARDING_WELCOME_TITLE}/>
+      )}
+      <div className="w-full flex flex-col px-4">
         <div className="flex flex-col w-full min-h-screen items-center py-8 pt-24 lg:pt-8">
 
           <div className="w-full flex items-center justify-between mb-12">
