@@ -12,12 +12,12 @@ import {
   MergeClustersRequest,
   ClusterOptions,
 } from "@/app/types";
-import { ADD_PROMPTS_ENDPOINT, ADD_PROMPTS_FILE_ENDPOINT, BASE_CLUSTER_ENDPOINT, COUNT_CLUSTER_ENDPOINT, GET_LABELS_ENDPOINT, COUNT_PROMPTS_ENDPOINT, BASE_PROMPTS_ENDPOINT, GET_PROMPTS_OVERVIEW_ENDPOINT, SERELEUM_BASE_URL, START_CLUSTER_ENDPOINT, CALC_CLUSTER_ACCURACY_ENDPOINT, GET_CLUSTER_PLOT_ENDPOINT, SSE_PROMPTS_INDEX_PROGRESS, QUERY_PROMPTS_ENDPOINT, GET_TOP_CLUSTERS_ENDPOINT, SSE_PROMPTS_CLUSTER_STATUS, MERGE_CLUSTERS_ENDPOINT } from "./constants";
+import * as APIRoutes from "@/app/constants/api";
 
-export class ReveliumClient {
+export class SereleumClient {
   private baseUrl: string;
 
-  constructor(baseUrl: string = SERELEUM_BASE_URL) {
+  constructor(baseUrl: string = APIRoutes.SERELEUM_BASE_URL) {
     this.baseUrl = baseUrl.replace(/\/$/, "");
   }
 
@@ -30,7 +30,7 @@ export class ReveliumClient {
   }
 
   async addPrompts(prompts: Prompt[]): Promise<AddPromptsResponse> {
-    const url = `${this.baseUrl}${ADD_PROMPTS_ENDPOINT}`;
+    const url = `${this.baseUrl}${APIRoutes.ADD_PROMPTS_ENDPOINT}`;
     const payload: AddPromptsRequest = { prompts };
 
     const res = await fetch(url, {
@@ -43,7 +43,7 @@ export class ReveliumClient {
   }
 
   async addPromptsFile(file: File, clusterOptions?: Partial<ClusterOptions>): Promise<AddPromptsResponse> {
-    const url = `${this.baseUrl}${ADD_PROMPTS_FILE_ENDPOINT}`;
+    const url = `${this.baseUrl}${APIRoutes.ADD_PROMPTS_FILE_ENDPOINT}`;
     const formData = new FormData();
 
     const defaultOptions: ClusterOptions = {"autoLabel": false, "autoMergeThreshold": 0.9, "defaultThreshold": 0.3}
@@ -62,7 +62,7 @@ export class ReveliumClient {
   }
 
   async getPrompts(ids?: string[], limit?: number, offset?: number, clusterIds?: string[]): Promise<Prompt[]> {
-    const url = `${this.baseUrl}${BASE_PROMPTS_ENDPOINT}`;
+    const url = `${this.baseUrl}${APIRoutes.BASE_PROMPTS_ENDPOINT}`;
     const payload: GetPromptsRequest = { 
       prompt_ids: ids,
       cluster_ids: clusterIds,
@@ -81,7 +81,7 @@ export class ReveliumClient {
   }
 
   async queryPrompts(query: string, limit?: number, clusterIds?: string[]): Promise<Prompt[]> {
-    const url = `${this.baseUrl}${QUERY_PROMPTS_ENDPOINT}`;
+    const url = `${this.baseUrl}${APIRoutes.QUERY_PROMPTS_ENDPOINT}`;
     const payload: QueryPromptsRequest = { 
       query,
       cluster_ids: clusterIds,
@@ -99,13 +99,13 @@ export class ReveliumClient {
   }
 
   async getPromptsOverview(): Promise<PromptsOverviewInfo> {
-    const url = `${this.baseUrl}${GET_PROMPTS_OVERVIEW_ENDPOINT}`;
+    const url = `${this.baseUrl}${APIRoutes.GET_PROMPTS_OVERVIEW_ENDPOINT}`;
     const res = await fetch(url, { method: "GET" });
     return this.handleResponse(res);
   }
 
   async clusterPrompts(): Promise<Record<string, unknown>> {
-    const url = `${this.baseUrl}${START_CLUSTER_ENDPOINT}`;
+    const url = `${this.baseUrl}${APIRoutes.START_CLUSTER_ENDPOINT}`;
     const res = await fetch(url, { method: "POST" });
     return this.handleResponse(res);
   }
@@ -119,7 +119,7 @@ export class ReveliumClient {
         Object.entries(payload).map(([key, value]) => [key, String(value)])
       )
     );
-    const url = `${this.baseUrl}${BASE_PROMPTS_ENDPOINT}?${params.toString()}`;
+    const url = `${this.baseUrl}${APIRoutes.BASE_PROMPTS_ENDPOINT}?${params.toString()}`;
 
     const res = await fetch(url, {
       method: "PATCH",
@@ -142,21 +142,21 @@ export class ReveliumClient {
         Object.entries(query).map(([key, value]) => [key, String(value)])
       )
     );
-    const url = `${this.baseUrl}${BASE_CLUSTER_ENDPOINT}?${params.toString()}`;
+    const url = `${this.baseUrl}${APIRoutes.BASE_CLUSTER_ENDPOINT}?${params.toString()}`;
     const res = await fetch(url, { method: "GET" });
     const data = await this.handleResponse<Record<"clusters", Cluster[]>>(res);
     return data.clusters;
   }
 
   async getTopClusters(): Promise<Cluster[]> {    
-    const url = `${this.baseUrl}${GET_TOP_CLUSTERS_ENDPOINT}`;
+    const url = `${this.baseUrl}${APIRoutes.GET_TOP_CLUSTERS_ENDPOINT}`;
     const res = await fetch(url, { method: "GET" });
     const data = await this.handleResponse<Record<"clusters", Cluster[]>>(res);
     return data.clusters;
   }
 
   async countPrompts(): Promise<number> {
-    const url = `${this.baseUrl}${COUNT_PROMPTS_ENDPOINT}`;
+    const url = `${this.baseUrl}${APIRoutes.COUNT_PROMPTS_ENDPOINT}`;
     const res = await fetch(url, { method: "GET" });
 
     const data = await this.handleResponse<{ count?: number }>(res);
@@ -164,7 +164,7 @@ export class ReveliumClient {
   }
 
   async countClusters(): Promise<number> {
-    const url = `${this.baseUrl}${COUNT_CLUSTER_ENDPOINT}`;
+    const url = `${this.baseUrl}${APIRoutes.COUNT_CLUSTER_ENDPOINT}`;
     const res = await fetch(url, { method: "GET" });
 
     const data = await this.handleResponse<{ count?: number }>(res);
@@ -172,7 +172,7 @@ export class ReveliumClient {
   }
 
   async getExistingLabels(): Promise<string[]> {
-    const url = `${this.baseUrl}${GET_LABELS_ENDPOINT}`;
+    const url = `${this.baseUrl}${APIRoutes.GET_LABELS_ENDPOINT}`;
     const res = await fetch(url, { method: "GET" });
 
     const data = await this.handleResponse<{ labels?: string[] }>(res);
@@ -187,7 +187,7 @@ export class ReveliumClient {
         Object.entries(payload).map(([key, value]) => [key, String(value)])
       )
     );
-    const url = `${this.baseUrl}${BASE_CLUSTER_ENDPOINT}?${params.toString()}`;
+    const url = `${this.baseUrl}${APIRoutes.BASE_CLUSTER_ENDPOINT}?${params.toString()}`;
 
     const res = await fetch(url, {
       method: "PATCH",
@@ -199,7 +199,7 @@ export class ReveliumClient {
   }
 
   async calculateClusterAccuracy(): Promise<ClusterAccuracy> {
-    const url = `${this.baseUrl}${CALC_CLUSTER_ACCURACY_ENDPOINT}`;
+    const url = `${this.baseUrl}${APIRoutes.CALC_CLUSTER_ACCURACY_ENDPOINT}`;
     const res = await fetch(url, { method: "GET" });
 
     const data = await this.handleResponse<{ accuracy: ClusterAccuracy }>(res);
@@ -209,7 +209,7 @@ export class ReveliumClient {
  async getClusterPlotBlob(
   method: "tsne" | "pca" = "tsne"
 ): Promise<Blob | null> {
-  const url = `${this.baseUrl}${GET_CLUSTER_PLOT_ENDPOINT}?method=${method}`;
+  const url = `${this.baseUrl}${APIRoutes.GET_CLUSTER_PLOT_ENDPOINT}?method=${method}`;
   const res = await fetch(url);
 
   if (res.status === 204) {
@@ -226,7 +226,7 @@ export class ReveliumClient {
 }
 
   async mergeClusters(merges: Record<string, string[]>): Promise<Cluster[]> {
-    const url = `${this.baseUrl}${MERGE_CLUSTERS_ENDPOINT}`;
+    const url = `${this.baseUrl}${APIRoutes.MERGE_CLUSTERS_ENDPOINT}`;
     const payload: MergeClustersRequest = { 
       merges,
     };
@@ -259,7 +259,7 @@ trackPromptsIndexProgress(
     onComplete?: () => void;
   }
 ): EventSource {
-  const url = `${this.baseUrl}${SSE_PROMPTS_INDEX_PROGRESS}?job_id=${encodeURIComponent(
+  const url = `${this.baseUrl}${APIRoutes.SSE_PROMPTS_INDEX_PROGRESS}?job_id=${encodeURIComponent(
       jobId
     )}`;
   const es = new EventSource(url);
@@ -321,7 +321,7 @@ trackPromptsIndexProgress(
     onComplete?: () => void;
   }
 ): EventSource {
-  const url = `${this.baseUrl}${SSE_PROMPTS_CLUSTER_STATUS}?job_id=${encodeURIComponent(
+  const url = `${this.baseUrl}${APIRoutes.SSE_PROMPTS_CLUSTER_STATUS}?job_id=${encodeURIComponent(
       jobId
     )}`;
   const es = new EventSource(url);
@@ -359,4 +359,4 @@ trackPromptsIndexProgress(
 }
 
 
-export const sereleumClient = new ReveliumClient()
+export const sereleumClient = new SereleumClient()

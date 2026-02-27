@@ -1,4 +1,4 @@
-import { BASE_CLUSTER_ENDPOINT, SERELEUM_BASE_URL, START_CLUSTER_ENDPOINT } from '@/app/sereleum/constants';
+import { BASE_CLUSTER_ENDPOINT, SERELEUM_BASE_URL, START_CLUSTER_ENDPOINT } from '@/app/constants/api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
