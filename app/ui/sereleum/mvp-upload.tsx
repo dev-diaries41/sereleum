@@ -22,11 +22,14 @@ import {
 import { useState } from 'react';
 import { upload } from '@/app/lib/server/cloudinary';
 import LoadingIndicator from '../utilities/circle-loading-indicator';
+import { PromptArraySchema } from '@/app/schemas/prompt';
 
 interface DashboardOverviewProps {
   email?: string | null;
   hasCompletedOnboarding?: boolean;
 }
+
+const PROMPTS_LIMIT = 1000
 
 export function MVPDashboard({ email, hasCompletedOnboarding }: DashboardOverviewProps) {
   const { isVisible, isOnboarded, onCompleteOnboarding } = useOnboarding(email);
@@ -36,7 +39,7 @@ export function MVPDashboard({ email, hasCompletedOnboarding }: DashboardOvervie
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  function fileToBase64(file: File): Promise<string> {
+  const  fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -48,14 +51,33 @@ export function MVPDashboard({ email, hasCompletedOnboarding }: DashboardOvervie
     });
   }
 
+  // Only for mvp since limited to 1000 prompts. For large json files streaming required
+  const validatePromptsFile = async(file: File) => {
+    const text = await file.text(); 
+    const parsed = JSON.parse(text);
+
+    if (parsed.length > PROMPTS_LIMIT) throw new Error("Prompts limit exceeded")
+
+    const result = PromptArraySchema.safeParse(parsed);
+
+    if (!result.success) {
+      throw result.error;
+    }
+
+    return result.data; 
+  }
+
   const handleFileUpload = async () => {
     if (!promptsFile) return;
 
     setLoading(true)
 
     try {
+      await validatePromptsFile(promptsFile);
+
       const base64 = await fileToBase64(promptsFile)
       const url = await upload(base64, {folder: `prompts`})
+
       setPromptsFile(null);
       setIsSubmitted(true);
     }catch(error){
