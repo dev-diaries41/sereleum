@@ -1,19 +1,8 @@
-// types.ts
-
 export interface PromptMetadata {
-  cluster_id: string | typeof UNCLUSTERED;
+  cluster_id: string;
   created_at: string;
   updated_at: string;
 }
-
-export const createPromptMetadata = (): PromptMetadata => {
-  const now = new Date().toISOString();
-  return {
-    cluster_id: "unclustered",
-    created_at: now,
-    updated_at: now,
-  };
-};
 
 export interface Prompt {
   id: string;
@@ -46,7 +35,7 @@ export interface Cluster {
 }
 
 export const UNLABELLED_CLUSTER = "unlabelled";
-export const UNCLUSTERED = "unclustered"; // TODO: lower case
+export const UNCLUSTERED = "unclustered"; 
 
 export interface ClusterAccuracy {
   per_label: Record<string, number>
