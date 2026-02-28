@@ -1,5 +1,5 @@
 import { PromptsProvider } from "@/app/providers/prompts";
-import { sereleumClient } from "@/app/sereleum/client";
+import { sereleumClient } from "@/app/client";
 import Sidenav from "@/app/ui/nav/side_navbar/sidenav";
 import { auth } from "@/auth";
 
