@@ -2,28 +2,19 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faUpload,
-  faFileLines,
-  faClose,
-  faEnvelope,
-  faCircleCheck
-} from '@fortawesome/free-solid-svg-icons';
+import {faUpload, faFileLines,faClose, faEnvelope, faCircleCheck} from '@fortawesome/free-solid-svg-icons';
 import FileUploader from '../common/upload';
 import { AcceptedMimes } from '@/app/constants/global';
 import { InlinePopUp } from '../common/inline-popup';
 import useOnboarding from '@/app/hooks/useOnboarding';
 import { Questionnaire } from '../onboarding/questionnaire';
-import {
-  ONBOARDING_WELCOME_MESSAGE,
-  ONBOARDING_WELCOME_TITLE,
-  onboardingQuestions
-} from '@/app/constants/content/onboarding';
+import {ONBOARDING_WELCOME_MESSAGE, ONBOARDING_WELCOME_TITLE,onboardingQuestions} from '@/app/constants/content/onboarding';
 import { useState } from 'react';
 import { upload } from '@/app/lib/server/cloudinary';
 import LoadingIndicator from '../utilities/circle-loading-indicator';
 import { PromptArraySchema } from '@/app/schemas/prompt';
 import { User } from '@/app/types';
+import { SereleumError } from '@/app/errors';
 
 interface DashboardOverviewProps {
   user?: Partial<User>;
@@ -57,12 +48,13 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
     const text = await file.text(); 
     const parsed = JSON.parse(text);
 
-    if (parsed.length > PROMPTS_LIMIT) throw new Error("Prompts limit exceeded")
+    if (parsed.length > PROMPTS_LIMIT) throw SereleumError.EXCEEDED_MAX_PROMPTS
 
     const result = PromptArraySchema.safeParse(parsed);
 
     if (!result.success) {
-      throw result.error;
+      console.error(result.error.issues.map(e => `${e.path.join(".")}: ${e.message}`).join(", "));      
+      throw SereleumError.INVALID_PROMPT_FORMAT
     }
 
     return result.data; 
@@ -83,7 +75,11 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
       setPromptsFile(null);
       setIsSubmitted(true);
     }catch(error){
-      setError("Error uploading file")
+      if(error instanceof SereleumError){
+        setError(error.message)
+      }else{
+        setError("Error uploading file")
+      }
       console.error(error)
     }
     finally{
