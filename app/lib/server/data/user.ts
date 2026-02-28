@@ -16,6 +16,7 @@ export async function getUser(email: string): Promise<User | null> {
     const result =  await getDoc<User>(UserModel, {email})
     if(!result.success || !result.data) throw new Error(result.message);
     const user = result.data;
+    // console.log(user)
     return user;
   } catch (error) {
     console.error('Failed to fetch user:', error);
@@ -28,8 +29,8 @@ export async function signUp(newUser: NewUser): Promise<AddDocResponse> {
   const {password, ...userInfo} = newUser;
   const salt = crypto.randomBytes(16).toString('hex');
   const hashedPassword = hashPassword(password, salt)
-  const user: User = {...userInfo, hashedPassword, salt, credits: FREE_CREDITS}; // every user gets 3 free credits
-  return addDoc<User>(UserModel, user);
+  const user: Omit<User, 'id'> = {...userInfo, hashedPassword, salt, credits: FREE_CREDITS}; // every user gets 3 free credits
+  return addDoc<Omit<User, 'id'>>(UserModel, user);
 }
 
 export async function updatePassword(email: string, newPassword: string): Promise<FindOneAndUpdateResponse<User>> {

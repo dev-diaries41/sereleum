@@ -4,7 +4,7 @@ import { usePrompts } from "@/app/providers/prompts";
 import { ClusterAccuracyPlayground } from "./cluster-accuracy";
 import  { useEffect, useMemo, useState } from "react";
 import { ClusterAccuracy, Cluster } from "@/app/types";
-import { sereleumClient } from "@/app/sereleum/client";
+import { sereleumClient } from "@/app/client";
 import { ClusterRow } from "./cluster-row";
 import { SortBySelector } from "../common/sort-by";
 import { MergeClustersView } from "./clusters/merger";

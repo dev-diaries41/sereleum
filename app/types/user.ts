@@ -37,6 +37,7 @@ export type Usage = {
   }
 
   export interface User {
+    id: string;           
     email: string;
     salt: string; 
     hashedPassword: string;

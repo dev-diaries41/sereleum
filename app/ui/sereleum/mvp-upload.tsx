@@ -22,21 +22,25 @@ import {
 import { useState } from 'react';
 import { upload } from '@/app/lib/server/cloudinary';
 import LoadingIndicator from '../utilities/circle-loading-indicator';
+import { PromptArraySchema } from '@/app/schemas/prompt';
+import { User } from '@/app/types';
 
 interface DashboardOverviewProps {
-  email?: string | null;
+  user?: Partial<User>;
   hasCompletedOnboarding?: boolean;
 }
 
-export function MVPDashboard({ email, hasCompletedOnboarding }: DashboardOverviewProps) {
-  const { isVisible, isOnboarded, onCompleteOnboarding } = useOnboarding(email);
+const PROMPTS_LIMIT = 1000
+
+export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverviewProps) {
+  const { isVisible, isOnboarded, onCompleteOnboarding } = useOnboarding(user!!.email);
 
   const [promptsFile, setPromptsFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  function fileToBase64(file: File): Promise<string> {
+  const  fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -48,14 +52,34 @@ export function MVPDashboard({ email, hasCompletedOnboarding }: DashboardOvervie
     });
   }
 
+  // Only for mvp since limited to 1000 prompts. For large json files streaming required
+  const validatePromptsFile = async(file: File) => {
+    const text = await file.text(); 
+    const parsed = JSON.parse(text);
+
+    if (parsed.length > PROMPTS_LIMIT) throw new Error("Prompts limit exceeded")
+
+    const result = PromptArraySchema.safeParse(parsed);
+
+    if (!result.success) {
+      throw result.error;
+    }
+
+    return result.data; 
+  }
+
   const handleFileUpload = async () => {
     if (!promptsFile) return;
 
     setLoading(true)
 
     try {
+      await validatePromptsFile(promptsFile);
+
       const base64 = await fileToBase64(promptsFile)
-      const url = await upload(base64, {folder: `prompts`})
+      const folder = `prompts_${user!!.id}`
+      const url = await upload(base64, {folder: folder, type: "private"})
+
       setPromptsFile(null);
       setIsSubmitted(true);
     }catch(error){
@@ -220,7 +244,7 @@ export function MVPDashboard({ email, hasCompletedOnboarding }: DashboardOvervie
                     Your prompts have been successfully submitted.
                     We’re analyzing your dominant workflows and token usage.
                     You’ll receive your free insights report at{" "}
-                    <span className="font-medium text-gray-800">{email}</span>{" "}
+                    <span className="font-medium text-gray-800">{user!!.email}</span>{" "}
                     within 24–48 hours.
                 </p>
                 </motion.div>

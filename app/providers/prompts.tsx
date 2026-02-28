@@ -3,7 +3,7 @@ import React, { createContext, useState, useContext, useLayoutEffect, useEffect 
 import { Cluster, Prompt, PromptsOverviewInfo, ProviderProps, Status } from '@/app/types';
 import { StorageKeys } from '../constants/global';
 import * as LocalStorage from "@/app/lib/client/storage/session"
-import { sereleumClient } from '../sereleum/client';
+import { sereleumClient } from "@/app/client";
 import { useRouter } from 'next/navigation';
  
 interface PromptsContextProps {

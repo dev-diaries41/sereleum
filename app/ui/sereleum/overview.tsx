@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import {  Cluster } from '@/app/types';
+import {  Cluster, User } from '@/app/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faLayerGroup, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import FileUploader from '../common/upload';
@@ -19,11 +19,11 @@ import { Questionnaire } from '../onboarding/questionnaire';
 import { ONBOARDING_WELCOME_MESSAGE, ONBOARDING_WELCOME_TITLE, onboardingQuestions } from '@/app/constants/content/onboarding';
 
 interface DashboardOverviewProps {
-  email?: string | null;
-  hasCompletedOnboarding?: boolean
+  user?: Partial<User>;
+  hasCompletedOnboarding?: boolean;
 }
 
-export function DashboardOverview({email, hasCompletedOnboarding}: DashboardOverviewProps) {
+export function DashboardOverview({user, hasCompletedOnboarding}: DashboardOverviewProps) {
   const {
     progress, 
     indexingStatus, 
@@ -42,7 +42,7 @@ export function DashboardOverview({email, hasCompletedOnboarding}: DashboardOver
     resetError
   } = useDashboard()
   
-  const {isVisible, isOnboarded, onCompleteOnboarding} = useOnboarding(email);
+  const {isVisible, isOnboarded, onCompleteOnboarding} = useOnboarding(user?.email);
 
   return (
     <div className="flex-1 mx-auto w-full">

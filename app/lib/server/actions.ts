@@ -1,5 +1,5 @@
 'use server'
-import { CompletePasswordResetFormSchema, ContactFormSchema, RegistrationFormSchema, ResetPasswordFormSchema } from '@/app/constants/schemas';
+import { CompletePasswordResetFormSchema, RegistrationFormSchema, ResetPasswordFormSchema } from '@/app/schemas/user';
 import { CompleteResetState, NewUser, RegistrationState, ResetState } from '@/app/types';
 import { signIn, signOut } from '@/auth';
 import { RequestErrors } from '@/app/constants/errors';
