@@ -31,6 +31,7 @@ export const { auth, signIn, signOut , handlers, unstable_update} = NextAuth({
   callbacks: {
     async jwt({ token, user, session, trigger }) {
       if (user) {
+        token.id = user.id;
         token.name = user.name;
         token.email = user.email;
         token.credits = user.credits;
@@ -47,6 +48,7 @@ export const { auth, signIn, signOut , handlers, unstable_update} = NextAuth({
     },
     async session({ session, token }) {
       if (token) {
+        session.user.id = token.id as User['id'];
         session.user.name = token.name as User['name'];
         session.user.email = token.email as User['email'];
         session.user.credits = token.credits as User['credits'];

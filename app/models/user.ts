@@ -14,18 +14,20 @@ const UserSchema = new mongoose.Schema({
     hasCompletedOnboarding: { type: Boolean, default: false },
   }         
 }, {
-  toJSON: {
-    transform: (doc, ret) => {
-      ret._id = ret._id.toString(); // Convert _id to string in JSON output
-      return ret;
-    }
-  },
-  toObject: {
-    transform: (doc, ret) => {
-      ret._id = ret._id.toString(); // Convert _id to string in object output
-      return ret;
-    }
+toJSON: {
+  transform: (doc, ret: Record<string, any>) => {
+    ret.id = ret._id.toString();
+    delete ret._id;
+    return ret;
   }
+},
+toObject: {
+  transform: (doc, ret: Record<string, any>) => {
+    ret.id = ret._id.toString();
+    delete ret._id;
+    return ret;
+  }
+}
 });
 
 export default mongoose.models.User || mongoose.model<User>("User", UserSchema);
