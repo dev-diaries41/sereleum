@@ -33,7 +33,7 @@ interface DashboardOverviewProps {
 const PROMPTS_LIMIT = 1000
 
 export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverviewProps) {
-  const { isVisible, isOnboarded, onCompleteOnboarding } = useOnboarding(user?.email);
+  const { isVisible, isOnboarded, onCompleteOnboarding } = useOnboarding(user!!.email);
 
   const [promptsFile, setPromptsFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -77,8 +77,8 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
       await validatePromptsFile(promptsFile);
 
       const base64 = await fileToBase64(promptsFile)
-      const url = await upload(base64, {folder: `prompts`, type: "private"})
-      console.log(url)
+      const folder = `prompts_${user!!.id}`
+      const url = await upload(base64, {folder: folder, type: "private"})
 
       setPromptsFile(null);
       setIsSubmitted(true);
@@ -244,7 +244,7 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
                     Your prompts have been successfully submitted.
                     We’re analyzing your dominant workflows and token usage.
                     You’ll receive your free insights report at{" "}
-                    <span className="font-medium text-gray-800">{user?.email}</span>{" "}
+                    <span className="font-medium text-gray-800">{user!!.email}</span>{" "}
                     within 24–48 hours.
                 </p>
                 </motion.div>
