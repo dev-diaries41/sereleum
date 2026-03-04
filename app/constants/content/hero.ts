@@ -1,5 +1,5 @@
 import {  SectionItem } from '@/app/types';
-import { faAdd, faChartLine, faCoins, faDatabase, faLayerGroup, faMoneyBill, faShieldHalved, faTag } from '@fortawesome/free-solid-svg-icons';
+import { faChartLine, faCoins, faDatabase, faLayerGroup, faShieldHalved, faTag } from '@fortawesome/free-solid-svg-icons';
 
 export const Features: SectionItem[] = [
   {
@@ -18,8 +18,14 @@ export const Features: SectionItem[] = [
     title: "Cluster-Driven System Prompt Refinement",
     description:
       "Align LLM system-prompts with observed user demand rather than assumptions.",
-    image: "/prompt_clusters.png",
+    image: "/optimise-system-prompt.png",
   },
+  {
+    title: "Cluster-Driven Prompt Templates",
+    description:
+      "Use clusters to create reusable prompt templates, improving workflow efficiency and UX consistency.",
+    image: "/prompt-templates.png",
+  }
 ];
 
   export const FlowDiagramSteps = [
