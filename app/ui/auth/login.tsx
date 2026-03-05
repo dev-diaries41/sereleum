@@ -1,5 +1,6 @@
 'use client';
- 
+
+import { motion, AnimatePresence } from 'framer-motion';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { useFormStatus } from 'react-dom';
 import { authenticate } from '@/app/lib/server/auth';
@@ -8,95 +9,108 @@ import Link from 'next/link';
 import CircleLoadingIndicator from '@/app/ui/utilities/circle-loading-indicator';
 import { useActionState } from 'react';
 
+
 export default function LoginForm() {
   const [errorMessage, dispatch] = useActionState(authenticate, undefined);
- 
+
   return (
-    <form action={dispatch} className="md:max-w-[50%] mx-auto space-y-3">
-      <div className="flex-1 rounded-lg px-6 pb-4 pt-8">
-        <h1 className={`mb-3 text-2xl`}>
-          Please log in to continue.
-        </h1>
-        <div className="w-full">
-          <div>
-            <label
-              className="mb-2 mt-5 block text-xs font-medium"
-              htmlFor="email"
-            >
-              Email
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full bg-transparent rounded-md border border border-gray-300 dark:border-[#555] py-[9px] p-2 text-sm outline-2 placeholder:text-gray-500"
-                id="email"
-                type="email"
-                name="email"
-                placeholder="Enter email address"
-                required
-              />
-            </div>
+    <div className="relative flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="relative z-10 w-full max-w-xl"
+      >
+        <div className="bg-white/70 backdrop-blur-xl shadow-2xl rounded-2xl p-8 border border-gray-200">
+          <div className="text-center mb-6">
+            <h1 className="text-2xl font-semibold mb-2">Please log in to continue.</h1>
           </div>
-          <div className="mt-4">
-            <label
-              className="mb-2 mt-5 block text-xs font-medium"
-              htmlFor="password"
-            >
-              Password
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full bg-transparent rounded-md border border-gray-300 dark:border-[#555] py-[9px] p-2 text-sm outline-2 placeholder:text-gray-500"
-                id="password"
-                type="password"
-                name="password"
-                placeholder="Enter password"
-                required
-                minLength={6}
-              />
+
+          <form action={dispatch} className="flex flex-col gap-5" aria-describedby={errorMessage ? 'login-error' : undefined}>
+            <div>
+              <label htmlFor="email" className="mb-2 block text-sm font-medium">
+                Email
+              </label>
+              <div className="relative">
+                <input
+                  className="peer block w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  id="email"
+                  type="email"
+                  name="email"
+                  placeholder="Enter email address"
+                  required
+                />
+              </div>
             </div>
-            <p className='my-4 mb-8' >
-              <Link href="/forgot-password" className="text-blue-500 hover:underline">
-                Forgot password?
-              </Link>
-            </p>   
-          </div>
-        </div>
-        <LoginButton />
-        <p className='my-4 mb-8' >
+
+            <div>
+              <label htmlFor="password" className="mb-2 block text-sm font-medium">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  className="peer block w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  id="password"
+                  type="password"
+                  name="password"
+                  placeholder="Enter password"
+                  required
+                  minLength={6}
+                />
+              </div>
+
+              <p className="my-4 mb-0">
+                <Link href="/forgot-password" className="text-indigo-600 hover:underline text-sm">
+                  Forgot password?
+                </Link>
+              </p>
+            </div>
+
+            <LoginButton />
+
+            <p className="text-sm text-center">
               Don't have an account?{' '}
-              <Link href="/register" className="text-blue-500 hover:underline">
+              <Link href="/register" className="text-indigo-600 hover:underline">
                 Sign Up
               </Link>
-            </p>   
-        <div
-          className="flex h-8 items-end space-x-1"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {errorMessage && (
-            <>
-              <FontAwesomeIcon icon={faExclamationCircle} className="h-5 w-5 text-red-500" />
-              <p className="text-sm text-red-500">{errorMessage}</p>
-            </>
-          )}
+            </p>
+
+            <div className="flex items-center gap-2" aria-live="polite" aria-atomic="true">
+              <AnimatePresence mode="wait">
+                {errorMessage && (
+                  <motion.div
+                    key="login-error"
+                    id="login-error"
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    className="flex items-center text-sm text-red-600"
+                  >
+                    <FontAwesomeIcon icon={faExclamationCircle} className="h-5 w-5 mr-2 text-red-500" />
+                    <span>{errorMessage}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </form>
         </div>
-      </div>
-    </form>
+      </motion.div>
+    </div>
   );
 }
- 
+
 function LoginButton() {
   const { pending } = useFormStatus();
- 
+
   return (
-    <button 
-    type='submit'
-    className="mt-4 w-full flex  gap-2 items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
-    aria-disabled={pending}
-    disabled={pending}
+    <button
+      type="submit"
+      className="mt-2 w-full flex gap-2 items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded-md"
+      aria-disabled={pending}
+      disabled={pending}
     >
-      {'Log in'} 
-      {pending && <CircleLoadingIndicator size={20}/>}
+      {'Log in'}
+      {pending && <CircleLoadingIndicator size={20} />}
     </button>
   );
 }
