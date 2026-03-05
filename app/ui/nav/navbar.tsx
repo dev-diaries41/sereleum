@@ -43,7 +43,6 @@ export default function NavBar({ email }: NavBarProps) {
       document.body.style.overflow = '';  // Re-enable scroll
     }
 
-    // Cleanup when component is unmounted
     return () => {
       document.body.style.overflow = '';
     };
@@ -73,7 +72,7 @@ export default function NavBar({ email }: NavBarProps) {
               href={email ? '/dashboard' : '/login'}
               className="w-auto ml-auto flex items-center justify-center mt-auto mb-8 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold p-2 px-4 rounded-lg text-sm md:text-md"
             >
-              {email ? 'Analyse prompts' : 'Log in'}
+            {email ? mainCTA : 'Log in'}
             </Link>
           </div>
         )}
