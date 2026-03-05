@@ -18,9 +18,9 @@ export default async function Layout({
 }) {
     const stage = process.env.NEXT_PUBLIC_APP_STAGE;
   
-    const session = await auth();
-    const email = session?.user?.email; 
-    const credits = session?.user?.credits; 
+    // const session = await auth();
+    // const email = session?.user?.email; 
+    // const credits = session?.user?.credits; 
     
     const clusters = stage === "mvp"? [] : await sereleumClient.getClusters()
     const prompts = stage === "mvp"? [] : await sereleumClient.getPrompts(undefined, 25)
@@ -29,8 +29,10 @@ export default async function Layout({
   return (
     <PromptsProvider initialClusters={clusters} initialPrompts={prompts} overview={promptOverview}>
       <div className={``}>
-        <Sidenav email={email} credits={credits!}/>
-        <div className="flex flex-col max-w-7xl mx-auto lg:pl-[240px] pt-16 lg:pt-0">{children}</div>
+        {/* <Sidenav email={email} credits={credits!}/> */}
+        {/* <div className="flex flex-col max-w-7xl mx-auto lg:pl-[240px] pt-16 lg:pt-0">{children}</div> */}
+
+        <div className="flex flex-col max-w-7xl mx-auto pt-16">{children}</div>
       </div>
     </PromptsProvider>
   )
