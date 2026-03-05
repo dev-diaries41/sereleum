@@ -14,6 +14,9 @@ const supportOptions: { value: string; name: string }[] = [
   { name: 'Issues', value: 'issues' },
   { name: 'Feature request', value: 'feature-request' },
 ]
+const CONFIRMATION_MESSAGE_SOLO = "I’ve received your message and will reply to your email as soon as possible."
+const SUPPORT_INFO = "Have a question or request? Send a message and you’ll receive a reply as soon as possible."
+const CONFIRMATION_MESSAGE = " Your message has been successfully delivered to our support team. We’ll review it and respond to your email shortly."
 
 export default function ContactForm() {
   const initialState = { success: false, errors: {} }
@@ -35,15 +38,13 @@ export default function ContactForm() {
         className="relative z-10 w-full max-w-xl"
       >
         <div className="bg-white/70 backdrop-blur-xl shadow-2xl rounded-2xl p-8 border border-gray-200">
-
-          {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-2xl font-semibold mb-3">
               Contact Support
             </h1>
 
             <p className="text-gray-600 text-sm leading-relaxed">
-              Send us a message and we’ll respond as soon as possible.
+              {SUPPORT_INFO}
             </p>
 
             <div className="flex items-center justify-center gap-2 mt-4 text-sm text-indigo-600">
@@ -147,17 +148,11 @@ export default function ContactForm() {
                 </h2>
 
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  Your message has been successfully delivered to our support team.
-                  We’ll review it and respond to your email shortly.
+                 {CONFIRMATION_MESSAGE_SOLO}
                 </p>
               </motion.div>
             )}
           </AnimatePresence>
-
-          <div className="mt-8 text-xs text-gray-500 text-center leading-relaxed">
-            Support requests are reviewed in the order received.
-          </div>
-
         </div>
       </motion.div>
     </div>
