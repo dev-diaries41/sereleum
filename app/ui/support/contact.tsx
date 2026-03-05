@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect } from 'react';
 import { useFormState } from 'react-dom';
-import { sendNotification } from '@/app/lib/server/actions';
+import { sendNotification } from '@/app/lib/server/auth';
 import { SubmitButton } from '../buttons/button';
 import InputError from '../common/form-error';
 
