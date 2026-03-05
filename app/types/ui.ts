@@ -131,7 +131,6 @@ export interface ProviderProps {
 }
 
 export interface UserProfileWidgetProps {
-  credits: number;
   userId: string | undefined | null;    //email/uid/username
 } 
 

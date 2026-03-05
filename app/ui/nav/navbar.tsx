@@ -6,6 +6,8 @@ import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { HeaderProps, NavItemsProps } from '@/app/types';
 import { navLinks } from '@/app/constants/navigation';
 import NavLinks from './links';
+import { usePathname } from 'next/navigation';
+import UserProfileWidget from '../account/user-profile';
 
 const NavBarItems = ({ navItems }: NavItemsProps) => {
   return (
@@ -29,6 +31,9 @@ export default function NavBar({ email }: NavBarProps) {
   const stage = process.env.NEXT_PUBLIC_APP_STAGE;
   const mainCTA = stage === "mvp"? "Get Free Report" : "Analyse Prompts";
 
+  const pathname = usePathname();
+  const showAccountWidget = pathname.includes("/dashboard")
+
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -48,8 +53,7 @@ export default function NavBar({ email }: NavBarProps) {
     };
   }, [isOpen]);
 
-  const filteredHeaderLinks = navLinks.filter((link) => !['License', 'Terms', 'Privacy Policy', 'Guide', 'Home'].includes(link.name));
-  const filteredMobHeaderLinks = navLinks.filter((link) => !['License', 'Terms', 'Privacy Policy', 'Guide'].includes(link.name));
+  const filteredHeaderLinks = navLinks.filter((link) => !['License', 'Terms', 'Privacy Policy', 'Home'].includes(link.name));
 
   return (
     <nav className='flex items-center justify-center gap-5 '>
@@ -68,23 +72,31 @@ export default function NavBar({ email }: NavBarProps) {
         {isOpen && (
         <div className=" absolute top-0 right-0 flex flex-col w-full min-h-screen bg-gray-100 border border-r-1 border-gray-300 pt-24 pb-32  p-6">
           <NavLinks navItems={[ ...navLinks.filter(link => !['License', 'Terms', 'Privacy Policy'].includes(link.name))]} />
+           {!showAccountWidget? (
           <Link
-            href={email ? '/dashboard' : '/login'}
-            className="w-auto ml-auto flex items-center justify-center mt-auto mb-8 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold p-2 px-4 rounded-lg text-sm md:text-md"
-          >
-          {email ? mainCTA : 'Log in'}
-          </Link>
-        </div>
-        )}
-      </div>
-      <div className="md:flex items-center gap-5 hidden">
-        <NavBarItems navItems={filteredHeaderLinks} />
-        <Link
           href={email ? '/dashboard' : '/login'}
           className="flex w-auto items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold p-2 px-4 rounded-lg text-sm md:text-md"
         >
           {email ? mainCTA : 'Log in'}
         </Link>
+        ): (
+          <UserProfileWidget userId={email}/>
+        )}
+        </div>
+        )}
+      </div>
+      <div className="md:flex items-center gap-5 hidden">
+        <NavBarItems navItems={filteredHeaderLinks} />
+        {!showAccountWidget? (
+          <Link
+          href={email ? '/dashboard' : '/login'}
+          className="flex w-auto items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold p-2 px-4 rounded-lg text-sm md:text-md"
+        >
+          {email ? mainCTA : 'Log in'}
+        </Link>
+        ): (
+          <UserProfileWidget userId={email}/>
+        )}
       </div>
     </nav>
   );

@@ -23,9 +23,8 @@ export const SidenavToggleIcon = ({ open = true }) => (
 
 interface SideNavProps { 
   email: string | null | undefined, 
-  credits: number;
 }
-export default React.memo(function SideNav({ email, credits }: SideNavProps) {
+export default React.memo(function SideNav({ email }: SideNavProps) {
   const [isOpen, setIsOpen] = useState(false);
   const {topClusters} = usePrompts()
 
@@ -69,7 +68,7 @@ export default React.memo(function SideNav({ email, credits }: SideNavProps) {
              <ClusterListSideNavWrapper clusters={topClusters}/>
           </div>
           <div className="absolute bottom-0 right-0 left-0 p-3 flex flex-col">
-            <UserProfileWidget credits={credits} userId={email} />
+            <UserProfileWidget userId={email} />
           </div>
         </div>
       </div>
