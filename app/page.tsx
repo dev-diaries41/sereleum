@@ -82,7 +82,7 @@ const FeaturesSection = () => (
         Built for Prompt Intelligence
       </h2>
       <p className="text-lg md:text-xl text-gray-500 leading-relaxed max-w-2xl mx-auto">
-        Sereleum delivers deep visibility into prompt behavior across LLM systems, helping businesses make data-driven decisions and optimize AI outputs.
+        Learn how Sereleum can help you enhance your LLM products.
       </p>
     </div>
 
