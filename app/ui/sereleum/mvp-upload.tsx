@@ -15,6 +15,7 @@ import LoadingIndicator from '../utilities/circle-loading-indicator';
 import { PromptArraySchema } from '@/app/schemas/prompt';
 import { User } from '@/app/types';
 import { SereleumError } from '@/app/errors';
+import { notify } from '@/app/lib/server/notify';
 
 interface DashboardOverviewProps {
   user?: Partial<User>;
@@ -66,11 +67,13 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
     setLoading(true)
 
     try {
-      await validatePromptsFile(promptsFile);
-
+      const prompts = await validatePromptsFile(promptsFile);
       const base64 = await fileToBase64(promptsFile)
       const folder = `prompts_${user!!.id}`
-      const url = await upload(base64, {folder: folder, type: "private"})
+      await upload(base64, {folder: folder, type: "private"})
+      
+      const formattedMsg = `New upload\nFolder: ${folder}\nNumber of items: ${prompts.length}`
+      await notify(formattedMsg)
 
       setPromptsFile(null);
       setIsSubmitted(true);
