@@ -67,11 +67,11 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 export type AnchorProps = AnchorHTMLAttributes<HTMLAnchorElement>;
 
     
-export type FeedbackState = {
+export type ContactState = {
   errors?: {
-    feedbackType?: string[];
+    supportType?: string[];
     email?: string[];
-    feedback?: string[];
+    message?: string[];
   };
   message: string | null;
 };
