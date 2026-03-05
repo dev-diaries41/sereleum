@@ -106,7 +106,7 @@ const FeaturesSection = () => (
 
 export const HowItWorksSection = ({ steps }: { steps: SectionItem[] }) => {
   return (
-    <section className="w-full py-24">
+    <section className="flex flex-col w-full py-24 items-center justify-center">
       <div className="max-w-6xl mx-auto px-6 text-center mb-12">
         <h2 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight text-gray-900">
           How Sereleum works
