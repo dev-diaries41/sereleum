@@ -34,6 +34,10 @@ export default function UserProfileWidget({ userId }: UserProfileWidgetProps) {
     setIsOpen(prev => !prev);
   };
 
+  const onClose = () => {
+    setIsOpen(false)
+  }
+
   return (
     <div ref={containerRef} className="relative">
       <button
@@ -52,11 +56,11 @@ export default function UserProfileWidget({ userId }: UserProfileWidgetProps) {
           className={`absolute right-0 left-0 w-48 p-4 bg-white rounded-md shadow-md z-50 flex flex-col gap-2 text-sm border border-gray-200 ${
             dropUp ? 'bottom-full mb-2' : 'top-full mt-2'
           }`}
-          onClick={()=> setIsOpen(false)}
         >
           <Link
             href="/dashboard/account"
             className="w-full flex items-center gap-2 p-2 rounded-md hover:bg-gray-200"
+            onClick={onClose}
           >
             <FontAwesomeIcon icon={faUserCircle} className="w-4 h-4" />
             Account
@@ -64,6 +68,7 @@ export default function UserProfileWidget({ userId }: UserProfileWidgetProps) {
 
           <form
             action={async () => {
+              onClose();
               await logout();
             }}
           >
