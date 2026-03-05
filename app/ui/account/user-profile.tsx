@@ -52,6 +52,7 @@ export default function UserProfileWidget({ userId }: UserProfileWidgetProps) {
           className={`absolute right-0 left-0 w-48 p-4 bg-white rounded-md shadow-md z-50 flex flex-col gap-2 text-sm border border-gray-200 ${
             dropUp ? 'bottom-full mb-2' : 'top-full mt-2'
           }`}
+          onClick={()=> setIsOpen(false)}
         >
           <Link
             href="/dashboard/account"
