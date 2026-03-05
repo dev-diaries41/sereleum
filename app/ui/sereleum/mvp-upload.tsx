@@ -22,7 +22,8 @@ interface DashboardOverviewProps {
   hasCompletedOnboarding?: boolean;
 }
 
-const PROMPTS_LIMIT = 1000
+const PROMPTS_LIMIT = 1000;
+const CONFIRMATION_MESSAGE = "Your prompts have been successfully submitted. Your free insights report will be sent to";
 
 export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverviewProps) {
   const { isVisible, isOnboarded, onCompleteOnboarding } = useOnboarding(user!!.email);
@@ -112,7 +113,6 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
         className="relative z-10 w-full max-w-xl"
       >
         <div className="bg-white/70 backdrop-blur-xl shadow-2xl rounded-2xl p-8 border border-gray-200">
-          {/* Header */}
           <div className=" mb-8">
             <h1 className="text-2xl font-semibold mb-3">
               Upload Your Prompts File
@@ -232,11 +232,8 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
                     Report on the Way
                 </h2>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                    Your prompts have been successfully submitted.
-                    We’re analyzing your dominant workflows and token usage.
-                    You’ll receive your free insights report at{" "}
-                    <span className="font-medium text-gray-800">{user!!.email}</span>{" "}
-                    within 24–48 hours.
+                  {`${CONFIRMATION_MESSAGE} `}
+                  <span className="font-medium text-gray-800">{user!!.email}</span>.
                 </p>
                 </motion.div>
               )}
