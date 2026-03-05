@@ -10,7 +10,7 @@ const NOTIFICATIONS_CONFIG = {
     },
 }
 
-const TELEGRAM_CHANNEL = process.env.TELEGRAM_CHANNEL_ID
+const TELEGRAM_CHANNEL = process.env.TELEGRAM_CHANNEL_ID;
 
 export async function sendNotification(prevState: ContactState, formData: FormData) {
   const notify = new Notify(NOTIFICATIONS_CONFIG)
@@ -23,7 +23,7 @@ export async function sendNotification(prevState: ContactState, formData: FormDa
   if (!formResults.success) {
     return {
       errors: formResults.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to send email.',
+      success: false,
     };
   }
 
@@ -33,9 +33,10 @@ export async function sendNotification(prevState: ContactState, formData: FormDa
     const result = await notify.broadcast([{telegramChatId: TELEGRAM_CHANNEL}], formattedMsg)
 
     if(result.error) throw result.error
+    return {success:true}
 
   } catch (error: any) {
     console.error("Error in sendNotification:", error.message);
-    return {message: 'Error sending notification'};
+    return {success: false};
   }
 }

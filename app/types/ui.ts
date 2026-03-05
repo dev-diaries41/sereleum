@@ -73,7 +73,7 @@ export type ContactState = {
     email?: string[];
     message?: string[];
   };
-  message: string | null;
+  success: boolean;
 };
 
 export interface PollOptions  {

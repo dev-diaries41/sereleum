@@ -20,11 +20,11 @@ const supportOptions: {value:string, name: string}[] = [
 ]
 
 export default function ContactForm(){
-  const initialState = { message: '', errors: {}};
+  const initialState = { success: false, errors: {}};
   const [state, dispatch] = useActionState(sendNotification, initialState);
 
   useEffect(() => {
-    if(state.message === 'MESSAGE SENT'){
+    if(state.success){
       alert('Message sent');
     }
   }, [state])
