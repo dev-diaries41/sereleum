@@ -1,8 +1,9 @@
 'use client'
-import React, { useActionState, useEffect } from 'react';
-import { SubmitButton } from '../buttons/button';
+import { useActionState, useEffect } from 'react';
 import InputError from '../common/form-error';
 import { sendNotification } from '@/app/lib/server/notify';
+import { useFormStatus } from 'react-dom';
+import CircleLoadingIndicator from '@/app/ui/utilities/circle-loading-indicator';
 
 const supportOptions: {value:string, name: string}[] = [
   {
@@ -84,3 +85,21 @@ export default function ContactForm(){
     </form>
   );
 };
+
+
+
+function SubmitButton() {
+    const { pending } = useFormStatus();
+
+    return (
+        <button 
+            type="submit"
+            className="mt-4 w-full flex gap-2 items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-4 rounded-lg"
+            aria-disabled={pending}
+            disabled={pending}
+        >
+            {'Send Message'} 
+            {pending && <CircleLoadingIndicator size={20} />}
+        </button>
+    );
+}
