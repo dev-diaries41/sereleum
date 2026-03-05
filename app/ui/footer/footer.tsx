@@ -18,11 +18,11 @@ export default function Footer() {
           </div>
 
           <div className="w-full flex justify-center py-12 overflow-hidden relative">
-            <h1 className="font-extrabold text-center leading-none select-none pointer-events-none max-w-full break-words relative z-10">
+            <h1 className="font-extrabold text-center leading-none select-none pointer-events-none max-w-full break-words relative z-10
+               text-[4rem] sm:text-[6rem] md:text-[10vw] lg:text-[12rem]">
               <span
                 className="block relative z-10"
                 style={{
-                  fontSize: 'clamp(4rem, 13vw, 14rem)', // scales from 6rem to 16rem based on viewport
                   backgroundImage: `
                     radial-gradient(circle, rgba(0,0,0,0.18) 1px, transparent 1px),
                     linear-gradient(to right, #4f46e5, #a78bfa, #818cf8)
