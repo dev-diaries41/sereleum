@@ -32,10 +32,10 @@ export async function sendNotification(prevState: ContactState, formData: FormDa
     const formattedMsg = `Support Type: ${supportType}\nEmail: ${email}\nMessage: ${message}`
     const result = await notify.broadcast([{telegramChatId: TELEGRAM_CHANNEL}], formattedMsg)
 
-    return result.success? {message: 'MESSAGE SENT'} : {message: 'MESSAGE FAILED'};
+    if(result.error) throw result.error
 
   } catch (error: any) {
     console.error("Error in sendNotification:", error.message);
-    return {message: 'MESSAGE FAILED'};
+    return {message: 'Error sending notification'};
   }
 }
