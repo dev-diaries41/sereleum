@@ -95,8 +95,7 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
   const resetError = () => setError(null);
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 py-16 overflow-hidden">
-
+    <div className="relative flex items-center justify-center p-4">
       {( !hasCompletedOnboarding && isVisible && !isOnboarded ) && (
         <Questionnaire
           onComplete={onCompleteOnboarding}

@@ -32,7 +32,7 @@ export default async function Layout({
         {/* <Sidenav email={email}/> */}
         {/* <div className="flex flex-col max-w-7xl mx-auto lg:pl-[240px] pt-16 lg:pt-0">{children}</div> */}
 
-        <div className="flex flex-col max-w-7xl mx-auto pt-16">{children}</div>
+        <div className="flex flex-col max-w-7xl mx-auto pt-24">{children}</div>
       </div>
     </PromptsProvider>
   )

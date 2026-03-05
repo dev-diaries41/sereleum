@@ -30,7 +30,7 @@ export default function ContactForm() {
   }, [state])
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 py-16">
+    <div className="relative flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
