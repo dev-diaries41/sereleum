@@ -11,7 +11,7 @@ import { HeaderProps } from '@/app/types';
 
 export default function Header({email}: HeaderProps) {
   const pathname = usePathname();
-  const pathsToHide = ['/dashboard', '/login', '/register', 'reset-password', 'forgot-password'];
+  const pathsToHide = ['/login', '/register', 'reset-password', 'forgot-password'];
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
   const hide = shouldHide(pathname, pathsToHide) || (callbackUrl && new URL(callbackUrl).pathname === '/dashboard')
