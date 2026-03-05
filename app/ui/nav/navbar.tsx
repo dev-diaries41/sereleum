@@ -66,15 +66,15 @@ export default function NavBar({ email }: NavBarProps) {
 
         {/* Dropdown menu */}
         {isOpen && (
-          <div className="absolute top-0 right-0 pb-32 flex flex-col min-h-screen w-full opacity-95 bg-white text-lg pt-16 p-4 z-40" id='navbar-menu'>
-            <NavLinks navItems={filteredMobHeaderLinks} />
-            <Link
-              href={email ? '/dashboard' : '/login'}
-              className="w-auto ml-auto flex items-center justify-center mt-auto mb-8 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold p-2 px-4 rounded-lg text-sm md:text-md"
-            >
-            {email ? mainCTA : 'Log in'}
-            </Link>
-          </div>
+        <div className=" absolute top-0 right-0 flex flex-col w-full min-h-screen bg-gray-100 border border-r-1 border-gray-300 pt-24 pb-32  p-6">
+          <NavLinks navItems={[ ...navLinks.filter(link => !['License', 'Terms', 'Privacy Policy'].includes(link.name))]} />
+          <Link
+            href={email ? '/dashboard' : '/login'}
+            className="w-auto ml-auto flex items-center justify-center mt-auto mb-8 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold p-2 px-4 rounded-lg text-sm md:text-md"
+          >
+          {email ? mainCTA : 'Log in'}
+          </Link>
+        </div>
         )}
       </div>
       <div className="md:flex items-center gap-5 hidden">

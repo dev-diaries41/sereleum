@@ -18,7 +18,7 @@ export default function NavLinks({navItems}: NavItemsProps) {
             className={clsx(
               'flex h-10 grow items-center justify-center gap-4 rounded-md bg-transparent hover:bg-gray-200 justify-start p-2 px-3',
               {
-                'text-blue-500': pathname === navItem.link,
+                'text-indigo-500': pathname === navItem.link,
               },
             )}
             {...(navItem.newPage

@@ -11,7 +11,7 @@ import { faCircleCheck, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 
 const supportOptions: { value: string; name: string }[] = [
   { name: 'Select Type', value: '' },
-  { name: 'Issues', value: 'issues' },
+  { name: 'Issue', value: 'issues' },
   { name: 'Feature request', value: 'feature-request' },
 ]
 const CONFIRMATION_MESSAGE_SOLO = "I’ve received your message and will reply to your email as soon as possible."
@@ -40,7 +40,7 @@ export default function ContactForm() {
         <div className="bg-white/70 backdrop-blur-xl shadow-2xl rounded-2xl p-8 border border-gray-200">
           <div className="text-center mb-8">
             <h1 className="text-2xl font-semibold mb-3">
-              Contact Support
+              Contact
             </h1>
 
             <p className="text-gray-600 text-sm leading-relaxed">

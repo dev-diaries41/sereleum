@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import NavLinks from './links';
-import { topSidebarLinks } from '@/app/constants/navigation';
+import { sideBarLinks } from '@/app/constants/navigation';
 import UserProfileWidget from '../../account/user-profile';
 import MobileNav from './mobile';
 import Logo from '../../logo';
@@ -64,7 +64,7 @@ export default React.memo(function SideNav({ email, credits }: SideNavProps) {
         </div>
        
         <div className='flex h-full flex-col justify-between'>
-          <NavLinks navItems={topSidebarLinks} />
+          <NavLinks navItems={sideBarLinks} />
           <div className="flex-1 max-h-[60vh] overflow-y-auto custom-scrollbar pb-24 mt-4">
              <ClusterListSideNavWrapper clusters={topClusters}/>
           </div>
