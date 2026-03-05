@@ -12,17 +12,20 @@ const ibmPlex = IBM_Plex_Sans({
   weight: ['300', '400', '500', '600']
 })
 
+const appName = 'Sereleum'
+const description = 'Prompt analytics platform that turns user prompts into actionable insights'
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://sereleum.vercel.app/'),
-  title: 'Sereleum',
-  description: 'Prompt analytics platform that turns real user prompts into actionable insights',
+  title: appName,
+  description: description,
   keywords: ['ai', 'llm', 'prompts', 'clusters', 'analysis', 'optimise'],
-  applicationName: 'Sereleum',
+  applicationName: appName,
   openGraph: {
     type: 'website',
     url: 'https://sereleum.vercel.app/',
-    description: 'Prompt analytics platform that turns real user prompts into actionable insights',
-    siteName: 'Sereleum',
+    description: description,
+    siteName: appName,
     images: []
   }
 }
@@ -34,7 +37,7 @@ export default async function RootLayout({
 }) {
   const session = await auth();
   const email = session?.user?.email; 
-  const credits = session?.user?.credits; 
+
   return (
     <html lang="en">
       <AuthProvider>
