@@ -2,7 +2,7 @@
  
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { useFormStatus } from 'react-dom';
-import { authenticate } from '@/app/lib/server/actions';
+import { authenticate } from '@/app/lib/server/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import CircleLoadingIndicator from '@/app/ui/utilities/circle-loading-indicator';

@@ -1,7 +1,7 @@
 'use client'
 import React, { useActionState, useEffect } from 'react';
 import {useFormStatus } from 'react-dom';
-import { register } from '@/app/lib/server/actions';
+import { register } from '@/app/lib/server/auth';
 import InputError from '@/app/ui/common/form-error';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';

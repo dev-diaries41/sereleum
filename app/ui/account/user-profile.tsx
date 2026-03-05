@@ -5,7 +5,7 @@ import { faUserCircle, faSignOut } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { UserProfileWidgetProps } from '@/app/types';
 import Link from 'next/link';
-import { logout } from '@/app/lib/server/actions';
+import { logout } from '@/app/lib/server/auth';
 
 export default function UserProfileWidget({ userId, credits }: UserProfileWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);

@@ -2,7 +2,7 @@
 'use client'
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { useFormStatus } from 'react-dom';
-import { sendPasswordResetEmail } from '@/app/lib/server/actions';
+import { sendPasswordResetEmail } from '@/app/lib/server/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CircleLoadingIndicator from '@/app/ui/utilities/circle-loading-indicator';
 import InputError from '../common/form-error';
