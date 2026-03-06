@@ -5,6 +5,7 @@ import { FeatureCard } from './ui/landing/features';
 import { FlowDiagram } from './ui/landing/flow-diagram';
 import { Card } from './ui/cards/card';
 import { SectionItem } from './types';
+import { GradientWave } from './ui/background/waves';
 
 export const revalidate = 3600;
 
@@ -67,9 +68,9 @@ const HeroSection = () => {
         <FlowDiagram steps={FlowDiagramSteps} />
       </div>
 
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        <div className="w-48 sm:w-72 h-48 sm:h-72 bg-purple-200/20 rounded-full absolute -top-16 -left-24 animate-pulse-slow"></div>
-        <div className="w-64 sm:w-96 h-64 sm:h-96 bg-indigo-200/10 rounded-full absolute bottom-0 right-0 animate-spin-slow"></div>
+      <div className="absolute inset-0 overflow-hidden z-0">
+        <GradientWave opacity={0.06} />
+        <GradientWave flip opacity={0.02} />
       </div>
     </section>
   );
@@ -96,8 +97,6 @@ const FeaturesSection = () => (
           reverse={index % 2 === 0}
         />
       ))}
-      <div className="absolute -top-32 -left-24 w-64 h-64 bg-indigo-100/20 rounded-xl rotate-12 animate-pulse-slow"></div>
-      <div className="absolute bottom-0 right-0 w-80 h-80 bg-purple-100/15 rounded-xl -rotate-6 animate-spin-slow"></div>
     </div>
   </section>
 );
