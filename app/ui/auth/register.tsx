@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { REGISTRATION_SUCCESS } from '@/app/constants/account';
 import CircleLoadingIndicator from '@/app/ui/utilities/circle-loading-indicator';
+import Logo from '../logo';
 
 export default function RegistrationForom() {
   const initialState = { message: '', errors: {} };
@@ -35,8 +36,9 @@ export default function RegistrationForom() {
         className="relative z-10 w-full max-w-xl"
       >
         <div className="bg-white/70 backdrop-blur-xl shadow-2xl rounded-2xl p-8 border border-gray-200">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-semibold mb-2">Create your account</h1>
+          <div className="flex flex-col items-center mb-6 gap-8">
+            <Logo name="Sereleum" width={80} height={80} src={'/sereleum-infinity-logo.png'}/>
+            <h1 className="text-2xl font-bold mb-2">Create your account</h1>
           </div>
 
           <AnimatePresence mode="wait">
@@ -112,9 +114,9 @@ export default function RegistrationForom() {
                   />
                 </div>
 
-                <p className="my-2 text-sm">
+                <p className="text-center my-2 text-sm">
                   Already have an account?{' '}
-                  <Link href="/login" className="text-indigo-600 hover:underline">Login</Link>
+                  <Link href="/login" className="text-indigo-600 hover:underline font-semibold">Sign in</Link>
                 </p>
 
                 <div className="flex justify-center w-full">
@@ -162,7 +164,7 @@ function RegisterButton() {
       aria-disabled={pending}
       disabled={pending}
     >
-      {'Sign up'}
+      {'Continue'}
       {pending && <CircleLoadingIndicator size={20} />}
     </button>
   );

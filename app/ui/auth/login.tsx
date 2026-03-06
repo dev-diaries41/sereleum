@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import CircleLoadingIndicator from '@/app/ui/utilities/circle-loading-indicator';
 import { useActionState } from 'react';
+import Logo from '../logo';
 
 
 export default function LoginForm() {
@@ -22,8 +23,9 @@ export default function LoginForm() {
         className="relative z-10 w-full max-w-xl"
       >
         <div className="bg-white/70 backdrop-blur-xl shadow-2xl rounded-2xl p-8 border border-gray-200">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-semibold mb-2">Please log in to continue.</h1>
+          <div className="flex flex-col items-center mb-6 gap-8">
+            <Logo name="Sereleum" width={80} height={80} src={'/sereleum-infinity-logo.png'}/>
+            <h1 className="text-2xl font-bold mb-2">Sign In</h1>
           </div>
 
           <form action={dispatch} className="flex flex-col gap-5" aria-describedby={errorMessage ? 'login-error' : undefined}>
@@ -60,9 +62,7 @@ export default function LoginForm() {
               </div>
 
               <p className="my-4 mb-0">
-                <Link href="/forgot-password" className="text-indigo-600 hover:underline text-sm">
-                  Forgot password?
-                </Link>
+                <Link href="/forgot-password" className="font-semibold text-indigo-600 hover:underline text-sm">Forgot password?</Link>
               </p>
             </div>
 
@@ -70,9 +70,7 @@ export default function LoginForm() {
 
             <p className="text-sm text-center">
               Don't have an account?{' '}
-              <Link href="/register" className="text-indigo-600 hover:underline">
-                Sign Up
-              </Link>
+              <Link href="/register" className="font-semibold text-indigo-600 hover:underline">Sign Up</Link>
             </p>
 
             <div className="flex items-center gap-2" aria-live="polite" aria-atomic="true">
@@ -109,7 +107,7 @@ function LoginButton() {
       aria-disabled={pending}
       disabled={pending}
     >
-      {'Log in'}
+      {'Continue'}
       {pending && <CircleLoadingIndicator size={20} />}
     </button>
   );
