@@ -15,13 +15,15 @@ import LoadingIndicator from '../utilities/circle-loading-indicator';
 import { PromptArraySchema } from '@/app/schemas/prompt';
 import { User } from '@/app/types';
 import { SereleumError } from '@/app/errors';
+import { notify } from '@/app/lib/server/notify';
 
 interface DashboardOverviewProps {
   user?: Partial<User>;
   hasCompletedOnboarding?: boolean;
 }
 
-const PROMPTS_LIMIT = 1000
+const PROMPTS_LIMIT = 1000;
+const CONFIRMATION_MESSAGE = "Your prompts have been successfully submitted. Your free insights report will be sent to";
 
 export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverviewProps) {
   const { isVisible, isOnboarded, onCompleteOnboarding } = useOnboarding(user!!.email);
@@ -43,7 +45,7 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
     });
   }
 
-  // Only for mvp since limited to 1000 prompts. For large json files streaming required
+  // Only for mvp. For large json files streaming required
   const validatePromptsFile = async(file: File) => {
     const text = await file.text(); 
     const parsed = JSON.parse(text);
@@ -66,11 +68,13 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
     setLoading(true)
 
     try {
-      await validatePromptsFile(promptsFile);
-
+      const prompts = await validatePromptsFile(promptsFile);
       const base64 = await fileToBase64(promptsFile)
       const folder = `prompts_${user!!.id}`
-      const url = await upload(base64, {folder: folder, type: "private"})
+      await upload(base64, {folder: folder, type: "private"})
+      
+      const formattedMsg = `New upload\nFolder: ${folder}\nNumber of items: ${prompts.length}`
+      await notify(formattedMsg)
 
       setPromptsFile(null);
       setIsSubmitted(true);
@@ -91,8 +95,7 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
   const resetError = () => setError(null);
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 py-16 overflow-hidden">
-
+    <div className="relative flex items-center justify-center p-4">
       {( !hasCompletedOnboarding && isVisible && !isOnboarded ) && (
         <Questionnaire
           onComplete={onCompleteOnboarding}
@@ -109,35 +112,32 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
         className="relative z-10 w-full max-w-xl"
       >
         <div className="bg-white/70 backdrop-blur-xl shadow-2xl rounded-2xl p-8 border border-gray-200">
-
-          {/* Header */}
-          <div className="text-center mb-8">
+          <div className=" mb-8">
             <h1 className="text-2xl font-semibold mb-3">
               Upload Your Prompts File
             </h1>
-            <div className="text-gray-600 text-sm leading-relaxed space-y-3">
-                <p>
-                    Upload a JSON export of your prompts to receive a free insights report.
-                    The report will highlight dominant user intents and where token usage concentrates.
-                </p>
+            <div className="text-gray-600 text-sm space-y-3">
+              <p>
+                Upload a JSON export of your prompts to receive a free insights report.
+                The report will highlight dominant user intents and where token usage concentrates.
+              </p>
 
-                <p className="font-semibold">
-                    Maximum 10,000 prompts per upload.
-                    <span className="block text-xs text-gray-500 font-normal">
-                    (Limit applies to the free report only.)
-                    </span>
-                </p>
+              <p className="font-semibold">
+                {`Maximum ${PROMPTS_LIMIT} prompts per upload.`}
+                <span className="block text-xs text-gray-500 font-normal">
+                  (Limit applies to the free report only.)
+                </span>
+              </p>
 
-                <p className="font-semibold">
-                Required format for each prompt:
-                <span className="block font-normal mt-1">
-                    <span className="font-mono">id: string</span> and{" "}
-                    <span className="font-mono">data: string</span>
-                </span>
-                <span className="block font-normal text-xs text-gray-500 mt-1">
-                    <span className="font-mono">data</span> contains the full prompt content.
-                </span>
-                </p>
+              <p className="font-semibold">Example format:</p>
+              <JsonDisplay
+                data={`
+                  [
+                    { "id": "1", "data": "Write a summary of today's news." },
+                    { "id": "2", "data": "Generate a product description for a laptop." }
+                  ]
+                `}
+              />
             </div>
             <div className="flex items-center justify-center gap-2 mt-4 text-sm text-indigo-600">
               <FontAwesomeIcon icon={faEnvelope} />
@@ -146,9 +146,7 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
           </div>
 
           <div className="flex flex-col items-center justify-center">
-
             <AnimatePresence mode="wait">
-
               {!isSubmitted ? (
                 <motion.div
                   key="upload"
@@ -157,7 +155,6 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
                   exit={{ opacity: 0, scale: 0.98 }}
                   className="w-full"
                 >
-
                   {!promptsFile ? (
                     <FileUploader
                       onFileUpload={(files) => updatePromptsFile(files[0])}
@@ -210,7 +207,6 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
                       </div>
                     </div>
                   )}
-
                 </motion.div>
               ) : (
                 <motion.div
@@ -231,21 +227,15 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
                       className="text-green-500 text-4xl"
                     />
                   </motion.div>
-
                 <h2 className="text-lg font-semibold mb-2">
                     Report on the Way
                 </h2>
-
                 <p className="text-sm text-gray-600 leading-relaxed">
-                    Your prompts have been successfully submitted.
-                    We’re analyzing your dominant workflows and token usage.
-                    You’ll receive your free insights report at{" "}
-                    <span className="font-medium text-gray-800">{user!!.email}</span>{" "}
-                    within 24–48 hours.
+                  {`${CONFIRMATION_MESSAGE} `}
+                  <span className="font-medium text-gray-800">{user!!.email}</span>.
                 </p>
                 </motion.div>
               )}
-
             </AnimatePresence>
 
             {error && (
@@ -263,9 +253,45 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
             Your data is used solely to generate your report. No prompts are shared
             or stored beyond analysis.
           </div>
-
         </div>
       </motion.div>
     </div>
+  );
+}
+
+interface JsonDisplayProps {
+  data: object | string;
+  maxHeight?: string;
+}
+
+
+interface JsonDisplayProps {
+  data: object | string;
+  maxHeight?: string;
+}
+
+
+export function JsonDisplay({ data, maxHeight }: JsonDisplayProps) {
+
+const dedent = (str: string) => {
+  const lines = str.split('\n');
+  const minIndent = Math.min(
+    ...lines.filter(Boolean).map(line => line.match(/^ */)![0].length)
+  );
+  return lines.map(line => line.slice(minIndent)).join('\n');
+};
+
+  const jsonString =
+    typeof data === 'string'
+      ? dedent(data)
+      : dedent(JSON.stringify(data, null, 2));
+
+  return (
+    <pre
+      className="bg-gray-100 p-3 rounded-md text-xs font-mono overflow-x-auto"
+      style={{ maxHeight: maxHeight || '300px' }}
+    >
+      {jsonString}
+    </pre>
   );
 }

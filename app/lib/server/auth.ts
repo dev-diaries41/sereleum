@@ -5,9 +5,9 @@ import { signIn, signOut } from '@/auth';
 import { RequestErrors } from '@/app/constants/errors';
 import {ACCOUNT_EXISTS, CHECK_EMAIL_MESSAGE, EMAIL_MESSAGE, PASSWORDS_DO_NOT_MATCH, REGISTRATION_FAILED, REGISTRATION_SUCCESS, RESET_FAILED, RESET_SUCCESS} from '@/app/constants/account';
 import { isValidUser, signUp, updatePassword } from '@/app/lib/server/data/user';
-import { generateAccessUrl } from './jwt';
 import { sendEmail } from './email';
 import { AuthError } from 'next-auth';
+import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken';
 
 export async function authenticate(prevState: string | undefined, formData: FormData) {
   try {
@@ -120,3 +120,17 @@ export async function resetPassword(prevState: CompleteResetState, formData: For
     return {message: RESET_FAILED};
   }
 }
+
+type TokenizedUrl = `${string}?token=${string}`;
+
+const SECRET_KEY = process.env.ACCESS_SECRET || 'your-secret-key'; 
+
+export async function generateAccessUrl(payload: Record<string, string>, baseUrl:string, options: SignOptions = { expiresIn:'1h' }) {
+    const token = jwt.sign(payload, SECRET_KEY, options);
+    return `${baseUrl}?token=${token}`;
+}
+
+export async function verifyToken<T extends JwtPayload = Record<string, any>>(token: string) {
+    return jwt.verify(token, SECRET_KEY) as T
+}
+

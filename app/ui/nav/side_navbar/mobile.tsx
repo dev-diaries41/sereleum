@@ -67,11 +67,10 @@ onToggleMenu
             Settings
           </button> */}
           <div className='flex flex-col mt-auto'>
-            <NavLinks navItems={[ ...navLinks.filter(link => !['License', 'Terms', 'Privacy Policy', 'Pricing', 'Home'].includes(link.name))]} />
             {/* <UserPlanWidget userId={email}/> */}
           </div>
           <div className="bg-gray-200 rounded-md mt-3">
-            <UserProfileWidget credits={0} userId={email} />
+            <UserProfileWidget userId={email} />
           </div>
       </div>
         )}

@@ -67,13 +67,13 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 export type AnchorProps = AnchorHTMLAttributes<HTMLAnchorElement>;
 
     
-export type FeedbackState = {
+export type ContactState = {
   errors?: {
-    feedbackType?: string[];
+    supportType?: string[];
     email?: string[];
-    feedback?: string[];
+    message?: string[];
   };
-  message: string | null;
+  success: boolean;
 };
 
 export interface PollOptions  {
@@ -131,7 +131,6 @@ export interface ProviderProps {
 }
 
 export interface UserProfileWidgetProps {
-  credits: number;
   userId: string | undefined | null;    //email/uid/username
 } 
 

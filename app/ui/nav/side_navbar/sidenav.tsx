@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import NavLinks from './links';
-import { topSidebarLinks } from '@/app/constants/navigation';
+import { sideBarLinks } from '@/app/constants/navigation';
 import UserProfileWidget from '../../account/user-profile';
 import MobileNav from './mobile';
 import Logo from '../../logo';
@@ -23,9 +23,8 @@ export const SidenavToggleIcon = ({ open = true }) => (
 
 interface SideNavProps { 
   email: string | null | undefined, 
-  credits: number;
 }
-export default React.memo(function SideNav({ email, credits }: SideNavProps) {
+export default React.memo(function SideNav({ email }: SideNavProps) {
   const [isOpen, setIsOpen] = useState(false);
   const {topClusters} = usePrompts()
 
@@ -64,12 +63,12 @@ export default React.memo(function SideNav({ email, credits }: SideNavProps) {
         </div>
        
         <div className='flex h-full flex-col justify-between'>
-          <NavLinks navItems={topSidebarLinks} />
+          <NavLinks navItems={sideBarLinks} />
           <div className="flex-1 max-h-[60vh] overflow-y-auto custom-scrollbar pb-24 mt-4">
              <ClusterListSideNavWrapper clusters={topClusters}/>
           </div>
           <div className="absolute bottom-0 right-0 left-0 p-3 flex flex-col">
-            <UserProfileWidget credits={credits} userId={email} />
+            <UserProfileWidget userId={email} />
           </div>
         </div>
       </div>

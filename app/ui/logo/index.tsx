@@ -26,7 +26,7 @@ export default function Logo({
           maskPosition: 'center',
         }}
       />
-      {name && <h1 className="text-2xl font-bold -translate-x-5">{name}</h1>}
+      {name && <h1 className="text-2xl font-medium -translate-x-5">{name}</h1>}
     </div>
   );
 }
