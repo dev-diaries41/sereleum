@@ -19,7 +19,7 @@ export default function Footer() {
 
           <div className="w-full flex justify-center py-12 overflow-hidden relative">
             <h1 className="font-extrabold text-center leading-none select-none pointer-events-none max-w-full break-words relative z-10
-               text-[4rem] sm:text-[6rem] md:text-[10vw] lg:text-[12rem]">
+               text-[clamp(4rem,10vw,12rem)]">
               <span
                 className="block relative z-10"
                 style={{
