@@ -253,5 +253,5 @@ body {
 }
 
 .wave-animate {
-  animation: waveShift 14s ease-in-out infinite;
+  animation: waveShift 7s ease-in-out infinite;
 }
