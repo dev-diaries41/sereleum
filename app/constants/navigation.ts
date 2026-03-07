@@ -2,7 +2,6 @@ import { faHome, faLayerGroup, faTerminal } from "@fortawesome/free-solid-svg-ic
 import { NavItem } from "../types";
 
 export const navLinks: NavItem[] = [
-    { name: 'Home', link: '/' },
     { name: 'Contact', link: '/contact'},
     // { name: 'Pricing', link: '/pricing'},
   ];
