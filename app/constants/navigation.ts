@@ -1,15 +1,15 @@
-import { faBook, faCreditCard, faFlask, faHome, faLayerGroup, faQuestionCircle, faTerminal } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faLayerGroup, faTerminal } from "@fortawesome/free-solid-svg-icons";
 import { NavItem } from "../types";
 
 export const navLinks: NavItem[] = [
-    { name: 'Home', link: '/', icon: faHome },
-    { name: 'Contact', link: '/contact', icon: faQuestionCircle},
-    // { name: 'Pricing', link: '/pricing', icon: faCreditCard},
+    { name: 'Home', link: '/' },
+    { name: 'Contact', link: '/contact'},
+    // { name: 'Pricing', link: '/pricing'},
   ];
   
   export const footerLinks: NavItem[] = [
-    // { name: 'Contact', link: '/contact', icon: faQuestionCircle},
-    // { name: 'Pricing', link: '/pricing', icon: faCreditCard},
+    // { name: 'Contact', link: '/contact'},
+    // { name: 'Pricing', link: '/pricing'},
     // { name: 'Terms', link: '/terms'},
     // { name: 'License', link: '/license'},
     // { name: 'Privacy policy', link: '/privacy'},
