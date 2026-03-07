@@ -45,7 +45,7 @@ export function DashboardOverview({user, hasCompletedOnboarding}: DashboardOverv
   const {isVisible, isOnboarded, onCompleteOnboarding} = useOnboarding(user?.email);
 
   return (
-    <div className="flex-1 mx-auto w-full">
+    <div className="flex-1 mx-auto w-full p-8">
       {( !hasCompletedOnboarding && isVisible && !isOnboarded ) &&(
       <Questionnaire 
       onComplete={onCompleteOnboarding} 
@@ -53,58 +53,55 @@ export function DashboardOverview({user, hasCompletedOnboarding}: DashboardOverv
       welcomeMessage={ONBOARDING_WELCOME_MESSAGE} 
       welcomeTitle={ONBOARDING_WELCOME_TITLE}/>
       )}
-      <div className="w-full flex flex-col px-4">
-        <div className="flex flex-col w-full items-center py-8 pt-24 lg:pt-8">
-
-          <div className="w-full flex items-center justify-between mb-12">
-            <div>
-              <h1 className="text-xl md:text-2xl ">Overview</h1>
-            </div>
-            <div className="flex flex-col items-start gap-3">
-           <div className="flex flex-row gap-3 items-center">
-            {((indexingStatus === "active") || (clusteringStatus === "active")) && trackerMinimized && (
-              <button
-                onClick={() => updateTrackerVisibility(false)}
-                className="flex items-center justify-center px-4"
-                aria-label="Show indexing progress"
-              >
-                <FontAwesomeIcon
-                  icon={faSpinner}
-                  spin
-                  className="w-6 h-6 text-indigo-600"
-                />
-              </button>
-                )}
-                {promptsFile ? (
-                  <button
-                    disabled = {indexingStatus !== null || clusteringStatus !== null}
-                    onClick={handleFileUpload}
-                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow-md"
-                  >
-                    Upload Prompts
-                  </button>
-                ) : (
-                  <FileUploader
-                    onFileUpload={(files) => updatePromptsFile(files[0])}
-                    acceptedMimes={AcceptedMimes}
-                  >
-                    <span className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow-md">
-                      Add Prompts
-                    </span>
-                  </FileUploader>
+      <div className="flex flex-col w-full items-center pt-24 lg:pt-8">
+        <div className="w-full flex items-center justify-between mb-12">
+          <div>
+            <h1 className="text-xl md:text-2xl ">Overview</h1>
+          </div>
+          <div className="flex flex-col items-start gap-3">
+            <div className="flex flex-row gap-3 items-center">
+              {((indexingStatus === "active") || (clusteringStatus === "active")) && trackerMinimized && (
+                <button
+                  onClick={() => updateTrackerVisibility(false)}
+                  className="flex items-center justify-center px-4"
+                  aria-label="Show indexing progress"
+                >
+                  <FontAwesomeIcon
+                    icon={faSpinner}
+                    spin
+                    className="w-6 h-6 text-indigo-600"
+                  />
+                </button>
+                  )}
+                  {promptsFile ? (
+                    <button
+                      disabled = {indexingStatus !== null || clusteringStatus !== null}
+                      onClick={handleFileUpload}
+                      className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow-md"
+                    >
+                      Upload Prompts
+                    </button>
+                  ) : (
+                    <FileUploader
+                      onFileUpload={(files) => updatePromptsFile(files[0])}
+                      acceptedMimes={AcceptedMimes}
+                    >
+                      <span className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow-md">
+                        Add Prompts
+                      </span>
+                    </FileUploader>
+                  )}
+                </div>
+          
+                {promptsFile && (
+                  <div className='flex flex-row gap-2 items-center'>
+                    <button onClick={() => updatePromptsFile(null)}>
+                      <FontAwesomeIcon icon={faClose} className="w-4 h-4 text-red-700" />
+                    </button>
+                    <p>{promptsFile.name}</p>
+                  </div>
                 )}
               </div>
-          
-              {promptsFile && (
-                <div className='flex flex-row gap-2 items-center'>
-                  <button onClick={() => updatePromptsFile(null)}>
-                    <FontAwesomeIcon icon={faClose} className="w-4 h-4 text-red-700" />
-                  </button>
-                  <p>{promptsFile.name}</p>
-                </div>
-              )
-              }
-            </div>
           </div>
           {error && <InlinePopUp description={error} isError={true} onClose={resetError}/>}
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
@@ -114,13 +111,12 @@ export function DashboardOverview({user, hasCompletedOnboarding}: DashboardOverv
           <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
             <TopClustersDetails topClusters={topClusters} isViewAllVisible ={isViewAllVisible } onViewAllClusters={goToClustersPage}/>
           </div>
-           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 my-6">
+          <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 my-6">
             {topClusters.length > 0 && <NumberPromptsPerClusterChart clusters={topClusters} loading ={false}/>}
             {topClusters.length > 0 && <TokenUsageByClusterChart overview={overview} loading ={false}/>}
           </div>
         </div>
-      </div>
-         {indexingStatus  && <ProgressTrackerPopUp
+        {indexingStatus  && <ProgressTrackerPopUp
           progress={progress} 
           status={indexingStatus} 
           title={"Indexing prompts"}
@@ -137,9 +133,9 @@ export function DashboardOverview({user, hasCompletedOnboarding}: DashboardOverv
           onMinimize={() => updateTrackerVisibility(true)}
           />
         }
-    </div>
-  );
-}
+      </div>
+    );
+  }
 
 interface ClustersPlotProps {
   url: string | null
