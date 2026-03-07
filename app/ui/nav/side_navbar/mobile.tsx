@@ -2,7 +2,7 @@
 'use client'
 import React from 'react';
 import Link from 'next/link';
-import NavLinks from './links';
+import NavLinks from '../links';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
 import { navLinks, sideBarLinks } from '@/app/constants/navigation';
@@ -55,7 +55,7 @@ onToggleMenu
         </div>}
 
         {isOpen && (
-        <div className=" absolute top-0 right-0 flex flex-col w-full min-h-screen bg-gray-100 border border-r-1 border-gray-300 pt-24 pb-32  p-2">
+        <div className=" absolute top-0 right-0 flex flex-col items-start w-full min-h-screen bg-gray-100 border border-r-1 border-gray-300 pt-24 p-6 text-2xl">
           <NavLinks navItems={[...sideBarLinks]} />
           <div className="flex-1 mr-auto max-h-[50vh] overflow-y-auto mb-8 custom-scrollbar p-1 ">
           </div>
@@ -69,7 +69,7 @@ onToggleMenu
           <div className='flex flex-col mt-auto'>
             {/* <UserPlanWidget userId={email}/> */}
           </div>
-          <div className="bg-gray-200 rounded-md mt-3">
+          <div className="w-full rounded-md mt-3">
             <UserProfileWidget userId={email} />
           </div>
       </div>

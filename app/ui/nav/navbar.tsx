@@ -70,13 +70,13 @@ export default function NavBar({ email }: NavBarProps) {
 
         {/* Dropdown menu */}
         {isOpen && (
-        <div className=" absolute top-0 right-0 flex flex-col w-full min-h-screen bg-gray-100 border border-r-1 border-gray-300 pt-24 p-6">
+        <div className=" absolute top-0 right-0 flex flex-col items-start w-full min-h-screen bg-gray-100 border border-r-1 border-gray-300 pt-24 p-6 text-2xl">
           <NavLinks navItems={[ ...navLinks.filter(link => !['License', 'Terms', 'Privacy Policy'].includes(link.name))]} />
              <div className="flex-1"></div>
            {!showAccountWidget? (
           <Link
           href={email ? '/dashboard' : '/login'}
-          className="flex w-auto items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold p-2 px-4 rounded-lg text-sm md:text-md"
+          className="flex w-full items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold p-2 px-4 rounded-lg text-sm md:text-md"
         >
           {email ? mainCTA : 'Log in'}
         </Link>
