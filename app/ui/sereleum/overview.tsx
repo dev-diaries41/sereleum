@@ -53,7 +53,7 @@ export function DashboardOverview({user, hasCompletedOnboarding}: DashboardOverv
       welcomeMessage={ONBOARDING_WELCOME_MESSAGE} 
       welcomeTitle={ONBOARDING_WELCOME_TITLE}/>
       )}
-      <div className="flex flex-col w-full items-center pt-24 lg:pt-8">
+      <div className="flex flex-col w-full items-center">
         <div className="w-full flex items-center justify-between mb-12">
           <div>
             <h1 className="text-xl md:text-2xl ">Overview</h1>
