@@ -43,7 +43,7 @@ export default function UserProfileWidget({ username }: UserProfileWidgetProps) 
       <button
         type="button"
         onClick={handleToggle}
-        className="w-full flex items-center p-3 justify-start hover:bg-gray-200 rounded-md"
+        className="w-full flex items-center p-2 justify-start hover:bg-gray-200 rounded-md"
       >
         <FontAwesomeIcon icon={faUserCircle} className="w-6 h-6 rounded-full" />
         <span className="sm:inline-block ml-2 text-sm font-medium truncate">
