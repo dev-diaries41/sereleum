@@ -53,8 +53,6 @@ export default function NavBar({ email }: NavBarProps) {
     };
   }, [isOpen]);
 
-  const filteredHeaderLinks = navLinks.filter((link) => !['License', 'Terms', 'Privacy Policy', 'Home'].includes(link.name));
-
   return (
     <nav className='flex items-center justify-center gap-5 '>
       <div className="md:hidden">
@@ -71,7 +69,7 @@ export default function NavBar({ email }: NavBarProps) {
         {/* Dropdown menu */}
         {isOpen && (
         <div className=" absolute top-0 right-0 flex flex-col items-start w-full min-h-screen bg-gray-100 border border-r-1 border-gray-300 pt-32 p-6 text-3xl">
-          <NavLinks navItems={[ ...navLinks.filter(link => !['License', 'Terms', 'Privacy Policy'].includes(link.name))]} />
+          <NavLinks navItems={navLinks} />
              <div className="flex-1"></div>
            {!showAccountWidget? (
           <Link
@@ -87,7 +85,7 @@ export default function NavBar({ email }: NavBarProps) {
         )}
       </div>
       <div className="md:flex items-center gap-5 hidden">
-        <NavBarItems navItems={filteredHeaderLinks} />
+        <NavBarItems navItems={navLinks} />
         {!showAccountWidget? (
           <Link
           href={email ? '/dashboard' : '/login'}
