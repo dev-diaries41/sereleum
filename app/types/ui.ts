@@ -26,6 +26,7 @@ export interface NavItem  {
 
 export interface NavItemsProps {
   navItems: NavItem[];
+  classname?: string
 }
 
 export interface LogoProps {
