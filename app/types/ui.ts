@@ -131,7 +131,7 @@ export interface ProviderProps {
 }
 
 export interface UserProfileWidgetProps {
-  userId: string | undefined | null;    //email/uid/username
+  username: string | undefined | null;    //email/uid/username
 } 
 
 export interface ActionRowProps {

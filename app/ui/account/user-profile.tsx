@@ -7,7 +7,7 @@ import { UserProfileWidgetProps } from '@/app/types';
 import Link from 'next/link';
 import { logout } from '@/app/lib/server/auth';
 
-export default function UserProfileWidget({ userId }: UserProfileWidgetProps) {
+export default function UserProfileWidget({ username }: UserProfileWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [dropUp, setDropUp] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -47,7 +47,7 @@ export default function UserProfileWidget({ userId }: UserProfileWidgetProps) {
       >
         <FontAwesomeIcon icon={faUserCircle} className="w-6 h-6 rounded-full" />
         <span className="sm:inline-block ml-2 text-sm font-medium truncate">
-          {userId}
+          {username}
         </span>
       </button>
 

@@ -70,7 +70,7 @@ onToggleMenu
             {/* <UserPlanWidget userId={email}/> */}
           </div>
           <div className="w-full rounded-md mt-3">
-            <UserProfileWidget userId={email?.split("@")[0]} />
+            <UserProfileWidget username={email?.split("@")[0]} />
           </div>
       </div>
         )}
