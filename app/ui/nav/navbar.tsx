@@ -69,7 +69,7 @@ export default function NavBar({ email }: NavBarProps) {
         {/* Dropdown menu */}
         {isOpen && (
         <div className=" absolute top-0 right-0 flex flex-col items-start w-full min-h-screen bg-gray-100 border border-r-1 border-gray-300 pt-32 p-6 text-3xl">
-          <NavLinks navItems={navLinks} />
+          <NavLinks navItems={navLinks} classname='flex flex-col gap-4'/>
              <div className="flex-1"></div>
            {!showAccountWidget? (
           <Link
