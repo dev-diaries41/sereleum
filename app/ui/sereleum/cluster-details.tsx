@@ -1,13 +1,13 @@
 'use client';
 
 import { usePrompts } from "@/app/providers/prompts";
-import { sereleumClient } from "@/app/sereleum/client";
 import { Cluster, ClusterMetadata, Prompt, UNLABELLED_CLUSTER } from "@/app/types";
 import { faCheck, faTag } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { MetricsItem } from "../dashboard/metrics-item";
+import { sereleumClient } from "@/app/client";
 
 export function ClusterDetail({ id }: { id?: string }) {
   const router = useRouter();
