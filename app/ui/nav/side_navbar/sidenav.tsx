@@ -68,7 +68,7 @@ export default React.memo(function SideNav({ email }: SideNavProps) {
              <ClusterListSideNavWrapper clusters={topClusters}/>
           </div>
           <div className="absolute bottom-0 right-0 left-0 p-3 flex flex-col">
-            <UserProfileWidget userId={email} />
+            <UserProfileWidget userId={email?.split("@")[0]} />
           </div>
         </div>
       </div>

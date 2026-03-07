@@ -81,7 +81,7 @@ export default function NavBar({ email }: NavBarProps) {
           {email ? mainCTA : 'Log in'}
         </Link>
         ): (
-          <UserProfileWidget userId={email}/>
+            <UserProfileWidget userId={email?.split("@")[0]} />
         )}
         </div>
         )}
@@ -96,7 +96,7 @@ export default function NavBar({ email }: NavBarProps) {
           {email ? mainCTA : 'Log in'}
         </Link>
         ): (
-          <UserProfileWidget userId={email}/>
+            <UserProfileWidget userId={email?.split("@")[0]} />
         )}
       </div>
     </nav>
