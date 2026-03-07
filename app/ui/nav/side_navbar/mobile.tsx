@@ -55,7 +55,7 @@ onToggleMenu
         </div>}
 
         {isOpen && (
-        <div className=" absolute top-0 right-0 flex flex-col items-start w-full min-h-screen bg-gray-100 border border-r-1 border-gray-300 pt-24 p-6 text-2xl">
+        <div className=" absolute top-0 right-0 flex flex-col items-start w-full min-h-screen bg-gray-100 border border-r-1 border-gray-300 pt-32 p-6 text-3xl">
           <NavLinks navItems={[...sideBarLinks]} />
           <div className="flex-1 mr-auto max-h-[50vh] overflow-y-auto mb-8 custom-scrollbar p-1 ">
           </div>
