@@ -43,7 +43,7 @@ export const onboardingQuestions: TQuestion<OnboardingAnswers>[] = [
   },
   {
     question: "Approximate volume of user prompts you handle per month",
-    options: ["<500", "500–2,000", "2,000–5,000", "5,000+"],
+    options: ["<1000", "1000–10,000", "10,000–50,000", "50,000-100,000", "100,000+"],
     questionCategory: 'promptVolume',
     allowMultipleAnswers: false,
   },
