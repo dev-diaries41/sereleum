@@ -2,8 +2,7 @@ import { OnboardingAnswers, TQuestion } from "@/app/types";
 
 export const ONBOARDING_WELCOME_TITLE = 'Welcome to Sereleum!';
 
-export const ONBOARDING_WELCOME_MESSAGE = 'To help us provide the best service, please fill out this simple form. It will take less than a minute!';
-
+export const ONBOARDING_WELCOME_MESSAGE = 'To receive the best possible service, please fill out this short form. It takes less than a minute.';
 
 export const onboardingQuestions: TQuestion<OnboardingAnswers>[] = [
   {
