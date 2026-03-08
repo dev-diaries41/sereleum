@@ -57,14 +57,14 @@ export default function UserProfileWidget({ username }: UserProfileWidgetProps) 
             dropUp ? 'bottom-full mb-2' : 'top-full mt-2'
           }`}
         >
-          <Link
+          {/* <Link
             href="/dashboard/account"
             className="w-full flex items-center gap-2 p-2 rounded-md hover:bg-gray-200"
             onClick={onClose}
           >
             <FontAwesomeIcon icon={faUserCircle} className="w-4 h-4" />
             Account
-          </Link>
+          </Link> */}
 
           <form
             action={async () => {
