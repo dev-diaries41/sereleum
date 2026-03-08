@@ -1,13 +1,13 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import NavLinks from './links';
 import { sideBarLinks } from '@/app/constants/navigation';
 import UserProfileWidget from '../../account/user-profile';
 import MobileNav from './mobile';
 import Logo from '../../logo';
 import ClusterListSideNavWrapper from '../../sereleum/clusters-sidenav';
 import { usePrompts } from '@/app/providers/prompts';
+import NavLinks from '../links';
 
 export const SidenavToggleIcon = ({ open = true }) => (
   <div
@@ -62,13 +62,13 @@ export default React.memo(function SideNav({ email }: SideNavProps) {
           </button>
         </div>
        
-        <div className='flex h-full flex-col justify-between'>
+        <div className='flex h-full flex-col justify-between text-sm'>
           <NavLinks navItems={sideBarLinks} />
           <div className="flex-1 max-h-[60vh] overflow-y-auto custom-scrollbar pb-24 mt-4">
              <ClusterListSideNavWrapper clusters={topClusters}/>
           </div>
           <div className="absolute bottom-0 right-0 left-0 p-3 flex flex-col">
-            <UserProfileWidget userId={email} />
+            <UserProfileWidget username={email?.split("@")[0]} />
           </div>
         </div>
       </div>

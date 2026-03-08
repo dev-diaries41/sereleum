@@ -53,8 +53,6 @@ export default function NavBar({ email }: NavBarProps) {
     };
   }, [isOpen]);
 
-  const filteredHeaderLinks = navLinks.filter((link) => !['License', 'Terms', 'Privacy Policy', 'Home'].includes(link.name));
-
   return (
     <nav className='flex items-center justify-center gap-5 '>
       <div className="md:hidden">
@@ -70,24 +68,24 @@ export default function NavBar({ email }: NavBarProps) {
 
         {/* Dropdown menu */}
         {isOpen && (
-        <div className=" absolute top-0 right-0 flex flex-col w-full min-h-screen bg-gray-100 border border-r-1 border-gray-300 pt-24 p-6">
-          <NavLinks navItems={[ ...navLinks.filter(link => !['License', 'Terms', 'Privacy Policy'].includes(link.name))]} />
+        <div className=" absolute top-0 right-0 flex flex-col items-start w-full min-h-screen bg-gray-100 border border-r-1 border-gray-300 pt-32 p-6 text-3xl">
+          <NavLinks navItems={navLinks} classname='flex flex-col gap-4'/>
              <div className="flex-1"></div>
            {!showAccountWidget? (
           <Link
           href={email ? '/dashboard' : '/login'}
-          className="flex w-auto items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold p-2 px-4 rounded-lg text-sm md:text-md"
+          className="flex w-full items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold p-2 px-4 rounded-lg text-sm md:text-md"
         >
           {email ? mainCTA : 'Log in'}
         </Link>
         ): (
-          <UserProfileWidget userId={email}/>
+            <UserProfileWidget username={email?.split("@")[0]} />
         )}
         </div>
         )}
       </div>
       <div className="md:flex items-center gap-5 hidden">
-        <NavBarItems navItems={filteredHeaderLinks} />
+        <NavBarItems navItems={navLinks} />
         {!showAccountWidget? (
           <Link
           href={email ? '/dashboard' : '/login'}
@@ -96,7 +94,7 @@ export default function NavBar({ email }: NavBarProps) {
           {email ? mainCTA : 'Log in'}
         </Link>
         ): (
-          <UserProfileWidget userId={email}/>
+            <UserProfileWidget username={email?.split("@")[0]} />
         )}
       </div>
     </nav>
