@@ -93,7 +93,7 @@ export function Questionnaire<T extends Record<string, QuestionnaireAnswer>>({
             )}
           </div>
 
-          <div className="flex justify-between mt-auto">
+          <div className="flex justify-between mt-auto pb-8">
             {currentIndex > 0 ? (
               <button
                 type="button"
