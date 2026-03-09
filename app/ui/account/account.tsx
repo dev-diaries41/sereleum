@@ -16,7 +16,7 @@ export default function AccountOverview({ usage , email, credits }: AccountOverv
   return (
       <div className="w-full flex flex-col px-4 pt-24 sm:pt-8">        
       <h1 className="text-xl md:text-2xl">Account overview</h1>
-        <div className="flex flex-col w-full min-h-screen items-center">
+        <div className="flex flex-col w-full  min-h-[100dvh] items-center">
           <AccountInformation email={email} credits={credits}/>
           <div className="flex flex-col justify-center items-start gap-2 w-full mb-4">
             <div className="w-full flex flex-row items-center justify-start gap-2">

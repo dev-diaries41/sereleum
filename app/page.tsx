@@ -32,7 +32,7 @@ const HeroSection = () => {
   const mainCTA = stage === "mvp" ? "Get Free Report" : "Analyse Prompts";
 
   return (
-    <section className="relative w-full min-h-screen pt-24 flex flex-col items-center justify-center text-center px-4 sm:px-6 overflow-x-hidden bg-gradient-to-b from-indigo-50 via-white to-white">
+    <section className="relative w-full  min-h-[100dvh] pt-24 flex flex-col items-center justify-center text-center px-4 sm:px-6 overflow-x-hidden bg-gradient-to-b from-indigo-50 via-white to-white">
       <div className="relative z-10 w-full max-w-full sm:max-w-3xl md:max-w-5xl">
 
         <div className="flex justify-center mb-6">
