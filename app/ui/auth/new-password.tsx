@@ -30,7 +30,7 @@ export default function CompletePasswordResetForm({ email }: any) {
   const isSuccess = state.message === RESET_SUCCESS;
 
   return (
-    <div className="relative flex items-center justify-center p-4">
+    <div className="relative flex justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

@@ -17,7 +17,7 @@ export default function ForgotPasswordForm() {
   const error = searchParams.get('error');
 
   return (
-    <div className="relative flex items-center justify-center p-4">
+    <div className="relative flex justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

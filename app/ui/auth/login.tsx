@@ -15,7 +15,7 @@ export default function LoginForm() {
   const [errorMessage, dispatch] = useActionState(authenticate, undefined);
 
   return (
-    <div className="relative flex items-center justify-center p-4">
+    <div className="relative flex justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
