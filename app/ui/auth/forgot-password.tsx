@@ -18,12 +18,7 @@ export default function ForgotPasswordForm() {
 
   return (
     <div className="relative flex justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="relative z-10 w-full max-w-xl"
-      >
+      <div className="relative z-10 w-full max-w-xl">
         <div className="bg-white/70 backdrop-blur-xl shadow-2xl rounded-2xl p-8 border border-gray-200">
           <div className="text-center mb-6">
             <h1 className="text-2xl font-semibold mb-2">Reset your password</h1>
@@ -96,7 +91,7 @@ export default function ForgotPasswordForm() {
             )}
           </motion.form>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

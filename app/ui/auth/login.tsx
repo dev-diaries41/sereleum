@@ -16,12 +16,7 @@ export default function LoginForm() {
 
   return (
     <div className="relative flex justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="relative z-10 w-full max-w-xl"
-      >
+      <div className="relative z-10 w-full max-w-xl">
         <div className="bg-white/70 backdrop-blur-xl shadow-2xl rounded-2xl p-8 border border-gray-200">
           <div className="flex flex-col items-center mb-6 gap-8">
             <Logo name="Sereleum" width={80} height={80} src={'/sereleum-infinity-logo.png'}/>
@@ -92,7 +87,7 @@ export default function LoginForm() {
             </div>
           </form>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
