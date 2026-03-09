@@ -17,7 +17,7 @@ export default function LoginForm() {
   return (
     <div className="relative flex justify-center p-4">
       <div className="relative z-10 w-full max-w-xl">
-        <div className="bg-white/70 backdrop-blur-xl shadow-2xl rounded-2xl p-8 border border-gray-200">
+        <div className="bg-white/70 shadow-2xl rounded-2xl p-8 border border-gray-200">
           <div className="flex flex-col items-center mb-6 gap-8">
             <Logo name="Sereleum" width={80} height={80} src={'/sereleum-infinity-logo.png'}/>
             <h1 className="text-2xl font-bold mb-2">Sign In</h1>
