@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     url: 'https://sereleum.vercel.app/',
     description: description,
     siteName: appName,
-    images: []
+    images: ["/sereleum-opengraph.png"]
   }
 }
 
