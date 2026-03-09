@@ -6,6 +6,7 @@ import { auth } from '@/auth';
 import AuthProvider from './providers/auth';
 
 import { IBM_Plex_Sans } from 'next/font/google'
+import { Analytics } from "@vercel/analytics/next"
 
 const ibmPlex = IBM_Plex_Sans({
   subsets: ['latin'],
@@ -47,6 +48,7 @@ export default async function RootLayout({
           {children}
           <Footer/>
         </main>
+        <Analytics />
       </body>
       </AuthProvider>
     </html>
