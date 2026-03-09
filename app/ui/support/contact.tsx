@@ -97,7 +97,7 @@ export default function ContactForm() {
                     id="email"
                     name="email"
                     defaultValue=""
-                    placeholder="johndoe@example.com"
+                    placeholder="Email address"
                     aria-describedby="email-error"
                     className="peer block w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
