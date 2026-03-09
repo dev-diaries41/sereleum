@@ -61,9 +61,9 @@ export default function LoginForm() {
                 />
               </div>
 
-              <p className="my-4 mb-0">
+              {/* <p className="my-4 mb-0">
                 <Link href="/forgot-password" className="font-semibold text-indigo-600 hover:underline text-sm">Forgot password?</Link>
-              </p>
+              </p> */}
             </div>
 
             <LoginButton />

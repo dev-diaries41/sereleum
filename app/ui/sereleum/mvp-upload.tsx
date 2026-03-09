@@ -248,11 +248,6 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
               </div>
             )}
           </div>
-
-          <div className="mt-8 text-xs text-gray-500 text-center leading-relaxed">
-            Your data is used solely to generate your report. No prompts are shared
-            or stored beyond analysis.
-          </div>
         </div>
       </motion.div>
     </div>
