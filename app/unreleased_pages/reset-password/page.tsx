@@ -1,9 +1,9 @@
 // app/reset-password/page.tsx
 
 import CompletePasswordResetForm from '@/app/ui/auth/new-password';
-import { verifyToken } from '@/app/lib/server/jwt'; // Ensure this is the correct import path
 import { AuthErrors } from '@/app/constants/errors';
 import { redirect } from 'next/navigation';
+import { verifyToken } from '@/app/lib/server/auth';
 
 const INVALID_LINK_ERROR = 'Invalid password reset link'
 const EXPIRED_LINK_ERROR = 'Password reset link has expired'
