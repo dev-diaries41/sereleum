@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   switch (event.type) {
       case 'invoice.paid':
           const subInvoicePaid = event.data.object;
-          handlePaymentComplete({email: subInvoicePaid.customer_email, name: subInvoicePaid.customer_name || '', chargeId: subInvoicePaid.id?.toString() || '', receipt_url: subInvoicePaid.hosted_invoice_url!});
+          handlePaymentComplete({email: subInvoicePaid.customer_email, name: subInvoicePaid.customer_name || '', chargeId: subInvoicePaid.id || '', receipt_url: subInvoicePaid.hosted_invoice_url!});
       default:
         console.warn(`Unhandled event type ${event.type}`);
     }
