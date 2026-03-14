@@ -20,13 +20,7 @@ export const WelcomePage = ({
       <div className="w-full max-w-xl bg-white rounded-lg shadow-md p-8 flex flex-col min-h-[420px]">
 
         <div className="flex justify-center mb-6">
-          <Logo
-            name='Sereleum'
-            src="/sereleum-infinity-logo.png"
-            width={80}
-            height={80}
-            alt="Sereleum logo"
-          />
+          <Logo name="Sereleum" width={24} height={32} src={'/sereleum-infinity-logo.png'}/>
         </div>
 
         <h2 className="text-3xl font-semibold text-center mb-3">

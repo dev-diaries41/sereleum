@@ -37,12 +37,8 @@ onToggleMenu
             className="flex items-center justify-start rounded-ful z-50"
             href="/"
           >
-           <Logo
-                    src={'/sereleum-infinity-logo.png'}
-                     width={80} 
-                     height={80}
-                    alt={'logo'}
-                  />
+          <Logo name="Sereleum" width={24} height={32} src={'/sereleum-infinity-logo.png'}/>
+     
           </Link>
           <div className='flex flex-row justify-end items-center ml-auto'>
             <button

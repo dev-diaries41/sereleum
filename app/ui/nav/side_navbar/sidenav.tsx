@@ -50,12 +50,8 @@ export default React.memo(function SideNav({ email }: SideNavProps) {
             className="flex items-center justify-start rounded-3xl"
             href="/"
           >
-            <Logo
-              src={'/sereleum-infinity-logo.png'}
-              width={50} 
-              height={50}
-              alt={'logo'}
-            />
+          <Logo name="Sereleum" width={24} height={32} src={'/sereleum-infinity-logo.png'}/>
+            
           </Link>
           <button>
             <SidenavToggleIcon/>
