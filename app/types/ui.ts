@@ -35,6 +35,7 @@ export interface LogoProps {
   alt?: string;
   width?:  number | `${number}`;
   height?:  number | `${number}`;
+  nameSize?: string;
 } 
 
 export interface FileUploaderProps {

@@ -6,7 +6,8 @@ export default function Logo({
   name,
   width = 30,
   height = 30,
-}: LogoProps & { color?: string }) {
+  nameSize = 'text-2xl',
+}: LogoProps) {
   return (
     <div className={`flex items-center gap-1`}>
       <Image
@@ -17,7 +18,7 @@ export default function Logo({
         priority = {true}
         className="object-contain rounded-sm"
       />
-      {name && <h1 className="text-2xl font-medium">{name}</h1>}
+      {name && <h1 className={`${nameSize} font-medium`}>{name}</h1>}
     </div>
   );
 }
