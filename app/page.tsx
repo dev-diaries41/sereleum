@@ -34,7 +34,7 @@ const HeroSection = () => {
   const mainCTA = stage === "mvp" ? "Get Free Report" : "Analyse Prompts";
 
   return (
-    <section className="relative w-full min-h-[100dvh] pt-32 flex flex-col items-center justify-center px-4 overflow-x-hidden bg-gradient-to-b from-indigo-50 via-white to-white">
+    <section className="relative w-full min-h-[100dvh] pt-0 flex flex-col items-center justify-center px-4 overflow-x-hidden bg-gradient-to-b from-indigo-50 via-white to-white">
       <div className="relative z-10 w-full max-w-7xl px-4">
         <div className="flex flex-col lg:flex-row items-center lg:items-start gap-12">
 
@@ -72,10 +72,8 @@ const HeroSection = () => {
           </div>
 
           <div className="relative w-full lg:w-3/5 flex justify-center lg:justify-end">
-
             <div className="absolute -inset-6 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-400 opacity-20 blur-3xl rounded-3xl" />
-
-            <div className="relative bg-white/80 backdrop-blur rounded-2xl shadow-2xl ring-1 ring-gray-200 p-2 w-full max-w-[900px] border-2 border-indigo-500/30">
+            <div className="relative bg-white/80 backdrop-blur rounded-2xl shadow-2xl ring-1 ring-gray-200 p-2 w-full border-2 border-indigo-500/30">
               <Image
                 src="/screenshots/dashboard-page.png"
                 alt="Sereleum dashboard preview"
@@ -85,12 +83,7 @@ const HeroSection = () => {
                 className="rounded-xl w-full h-auto"
               />
             </div>
-
           </div>
-        </div>
-
-        <div className="pt-10 pb-20 w-full">
-          <FlowDiagram steps={FlowDiagramSteps} />
         </div>
       </div>
 
