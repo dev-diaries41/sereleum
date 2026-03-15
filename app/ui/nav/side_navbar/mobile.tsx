@@ -37,12 +37,8 @@ onToggleMenu
             className="flex items-center justify-start rounded-ful z-50"
             href="/"
           >
-           <Logo
-                    src={'/sereleum-infinity-logo.png'}
-                     width={80} 
-                     height={80}
-                    alt={'logo'}
-                  />
+          <Logo name="Sereleum" src={'/sereleum-infinity-logo.png'} width={20} height={26} nameSize='text-xl'/>
+     
           </Link>
           <div className='flex flex-row justify-end items-center ml-auto'>
             <button
@@ -55,7 +51,7 @@ onToggleMenu
         </div>}
 
         {isOpen && (
-        <div className=" absolute top-0 right-0 flex flex-col items-start w-full  min-h-[100dvh] bg-gray-100 border border-r-1 border-gray-300 pt-32 p-6 text-3xl">
+        <div className=" absolute top-0 right-0 flex flex-col items-start w-full  min-h-[100dvh] bg-gray-100 border border-r-1 border-gray-300 pt-24 p-6 text-3xl">
           <NavLinks navItems={sideBarLinks} classname='flex flex-col gap-4'/>
           <div className="flex-1 mr-auto max-h-[50vh] overflow-y-auto mb-8 custom-scrollbar p-1 ">
           </div>

@@ -1,32 +1,24 @@
-import React from 'react';
 import { LogoProps } from '@/app/types';
+import Image from 'next/image';
 
 export default function Logo({
   src,
   name,
   width = 30,
   height = 30,
-  color = '#4F46E5', // optional: allows tint color
-}: LogoProps & { color?: string }) {
+  nameSize = 'text-2xl',
+}: LogoProps) {
   return (
-    <div className={`flex items-center -translate-x-2`}>
-      <div
-        className={``}
-        style={{
-          width: width,
-          height: height,
-          backgroundColor: color,
-          WebkitMaskImage: `url(${src})`,
-          WebkitMaskRepeat: 'no-repeat',
-          WebkitMaskSize: 'contain',
-          WebkitMaskPosition: 'center',
-          maskImage: `url(${src})`,
-          maskRepeat: 'no-repeat',
-          maskSize: 'contain',
-          maskPosition: 'center',
-        }}
+    <div className={`flex items-center gap-1`}>
+      <Image
+        src={src}
+        alt="Sereleum logo"
+        width={width}
+        height={height}
+        priority = {true}
+        className="object-contain rounded-sm"
       />
-      {name && <h1 className="text-2xl font-medium -translate-x-5">{name}</h1>}
+      {name && <h1 className={`${nameSize} font-medium`}>{name}</h1>}
     </div>
   );
 }

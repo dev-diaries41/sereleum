@@ -24,8 +24,7 @@ export default function Header({email}: HeaderProps) {
     <div className={`fixed top-0 w-full pt-2 z-50`}>
       <div className='flex flex-row w-full max-w-7xl mx-auto items-center justify-between px-4'>
         <Link href={'/'} className='z-50'>
-          <Logo name="Sereleum" width={80} height={80}             
-          src={'/sereleum-infinity-logo.png'}/>
+          <Logo name="Sereleum" width={24} height={32} src={'/sereleum-infinity-logo.png'}/>
         </Link>
         <NavBar email={email}/>
       </div>

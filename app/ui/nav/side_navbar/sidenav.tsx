@@ -45,17 +45,13 @@ export default React.memo(function SideNav({ email }: SideNavProps) {
     <>
       {/* Desktop SideNav */}
       <div className="fixed flex flex-col w-[240px]  min-h-[100dvh] bg-gray-50 border-r border-gray-200 p-2 lg:block hidden z-[100]">
-        <div className='w-full flex flex-row justify-between items-center mb-2'>
+        <div className='w-full flex flex-row justify-between items-center mb-2 px-1 py-2'>
           <Link
             className="flex items-center justify-start rounded-3xl"
             href="/"
           >
-            <Logo
-              src={'/sereleum-infinity-logo.png'}
-              width={50} 
-              height={50}
-              alt={'logo'}
-            />
+          <Logo name="Sereleum" src={'/sereleum-infinity-logo.png'} width={20} height={26} nameSize='text-xl'/>
+            
           </Link>
           <button>
             <SidenavToggleIcon/>
