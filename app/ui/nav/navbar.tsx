@@ -28,8 +28,7 @@ interface NavBarProps extends Omit<HeaderProps, 'credits'>{
 }
 
 export default function NavBar({ email }: NavBarProps) {
-  const stage = process.env.NEXT_PUBLIC_APP_STAGE;
-  const mainCTA = stage === "mvp"? "Get Free Report" : "Analyse Prompts";
+  const mainCTA =  "Analyse Prompts";
 
   const pathname = usePathname();
   const showAccountWidget = pathname.includes("/dashboard")

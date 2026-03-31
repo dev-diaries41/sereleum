@@ -1,11 +1,10 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
-import { Features, FlowDiagramSteps, HowItWorksSteps } from './constants/content/hero';
+import { Features, HowItWorksSteps } from './constants/content/hero';
 import { FeatureCard } from './ui/landing/features';
-import { FlowDiagram } from './ui/landing/flow-diagram';
 import { Card } from './ui/cards/card';
 import { SectionItem } from './types';
-import { GradientWave } from './ui/background/waves';
+import Image from "next/image";
 
 export const revalidate = 3600;
 
@@ -27,11 +26,9 @@ function Home() {
   );
 }
 
-import Image from "next/image";
 
 const HeroSection = () => {
-  const stage = process.env.NEXT_PUBLIC_APP_STAGE;
-  const mainCTA = stage === "mvp" ? "Get Free Report" : "Analyse Prompts";
+  const mainCTA = "Analyse Prompts";
 
   return (
     <section className="relative w-full min-h-[100dvh] pt-24 lg:pt-0 flex flex-col items-center justify-center px-4 overflow-x-hidden bg-gradient-to-b from-indigo-50 via-white to-white">
@@ -39,12 +36,6 @@ const HeroSection = () => {
         <div className="flex flex-col lg:flex-row items-center lg:items-start gap-12">
 
           <div className="w-full lg:w-2/5 text-center lg:text-left">
-            <div className="flex justify-center lg:justify-start mb-6">
-              <span className="inline-flex items-center rounded-md bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700 ring-1 ring-inset ring-indigo-200">
-                Early Access
-              </span>
-            </div>
-
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-6 tracking-tight leading-snug sm:leading-tight">
               Turn LLM prompts into{" "}
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-500 to-indigo-400">
@@ -65,10 +56,6 @@ const HeroSection = () => {
                 {mainCTA}
               </Link>
             </div>
-
-            <span className="text-xs text-gray-500 block">
-              Free report available during Early Access
-            </span>
           </div>
 
           <div className="relative w-full lg:w-3/5 flex justify-center lg:justify-end">
