@@ -1,11 +1,9 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
-import { Features, FlowDiagramSteps, HowItWorksSteps } from './constants/content/hero';
+import { Features, HowItWorksSteps } from './constants/content/hero';
 import { FeatureCard } from './ui/landing/features';
-import { FlowDiagram } from './ui/landing/flow-diagram';
 import { Card } from './ui/cards/card';
 import { SectionItem } from './types';
-import { GradientWave } from './ui/background/waves';
 
 export const revalidate = 3600;
 
@@ -30,8 +28,7 @@ function Home() {
 import Image from "next/image";
 
 const HeroSection = () => {
-  const stage = process.env.NEXT_PUBLIC_APP_STAGE;
-  const mainCTA = stage === "mvp" ? "Get Free Report" : "Analyse Prompts";
+  const mainCTA = "Get Free Report";
 
   return (
     <section className="relative w-full min-h-[100dvh] pt-24 lg:pt-0 flex flex-col items-center justify-center px-4 overflow-x-hidden bg-gradient-to-b from-indigo-50 via-white to-white">
@@ -86,11 +83,6 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
-
-      {/* <div className="absolute inset-0 overflow-hidden z-0">
-        <GradientWave opacity={0.06} />
-        <GradientWave flip opacity={0.02} />
-      </div> */}
     </section>
   );
 };

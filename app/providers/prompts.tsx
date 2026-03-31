@@ -20,11 +20,18 @@ interface PromptsContextProps {
 const PromptsContext = createContext<PromptsContextProps | undefined>(undefined);
 
 interface PromptsProviderProps extends ProviderProps {
-  initialClusters: Cluster[]; 
-  initialPrompts: Prompt[];
-  overview: PromptsOverviewInfo;
+  initialClusters?: Cluster[]; 
+  initialPrompts?: Prompt[];
+  overview?: PromptsOverviewInfo;
 }
-const PromptsProvider = ({ children, initialClusters, initialPrompts, overview }: PromptsProviderProps) => {
+
+const defaultOverview:PromptsOverviewInfo = {
+  total_clusters: 0,
+  total_prompts: 0,
+  top_clusters: [],
+  top_cluster_token_counts: {}
+}
+const PromptsProvider = ({ children, initialClusters = [], initialPrompts = [], overview = defaultOverview }: PromptsProviderProps) => {
   const [ clusters, setClusters ] = useState<Cluster[]>(initialClusters);
   const [ topClusters, setTopClusters ] = useState<Cluster[]>(overview.top_clusters);
   const [ prompts, setPrompts ] = useState<Prompt[]>(initialPrompts);
