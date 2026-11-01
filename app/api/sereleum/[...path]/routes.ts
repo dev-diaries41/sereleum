@@ -1,6 +1,5 @@
+import { SERELEUM_BASE_URL } from "@/app/constants/api";
 import { NextRequest, NextResponse } from "next/server";
-
-const BASE_URL = process.env.SERELEUM_BASE_URL!;
 
 type RouteContext = {
   params: Promise<{ path: string[] }>;
@@ -10,7 +9,7 @@ async function handler(request: NextRequest, context: RouteContext) {
   const { path } = await context.params;
 
   const endpoint = path.map(encodeURIComponent).join("/");
-  const url = `${BASE_URL.replace(/\/$/, "")}/${endpoint}${request.nextUrl.search}`;
+  const url = `${SERELEUM_BASE_URL.replace(/\/$/, "")}/${endpoint}${request.nextUrl.search}`;
 
   const headers = new Headers();
 
