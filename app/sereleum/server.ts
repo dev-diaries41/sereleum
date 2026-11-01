@@ -25,7 +25,7 @@ import * as APIRoutes from "@/app/constants/api";
 export class SereleumApiClient<T extends DocItem = DocItem> {
   private baseUrl: string;
 
-  constructor(baseUrl: string = "/api/sereleum") {
+  constructor(baseUrl: string) {
     this.baseUrl = baseUrl.replace(/\/$/, "");
   }
 
