@@ -47,13 +47,20 @@ const defaultOverview:OverviewInfo = {
     );
   };
 
-  const useManageClusters = () => {
+  const useManageClusters = (initialClusters: Cluster[] = []) => {
     const context = useContext(SereleumContext);
     if (!context) {
       throw new Error('useManageClusters must be used within a SereleumProvider');
     }
 
     const { clusters, overview, setClusters, setOverview } = context;
+
+    useEffect(() => {
+      if(clusters.length == 0 && initialClusters.length > 0) {
+        setClusters(initialClusters)
+      }
+      
+    }, [initialClusters, clusters])
 
     const onLoadMoreClusters = async(limit: number, offset: number) => {
       if(clusters.length >= overview.total_clusters) return

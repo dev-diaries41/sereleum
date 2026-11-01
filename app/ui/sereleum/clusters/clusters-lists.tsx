@@ -13,10 +13,12 @@ type SortKey = typeof SortKeyOptions[number];
 
 interface ClustersWrapperProps {
   pageSize?: number;
+  initialClusters?: Cluster[]
+  
 }
 
-export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
-  const { clusters, overview, onLoadMoreClusters , onMergeClusters} = useManageClusters();
+export function ClustersWrapper({ pageSize = 25, initialClusters = [] }: ClustersWrapperProps) {
+  const { clusters, overview, onLoadMoreClusters , onMergeClusters} = useManageClusters(initialClusters);
   const [selectedClusterIds, setSelectedClusterIds] = useState<string[]>([]);
   const [isSelecting, setIsSelecting] = useState(false);
   const [isChoosingParent, setIsChoosingParent] = useState(false);
