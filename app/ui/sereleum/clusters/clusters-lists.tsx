@@ -1,9 +1,8 @@
 "use client";
 
 import { useClusters } from "@/app/providers/prompts";
-import { ClusterAccuracyPlayground } from "./cluster-accuracy";
 import  { useEffect, useMemo, useState } from "react";
-import { ClusterAccuracy, Cluster } from "@/app/types";
+import { Cluster } from "@/app/types";
 import { ClusterRow } from "./cluster-row";
 import { SortBySelector } from "../../common/sort-by";
 import { MergeClustersView } from "./merger";
@@ -18,38 +17,15 @@ interface ClustersWrapperProps {
   pageSize?: number;
 }
 
-
 export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
   const { clusters, overview, setTopClusters, setClusters, onLoadMoreClusters } = useClusters();
-  const [running, setRunning] = useState(false);
-  const [result, setResult] = useState<ClusterAccuracy | null>(null);
   const [selectedClusterIds, setSelectedClusterIds] = useState<string[]>([]);
-  const [isRunAccVisisble, setIsRunAccVisisble] = useState(false);
-
-  // New selection mode
   const [isSelecting, setIsSelecting] = useState(false);
-
-  // When true, we are showing the UI to pick a parent cluster for the merge
   const [isChoosingParent, setIsChoosingParent] = useState(false);
   const [parentClusterId, setParentClusterId] = useState<string | null>(null);
-
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
   const [page, setPage] = useState(0);
-
-  // Sorting state
   const [sortBy, setSortBy] = useState<SortKey>('mean');
   const [sortDirection, setSortDirection] = useState<"desc" | "asc">("desc");
-
-  // const runAccuracy = async () => {
-  //   setRunning(true);
-  //   try {
-  //     const res = await apiPromptsClient.calculateClusterAccuracy();
-  //     setResult(res);
-  //   } finally {
-  //     setRunning(false);
-  //   }
-  // };
 
   const toggleSelection = (id: string) => {
     setSelectedClusterIds((prev) =>
@@ -187,14 +163,6 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
 
         <div className="flex gap-3 items-center">
           <button
-            onClick={() => setIsRunAccVisisble((prev) => !prev)}
-            disabled={running}
-            className="px-4 py-2 rounded-md bg-indigo-600 text-white text-sm font-medium disabled:opacity-60"
-          >
-            Test accuracy
-          </button>
-
-          <button
             onClick={() => {
               setIsSelecting((s) => !s);
               if (isSelecting) clearSelection();
@@ -214,19 +182,6 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
         setSortDirection={setSortDirection}
         labelFor={labelFor}
       />
-
-      {isRunAccVisisble && (
-        <ClusterAccuracyPlayground
-          // runAccuracy={runAccuracy}
-          running={running}
-          toggleDropDown={() => setDropdownOpen((prev) => !prev)}
-          toggleSelection={toggleSelection}
-          clusters={clusters}
-          dropdownOpen={dropdownOpen}
-          result={result}
-          selectedClusterIds={selectedClusterIds}
-        />
-      )}
 
       {/* Selection header - visible only when selecting */}
     {isSelecting && (
