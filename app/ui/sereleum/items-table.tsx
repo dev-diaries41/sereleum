@@ -5,8 +5,9 @@ import Link from 'next/link';
 import PopUp from '../common/popup';
 import { Cluster, Prompt } from '@/app/types/';
 import usePopUp from '@/app/hooks/usePopUp';
-import { useClusters } from '@/app/providers/prompts';
 import { UNCLUSTERED, UNLABELLED_CLUSTER } from '@/app/constants/clusters';
+import { useClusterManager } from '@/app/hooks/useClusterManager';
+import { apiPromptsClient } from '@/app/sereleum';
 
 interface ItemsTableViewProps {
   title?: string;
@@ -24,11 +25,8 @@ export default function ItemsTable({
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   const { popUpCta, popUpDescription, popUpTitle, showPopUp, closePopUp } = usePopUp();
-  const { items, overview, onMoveItem, onLoadMoreItems } = useClusters();
+  const { items, onMoveItem, onLoadMoreItems } = useClusterManager(apiPromptsClient, cluster);
 
-  const handleLabelChange = (itemId: string, newClusterId: string) => {
-    onMoveItem(itemId, newClusterId);
-  };
 
   const toggleExpanded = (ItemId: string) => {
     setExpandedIds((prev) => {
@@ -48,7 +46,7 @@ export default function ItemsTable({
   const start = page * pageSize;
   const end = start + pageSize;
   const pageItems = filteredItems.slice(start, end);
-  const totalPages = Math.max(1, Math.ceil(overview.total_items / pageSize));
+  const totalPages = Math.max(1, Math.ceil(cluster.prototype_size / pageSize));
   const label = cluster.label !== UNLABELLED_CLUSTER ? cluster.label : cluster.id
 
   const handleNext = () => {
