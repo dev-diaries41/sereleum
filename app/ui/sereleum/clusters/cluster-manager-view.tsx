@@ -1,6 +1,6 @@
 'use client';
 
-import { useManageClusters } from "@/app/providers/prompts";
+import { useManageClusters } from "@/app/providers/sereleum";
 import { Cluster, Prompt } from "@/app/types";
 import { faCheck, faTag } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

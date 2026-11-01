@@ -1,11 +1,10 @@
 'use client'
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { Cluster, OverviewInfo, ProviderProps, Status, DocItem } from '@/app/types';
+import { Cluster, OverviewInfo, ProviderProps, Status } from '@/app/types';
 import { StorageKeys } from '../constants/global';
 import * as LocalStorage from "@/app/lib/client/storage/session"
 import { useRouter } from 'next/navigation';
-import { SereleumApiClient } from '../sereleum/server';
-import { SereleumEventsClient } from '../sereleum/client';
+import { apiPromptsClient, eventsClient } from '../sereleum';
 
 
 const defaultOverview:OverviewInfo = {
@@ -14,12 +13,7 @@ const defaultOverview:OverviewInfo = {
   top_clusters: [],
 }
 
-export function createItemsProvider<T extends DocItem>(
-  apiClient: SereleumApiClient<T>,
-  eventsClient: SereleumEventsClient
-) {
-
-  interface ItemsContextProps<T> {
+  interface SereleumContextProps {
       clusters: Cluster[];
       setClusters: React.Dispatch<React.SetStateAction<Cluster[]>>;
       topClusters: Cluster[];
@@ -29,19 +23,19 @@ export function createItemsProvider<T extends DocItem>(
   }
 
 
-  interface ItemsProviderProps<T> extends ProviderProps {
+  interface SereleumProviderProps extends ProviderProps {
     initialClusters?: Cluster[]; 
     initialOverview?: OverviewInfo;
   }
 
-  const ItemsContext = createContext<ItemsContextProps<T> | undefined>(undefined);
+  const SereleumContext = createContext<SereleumContextProps | undefined>(undefined);
 
 
-  const ItemsProvider =({ 
+  const SereleumProvider =({ 
     children, 
     initialClusters= [], 
     initialOverview = defaultOverview 
-  }: ItemsProviderProps<T>) => {
+  }: SereleumProviderProps) => {
     const [ clusters, setClusters ] = useState<Cluster[]>(initialClusters);
     const [ topClusters, setTopClusters ] = useState<Cluster[]>(initialOverview.top_clusters);
     const [ overview, setOverview ] = useState<OverviewInfo>(initialOverview);
@@ -53,7 +47,7 @@ export function createItemsProvider<T extends DocItem>(
 
     
     return (
-      <ItemsContext.Provider value={{
+      <SereleumContext.Provider value={{
         clusters,
         setClusters,
         topClusters, 
@@ -62,26 +56,26 @@ export function createItemsProvider<T extends DocItem>(
         setOverview
       }}>
         {children}
-      </ItemsContext.Provider>
+      </SereleumContext.Provider>
     );
   };
 
   const useManageClusters = () => {
-    const context = useContext(ItemsContext);
+    const context = useContext(SereleumContext);
     if (!context) {
-      throw new Error('useManageClusters must be used within a ItemsProvider');
+      throw new Error('useManageClusters must be used within a SereleumProvider');
     }
 
     const { clusters, topClusters, overview,  setTopClusters, setClusters } = context;
 
     const onLoadMoreClusters = async(limit: number, offset: number) => {
       if(clusters.length >= overview.total_clusters) return
-      const result = await apiClient.getClusters(undefined, limit, offset)
+      const result = await apiPromptsClient.getClusters(undefined, limit, offset)
       setClusters(prev => [...prev, ...result] )
     }
 
     const onRenameCluster = async(clusterId: string, name: string) => {
-      const newLabel = await apiClient.renameCluster(clusterId, name)
+      const newLabel = await apiPromptsClient.renameCluster(clusterId, name)
       setClusters((prev) => prev.map((c) => c.id === clusterId? {...c, label: newLabel} : c ) );
     }
 
@@ -90,7 +84,7 @@ export function createItemsProvider<T extends DocItem>(
       const merges: Record<string, string[]> = {
         [primaryClusterId]: secondaryClusterIds,
       };
-      const updatedClusters = await apiClient.mergeClusters(merges);
+      const updatedClusters = await apiPromptsClient.mergeClusters(merges);
       setClusters(prev => prev.map(cluster => cluster.id === updatedClusters[0].id ? updatedClusters[0] : cluster).filter(cluster => !secondaryClusterIds.includes(cluster.id)))
       setTopClusters(prev => prev.map(cluster => cluster.id === updatedClusters[0].id ? updatedClusters[0] : cluster).filter(cluster => !secondaryClusterIds.includes(cluster.id)))
     }
@@ -109,9 +103,9 @@ export function createItemsProvider<T extends DocItem>(
 
   const useDashboard = () => {
 
-    const context = useContext(ItemsContext);
+    const context = useContext(SereleumContext);
     if (!context) {
-      throw new Error('useDashboard must be used within a ItemsProvider');
+      throw new Error('useDashboard must be used within a SereleumProvider');
     }
 
     const { overview, topClusters, setClusters, setOverview } = context;
@@ -154,8 +148,8 @@ export function createItemsProvider<T extends DocItem>(
       const eventSource = eventsClient.trackClusterStatus(jobId, {
         onComplete: async() => {
           await new Promise(resolve => setTimeout(resolve, 1000))
-          const updatedOverview = await apiClient.getOverview();
-          const clusters = await apiClient.getClusters()
+          const updatedOverview = await apiPromptsClient.getOverview();
+          const clusters = await apiPromptsClient.getClusters()
           updateOverview(updatedOverview)
           setClusters(clusters)
           setClusteringStatus("complete")
@@ -229,7 +223,7 @@ export function createItemsProvider<T extends DocItem>(
             }    
           }   
 
-          const blob = await apiClient.getClusterPlotBlob();
+          const blob = await apiPromptsClient.getClusterPlotBlob();
           if (blob) {
             LocalStorage.set(StorageKeys.overview, JSON.stringify(overview));
             url = URL.createObjectURL(blob);
@@ -284,7 +278,7 @@ export function createItemsProvider<T extends DocItem>(
 
     const handleFileUpload = async() => {
       if(!itemsFile) return
-      const res = await apiClient.indexItems(itemsFile, {autoLabel: false})
+      const res = await apiPromptsClient.indexItems(itemsFile, {autoLabel: false})
       setItemsFile(null)
       setIndexingStatus(res.status)
       LocalStorage.set(StorageKeys.indexingJobId, res.job_id)
@@ -316,5 +310,6 @@ export function createItemsProvider<T extends DocItem>(
     }
       
   }
-    return { ItemsContext, ItemsProvider, useManageClusters, useDashboard };
-}
+  
+  export { SereleumContext, SereleumProvider, useManageClusters, useDashboard };
+

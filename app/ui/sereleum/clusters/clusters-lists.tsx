@@ -1,6 +1,6 @@
 "use client";
 
-import { useManageClusters } from "@/app/providers/prompts";
+import { useManageClusters } from "@/app/providers/sereleum";
 import  { useEffect, useMemo, useState } from "react";
 import { Cluster } from "@/app/types";
 import { ClusterRow } from "./cluster-row";
