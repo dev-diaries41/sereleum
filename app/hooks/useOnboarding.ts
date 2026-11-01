@@ -33,8 +33,9 @@ const useOnboarding = (email: string | null | undefined) => {
     };
 
     const onCompleteOnboarding = async (answers: OnboardingAnswers) => {
+        closeOnboardingPopUp();
+
         if (email) {
-            closeOnboardingPopUp();
             await completedOnboarding(email, answers);
             setAnswers(answers)
             LocalStorage.set(StorageKeys.onboarding, 'complete');
