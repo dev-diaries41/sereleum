@@ -3,11 +3,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import PopUp from '../common/popup';
-import { Cluster, Prompt } from '@/app/types/';
+import { Cluster } from '@/app/types/';
 import usePopUp from '@/app/hooks/usePopUp';
 import { UNCLUSTERED, UNLABELLED_CLUSTER } from '@/app/constants/clusters';
-import { useClusterManager } from '@/app/hooks/useClusterManager';
-import { apiPromptsClient } from '@/app/sereleum';
+import { useClusterItems } from '@/app/hooks/useClusterItems';
 
 interface ItemsTableViewProps {
   title?: string;
@@ -25,8 +24,7 @@ export default function ItemsTable({
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   const { popUpCta, popUpDescription, popUpTitle, showPopUp, closePopUp } = usePopUp();
-  const { items, onMoveItem, onLoadMoreItems } = useClusterManager(apiPromptsClient, cluster);
-
+  const { items, onMoveItem, onLoadMoreItems } = useClusterItems(cluster);
 
   const toggleExpanded = (ItemId: string) => {
     setExpandedIds((prev) => {
