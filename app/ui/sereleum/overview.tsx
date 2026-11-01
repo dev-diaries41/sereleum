@@ -7,12 +7,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faLayerGroup, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import FileUploader from '../common/upload';
 import {  AcceptedMimes } from '@/app/constants/global';
-import { ClusterRow } from './cluster-row';
+import { ClusterRow } from './clusters/cluster-row';
 import { useDashboard } from '@/app/providers/prompts';
 import { ProgressTrackerPopUp } from '../common/progress-tracker';
 import { OverviewSummary } from './overview-summary';
-import { TokenUsageByClusterChart } from './charts/cluster-tokens';
-import { NumberPromptsPerClusterChart } from './charts/cluster-density';
+import { ClusterDensityChart } from './charts/cluster-density';
 import {InlinePopUp} from '../common/inline-popup';
 import useOnboarding from '@/app/hooks/useOnboarding';
 import { Questionnaire } from '../onboarding/questionnaire';
@@ -30,15 +29,15 @@ export function DashboardOverview({user, hasCompletedOnboarding}: DashboardOverv
     clusteringStatus, 
     clusterPlotUrl, 
     topClusters, 
-    promptsOverview: overview, 
+    overview, 
     trackerMinimized, 
-    promptsFile,
+    itemsFile,
     isViewAllVisible,
     error,  
     handleFileUpload, 
     goToClustersPage, 
     updateTrackerVisibility, 
-    updatePromptsFile,
+    updateItemsFile,
     resetError
   } = useDashboard()
   
@@ -73,7 +72,7 @@ export function DashboardOverview({user, hasCompletedOnboarding}: DashboardOverv
                   />
                 </button>
                   )}
-                  {promptsFile ? (
+                  {itemsFile ? (
                     <button
                       disabled = {indexingStatus !== null || clusteringStatus !== null}
                       onClick={handleFileUpload}
@@ -83,7 +82,7 @@ export function DashboardOverview({user, hasCompletedOnboarding}: DashboardOverv
                     </button>
                   ) : (
                     <FileUploader
-                      onFileUpload={(files) => updatePromptsFile(files[0])}
+                      onFileUpload={(files) => updateItemsFile(files[0])}
                       acceptedMimes={AcceptedMimes}
                     >
                       <span className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow-md">
@@ -93,12 +92,12 @@ export function DashboardOverview({user, hasCompletedOnboarding}: DashboardOverv
                   )}
                 </div>
           
-                {promptsFile && (
+                {itemsFile && (
                   <div className='flex flex-row gap-2 items-center'>
-                    <button onClick={() => updatePromptsFile(null)}>
+                    <button onClick={() => updateItemsFile(null)}>
                       <FontAwesomeIcon icon={faClose} className="w-4 h-4 text-red-700" />
                     </button>
-                    <p>{promptsFile.name}</p>
+                    <p>{itemsFile.name}</p>
                   </div>
                 )}
               </div>
@@ -112,8 +111,7 @@ export function DashboardOverview({user, hasCompletedOnboarding}: DashboardOverv
             <TopClustersDetails topClusters={topClusters} isViewAllVisible ={isViewAllVisible } onViewAllClusters={goToClustersPage}/>
           </div>
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 my-6">
-            {topClusters.length > 0 && <NumberPromptsPerClusterChart clusters={topClusters} loading ={false}/>}
-            {topClusters.length > 0 && <TokenUsageByClusterChart overview={overview} loading ={false}/>}
+            {topClusters.length > 0 && <ClusterDensityChart clusters={topClusters} loading ={false}/>}
           </div>
         </div>
         {indexingStatus  && <ProgressTrackerPopUp
@@ -140,7 +138,7 @@ export function DashboardOverview({user, hasCompletedOnboarding}: DashboardOverv
 interface ClustersPlotProps {
   url: string | null
 }
-
+ 
 function ClustersPlot({url}: ClustersPlotProps){
   return (
     <div className="lg:col-span-1">
@@ -181,7 +179,7 @@ interface TopClustersDetailsProps {
   onViewAllClusters: () => void;
 }
 function TopClustersDetails({ topN = 6, topClusters, isViewAllVisible, onViewAllClusters }: TopClustersDetailsProps) {
-  const sortedClusters = topClusters.sort((a, b) => b.metadata.prototype_size - a.metadata.prototype_size)
+  const sortedClusters = topClusters.sort((a, b) => b.prototype_size - a.prototype_size)
   return (
     <div className="lg:col-span-3 border border-gray-300 rounded-2xl shadow-sm p-6">
       <div className="flex items-center justify-between mb-4">
@@ -219,8 +217,8 @@ function TopClustersDetails({ topN = 6, topClusters, isViewAllVisible, onViewAll
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
           {sortedClusters.map((cluster) => (
             <Link
-              key={cluster.prototype_id}
-              href={`/dashboard/clusters/cluster/${cluster.prototype_id}`}
+              key={cluster.id}
+              href={`/dashboard/clusters/cluster/${cluster.id}`}
               className="w-full"
             >
               <div className="w-full">

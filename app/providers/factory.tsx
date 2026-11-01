@@ -1,0 +1,335 @@
+'use client'
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { Cluster, OverviewInfo, ProviderProps, Status, DocItem } from '@/app/types';
+import { StorageKeys } from '../constants/global';
+import * as LocalStorage from "@/app/lib/client/storage/session"
+import { useRouter } from 'next/navigation';
+import { SereleumApiClient } from '../sereleum/server';
+import { SereleumEventsClient } from '../sereleum/client';
+
+
+const defaultOverview:OverviewInfo = {
+  total_clusters: 0,
+  total_items: 0,
+  top_clusters: [],
+}
+
+export function createItemsProvider<T extends DocItem>(
+  apiClient: SereleumApiClient<T>,
+  eventsClient: SereleumEventsClient
+) {
+
+  interface ItemsContextProps<T> {
+      clusters: Cluster[];
+      setClusters: React.Dispatch<React.SetStateAction<Cluster[]>>;
+      topClusters: Cluster[];
+      setTopClusters: React.Dispatch<React.SetStateAction<Cluster[]>>;
+      items: T[];
+      setItems: React.Dispatch<React.SetStateAction<T[]>>;
+      overview: OverviewInfo;
+      setOverview: React.Dispatch<React.SetStateAction<OverviewInfo>>;
+  }
+
+
+  interface ItemsProviderProps<T> extends ProviderProps {
+    initialClusters?: Cluster[]; 
+    initialItems?: T[];
+    initialOverview?: OverviewInfo;
+  }
+
+  const ItemsContext = createContext<ItemsContextProps<T> | undefined>(undefined);
+
+
+  const ItemsProvider =({ 
+    children, 
+    initialClusters= [], 
+    initialItems = [], 
+    initialOverview = defaultOverview 
+  }: ItemsProviderProps<T>) => {
+    const [ clusters, setClusters ] = useState<Cluster[]>(initialClusters);
+    const [ topClusters, setTopClusters ] = useState<Cluster[]>(initialOverview.top_clusters);
+    const [ items, setItems ] = useState<T[]>(initialItems);
+    const [ overview, setOverview ] = useState<OverviewInfo>(initialOverview);
+    
+    useEffect(() => {
+      async function fetchInitialItems(){
+        const initialItems = await apiClient.getItems(undefined, 25)
+        setItems(initialItems)
+      }
+      if(items.length == 0 && initialOverview.total_items > 0) {
+          fetchInitialItems();
+        }
+    }, [initialOverview])
+
+    useEffect(() => {
+        setTopClusters(initialOverview.top_clusters)
+      }, [initialOverview])
+
+    
+    return (
+      <ItemsContext.Provider value={{
+        clusters,
+        setClusters,
+        topClusters, 
+        setTopClusters,
+        items,
+        setItems,
+        overview, 
+        setOverview
+      }}>
+        {children}
+      </ItemsContext.Provider>
+    );
+  };
+
+  const useClusters = () => {
+    const context = useContext(ItemsContext);
+    if (!context) {
+      throw new Error('useClusters must be used within a ItemsProvider');
+    }
+
+    const { clusters, topClusters, items, overview,  setTopClusters, setClusters, setItems } = context;
+
+    const onMoveItem = async(itemId: string, newClusterId: string) => {
+      const updatedClusterId = await apiClient.moveItem(itemId, newClusterId)
+      setItems(prev => prev.map(prevItem => prevItem.id === itemId? {...prevItem} : prevItem))
+    }
+
+    const onLoadMoreItems = async(limit: number, offset: number) => {
+      if(items.length >= overview.total_items) return
+      const result = await apiClient.getItems(limit, offset)
+      setItems(prev => [...prev, ...result] )
+    }
+
+    const onLoadMoreClusters = async(limit: number, offset: number) => {
+      if(items.length >= overview.total_items) return
+      const result = await apiClient.getClusters(undefined, limit, offset)
+      setClusters(prev => [...prev, ...result] )
+    }
+
+    return {
+        clusters,
+        topClusters,
+        items, 
+        overview,
+        setTopClusters,
+        setClusters,
+        setItems,
+        onMoveItem,
+        onLoadMoreItems,
+        onLoadMoreClusters,
+      };
+  };
+
+
+  const useDashboard = () => {
+
+    const context = useContext(ItemsContext);
+    if (!context) {
+      throw new Error('useDashboard must be used within a ItemsProvider');
+    }
+
+    const { overview, topClusters, setClusters, setOverview } = context;
+
+    const [progress, setProgress] = useState<number>(0);
+    const [indexingStatus, setIndexingStatus] = useState<Status|null>(null);
+    const [clusteringStatus, setClusteringStatus] = useState<Status|null>(null);
+    const [trackerMinimized, setTrackerMinimized] = useState(false);
+    const [clusterPlotUrl, setClusterPlotUrl] = useState<string | null>(null);
+    const [itemsFile, setItemsFile] = useState<File | null>(null);
+    const [error, setError] = useState<string|null>(null);
+
+    const router = useRouter();
+    const isViewAllVisible = overview.total_clusters > topClusters.length 
+
+    const updateOverview =(overview: OverviewInfo) => {
+      setOverview(overview)
+    }
+    const handleTrackIndexProgress = (jobId: string) => {
+        const eventSource = eventsClient.trackIndexProgress(jobId, {
+          onProgress: (p) => {
+            setProgress(p)
+          },
+          onComplete: async() => {
+            LocalStorage.remove(StorageKeys.indexingJobId)
+            setIndexingStatus("complete")
+            handleTrackClusteringStatus(jobId)
+          },
+          onFail: (e) => {
+            setIndexingStatus("failed")
+            LocalStorage.remove(StorageKeys.indexingJobId)
+            setError(e)
+          },
+          onActive: () => setIndexingStatus('active'),
+        })
+    }
+
+    const handleTrackClusteringStatus = (jobId: string) => {
+      setClusteringStatus('queued')
+      const eventSource = eventsClient.trackClusterStatus(jobId, {
+        onComplete: async() => {
+          await new Promise(resolve => setTimeout(resolve, 1000))
+          const updatedOverview = await apiClient.getOverview();
+          const clusters = await apiClient.getClusters()
+          updateOverview(updatedOverview)
+          setClusters(clusters)
+          setClusteringStatus("complete")
+        },
+        onFail: (e) => {
+          setClusteringStatus("failed")
+          setError(e)
+        },
+        onActive: () => setClusteringStatus('active'),
+      })
+    }
+
+    const goToClustersPage = () => {
+        router.push('/dashboard/clusters');
+    }
+
+
+    const isSameOverview = (
+      a: OverviewInfo,
+      b: OverviewInfo
+    ): boolean => {
+      if (a.total_items !== b.total_items) return false;
+      if (a.total_clusters !== b.total_clusters) return false;
+
+      if (a.top_clusters.length !== b.top_clusters.length) return false;
+      for (let i = 0; i < a.top_clusters.length; i++) {
+        const clusterA = a.top_clusters[i];
+        const clusterB = b.top_clusters[i];
+        if (clusterA.id !== clusterB.id) return false;
+      }
+
+      return true;
+    }
+
+
+    useEffect(() => {
+      if ( clusteringStatus !== null) return;
+
+      let url: string | null = null;
+      
+
+      const fetchPlot = async () => {
+        const request = indexedDB.open("ClusterPlotDB", 1);
+        const cachedOverview = LocalStorage.get<OverviewInfo>(StorageKeys.overview) as OverviewInfo | null;
+        request.onupgradeneeded = () => {
+          const db = request.result;
+          if (!db.objectStoreNames.contains("plots")) {
+            db.createObjectStore("plots");
+          }
+        };
+
+        request.onsuccess = async () => {
+          const db = request.result;
+          const tx = db.transaction("plots", "readonly");
+          const store = tx.objectStore("plots");
+          const cachedBlob = await new Promise<Blob | undefined>((resolve) => {
+            const getReq = store.get("clusterPlot");
+            getReq.onsuccess = () => resolve(getReq.result);
+            getReq.onerror = () => resolve(undefined);
+          });
+
+
+          if (cachedBlob) {
+            if(cachedOverview && isSameOverview(cachedOverview, overview)) {
+              url = URL.createObjectURL(cachedBlob);
+              setClusterPlotUrl(url);
+              return
+            }else{
+              const txWriteDelete = db.transaction("plots", "readwrite");
+              txWriteDelete.objectStore("plots").delete("clusterPlot");          
+            }    
+          }   
+
+          const blob = await apiClient.getClusterPlotBlob();
+          if (blob) {
+            LocalStorage.set(StorageKeys.overview, JSON.stringify(overview));
+            url = URL.createObjectURL(blob);
+            setClusterPlotUrl(url);
+
+          const txWrite = db.transaction("plots", "readwrite");
+            txWrite.objectStore("plots").put(blob, "clusterPlot");
+          }
+        };
+
+        request.onerror = (e) => console.error("IndexedDB error", e);
+      };
+
+      fetchPlot();
+
+      return () => {
+        if (url) URL.revokeObjectURL(url);
+      };
+  }, [clusteringStatus, overview]);
+
+
+
+    useEffect(() => {
+      if(indexingStatus === "complete" || indexingStatus === "failed"){
+        setTimeout(()=>{
+          setIndexingStatus(null)
+          setProgress(0)
+          setTrackerMinimized(false)
+        }, 750
+  )
+      }
+    }, [indexingStatus])
+
+
+    useEffect(() => {
+      if(clusteringStatus === "complete" || clusteringStatus === "failed"){
+        setTimeout(()=>{
+          setClusteringStatus(null)
+          setTrackerMinimized(false)
+        }, 1000
+  )
+      }
+    }, [clusteringStatus])
+
+
+    useEffect(() => {
+      const jobId = LocalStorage.get<string>(StorageKeys.indexingJobId)
+      if(jobId){
+        handleTrackIndexProgress(jobId)
+      }
+    }, [])
+
+    const handleFileUpload = async() => {
+      if(!itemsFile) return
+      const res = await apiClient.indexItems(itemsFile, {autoLabel: false})
+      setItemsFile(null)
+      setIndexingStatus(res.status)
+      LocalStorage.set(StorageKeys.indexingJobId, res.job_id)
+      handleTrackIndexProgress(res.job_id)
+    }
+
+    const updateItemsFile = (file:File | null) => setItemsFile(file)
+
+    const updateTrackerVisibility = (isMinimized: boolean) => setTrackerMinimized(isMinimized)
+    
+    const resetError = () => setError(null)
+
+    return {
+      progress,
+      indexingStatus,
+      clusteringStatus, 
+      clusterPlotUrl,
+      overview,
+      trackerMinimized,
+      itemsFile,
+      topClusters,
+      isViewAllVisible,
+      error,
+      handleFileUpload,
+      goToClustersPage,
+      updateTrackerVisibility,
+      updateItemsFile,
+      resetError
+    }
+      
+  }
+    return { ItemsContext, ItemsProvider, useClusters, useDashboard };
+}

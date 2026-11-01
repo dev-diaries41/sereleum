@@ -28,7 +28,7 @@ const CONFIRMATION_MESSAGE = "Your prompts have been successfully submitted. You
 export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverviewProps) {
   const { isVisible, isOnboarded, onCompleteOnboarding } = useOnboarding(user!!.email);
 
-  const [promptsFile, setPromptsFile] = useState<File | null>(null);
+  const [itemsFile, setPromptsFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -63,13 +63,13 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
   }
 
   const handleFileUpload = async () => {
-    if (!promptsFile) return;
+    if (!itemsFile) return;
 
     setLoading(true)
 
     try {
-      const prompts = await validatePromptsFile(promptsFile);
-      const base64 = await fileToBase64(promptsFile)
+      const prompts = await validatePromptsFile(itemsFile);
+      const base64 = await fileToBase64(itemsFile)
       const folder = `prompts_${user!!.id}`
       await upload(base64, {folder: folder, type: "private"})
       
@@ -91,7 +91,7 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
     }
   };
 
-  const updatePromptsFile = (file: File | null) => setPromptsFile(file);
+  const updateItemsFile = (file: File | null) => setPromptsFile(file);
   const resetError = () => setError(null);
 
   return (
@@ -155,9 +155,9 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
                   exit={{ opacity: 0, scale: 0.98 }}
                   className="w-full"
                 >
-                  {!promptsFile ? (
+                  {!itemsFile ? (
                     <FileUploader
-                      onFileUpload={(files) => updatePromptsFile(files[0])}
+                      onFileUpload={(files) => updateItemsFile(files[0])}
                       acceptedMimes={AcceptedMimes}
                     >
                       <motion.div
@@ -185,7 +185,7 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
                       />
 
                       <p className="text-sm font-medium text-gray-800">
-                        {promptsFile.name}
+                        {itemsFile.name}
                       </p>
 
                       <div className="flex gap-3 mt-2">
@@ -198,7 +198,7 @@ export function MVPDashboard({ user, hasCompletedOnboarding }: DashboardOverview
                         </button>
 
                         <button
-                          onClick={() => updatePromptsFile(null)}
+                          onClick={() => updateItemsFile(null)}
                           className="px-4 py-2 rounded-lg bg-white border border-gray-300 text-sm text-gray-600 hover:bg-gray-50 transition flex items-center gap-2"
                         >
                           <FontAwesomeIcon icon={faClose} />

@@ -3,9 +3,10 @@
 import { useRef } from 'react';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Cluster, ClusterAccuracy, UNLABELLED_CLUSTER } from '@/app/types';
+import { Cluster, ClusterAccuracy } from '@/app/types';
 import { MetricsItem } from '../dashboard/metrics-item';
 import Link from 'next/link';
+import { UNLABELLED_CLUSTER } from '@/app/constants/clusters';
 
 interface ClusterAccuracyPlaygroundProps {
   result: ClusterAccuracy | null;
@@ -15,7 +16,7 @@ interface ClusterAccuracyPlaygroundProps {
   running: boolean;
   toggleDropDown: () => void;
   toggleSelection: (value: string) => void;
-  runAccuracy: () => Promise<void>;
+  // runAccuracy: () => Promise<void>;
 }
 
 export function ClusterAccuracyPlayground({
@@ -26,7 +27,7 @@ export function ClusterAccuracyPlayground({
   selectedClusterIds,
   toggleDropDown,
   toggleSelection,
-  runAccuracy
+  // runAccuracy
 
 }: ClusterAccuracyPlaygroundProps) {
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -82,8 +83,8 @@ export function ClusterAccuracyPlayground({
                   unclustered
                 </label>
                 {clusters.map((c) => {
-                  const id = c.label === UNLABELLED_CLUSTER ? c.prototype_id : c.label;
-                  const label = c.label === UNLABELLED_CLUSTER ? c.prototype_id : c.label;
+                  const id = c.label === UNLABELLED_CLUSTER ? c.id : c.label;
+                  const label = c.label === UNLABELLED_CLUSTER ? c.id : c.label;
                   return (
                     <label
                       key={id}
@@ -104,7 +105,7 @@ export function ClusterAccuracyPlayground({
           </div>
 
           <button
-            onClick={runAccuracy}
+            // onClick={runAccuracy}
             disabled={running}
             className="px-4 py-2 rounded-md bg-indigo-600 text-white text-sm disabled:opacity-60"
           >

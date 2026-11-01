@@ -1,60 +1,62 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import PopUp from '../common/popup';
-import { Prompt, UNLABELLED_CLUSTER, UNCLUSTERED } from '@/app/types/prompts';
+import { Cluster, Prompt } from '@/app/types/';
 import usePopUp from '@/app/hooks/usePopUp';
-import { usePrompts } from '@/app/providers/prompts';
+import { useClusters } from '@/app/providers/prompts';
+import { UNCLUSTERED, UNLABELLED_CLUSTER } from '@/app/constants/clusters';
 
-interface PromptsTableViewProps {
+interface ItemsTableViewProps {
+  title?: string;
   pageSize?: number;
+  cluster: Cluster;
 }
 
-export default function PromptsTableView({ pageSize = 10 }: PromptsTableViewProps) {
+export default function ItemsTable({ 
+  cluster ,
+  title = 'Items',
+  pageSize = 10, 
+}: ItemsTableViewProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(0);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   const { popUpCta, popUpDescription, popUpTitle, showPopUp, closePopUp } = usePopUp();
-  const { prompts, clusters, promptsOverview, onUpdatePrompt, onLoadMorePrompts } = usePrompts();
+  const { items, overview, onMoveItem, onLoadMoreItems } = useClusters();
 
-  const handleLabelChange = (prompt: Prompt, newClusterId: string) => {
-    const updatedPrompt = {
-      ...prompt,
-      metadata: { ...prompt.metadata, cluster_id: newClusterId },
-    };
-    onUpdatePrompt(updatedPrompt, newClusterId);
+  const handleLabelChange = (itemId: string, newClusterId: string) => {
+    onMoveItem(itemId, newClusterId);
   };
 
-  const toggleExpanded = (promptId: string) => {
+  const toggleExpanded = (ItemId: string) => {
     setExpandedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(promptId)) next.delete(promptId);
-      else next.add(promptId);
+      if (next.has(ItemId)) next.delete(ItemId);
+      else next.add(ItemId);
       return next;
     });
   };
 
-  const filteredPrompts = prompts.filter(
+  const filteredItems = items.filter(
     (p) =>
       p.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.metadata.cluster_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.data.toLowerCase().includes(searchTerm.toLowerCase())
+      p.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Compute pagination
   const start = page * pageSize;
   const end = start + pageSize;
-  const pagePrompts = filteredPrompts.slice(start, end);
-  const totalPages = Math.max(1, Math.ceil(promptsOverview.total_prompts / pageSize));
+  const pageItems = filteredItems.slice(start, end);
+  const totalPages = Math.max(1, Math.ceil(overview.total_items / pageSize));
+  const label = cluster.label !== UNLABELLED_CLUSTER ? cluster.label : cluster.id
 
   const handleNext = () => {
     if (page + 1 < totalPages) {
       setPage(page + 1);
-      const needMore = end >= prompts.length;
+      const needMore = end >= items.length;
       if (needMore) {
-        onLoadMorePrompts(pageSize, prompts.length);
+        onLoadMoreItems(pageSize, items.length);
       }
     }
   };
@@ -66,7 +68,7 @@ export default function PromptsTableView({ pageSize = 10 }: PromptsTableViewProp
   return (
     <div className="flex flex-col mx-auto w-full items-center justify-center py-8 px-4">
       <div className="w-full flex flex-col gap-8 md:flex-row justify-between mb-12">
-        <h1 className="text-xl md:text-2xl">Prompts</h1>
+        <h1 className="text-xl md:text-2xl">{title}</h1>
         <input
           type="text"
           value={searchTerm}
@@ -74,7 +76,7 @@ export default function PromptsTableView({ pageSize = 10 }: PromptsTableViewProp
             setSearchTerm(e.target.value);
             setPage(0); // reset to first page when searching
           }}
-          placeholder="Search by prompt ID, cluster, label, or content..."
+          placeholder="Search by item ID, cluster, label, or content..."
           className="border border-gray-300 rounded px-4 py-2 w-full max-w-md"
         />
       </div>
@@ -89,24 +91,22 @@ export default function PromptsTableView({ pageSize = 10 }: PromptsTableViewProp
           </colgroup>
           <thead>
             <tr className=" bg-gray-100 text-sm text-gray-500">
-              <th className="border px-4 py-2 text-left">Prompt ID</th>
+              <th className="border px-4 py-2 text-left">Item Id</th>
               <th className="border px-4 py-2 text-left">Cluster</th>
-              <th className="border px-4 py-2 text-left">Label</th>
               <th className="border px-4 py-2 text-left">Content</th>
             </tr>
           </thead>
           <tbody>
-            {pagePrompts.length === 0 ? (
+            {pageItems.length === 0 ? (
               <tr>
                 <td colSpan={4} className="text-center py-6 text-gray-500">
-                  {searchTerm ? "No prompts match the current filters." : "No prompts stored."}
+                  {searchTerm ? "No items match the current filters." : "No items stored."}
                 </td>
               </tr>
             ) : (
-              pagePrompts.map((prompt) => {
-                const clusterId = prompt.metadata.cluster_id;
-                const isLinkable = clusterId !== UNCLUSTERED;
-                const isExpanded = expandedIds.has(prompt.id);
+              pageItems.map((item) => {
+                const isLinkable = cluster.id !== UNCLUSTERED;
+                const isExpanded = expandedIds.has(item.id);
 
                 const collapsedStyle: React.CSSProperties = {
                   display: '-webkit-box',
@@ -123,41 +123,25 @@ export default function PromptsTableView({ pageSize = 10 }: PromptsTableViewProp
                 };
 
                 return (
-                  <tr key={prompt.id} className="hover:bg-gray-50 transition-all duration-200 align-top">
-                    <td className="border px-4 py-2 break-words">{prompt.id}</td>
+                  <tr key={item.id} className="hover:bg-gray-50 transition-all duration-200 align-top">
+                    <td className="border px-4 py-2 break-words">{item.id}</td>
 
                     <td className="border px-4 py-2 break-words">
                       {isLinkable ? (
-                        <Link href={`/dashboard/clusters/cluster/${clusterId}`} className="text-blue-600 hover:underline">
-                          {clusterId}
+                        <Link href={`/dashboard/clusters/cluster/${cluster.id}`} className="text-blue-600 hover:underline">
+                          {label}
                         </Link>
                       ) : (
-                        <span>{clusterId}</span>
+                        <span>{label}</span>
                       )}
                     </td>
-
-                    <td className="border px-4 py-2 w-1/6" onClick={(e) => e.stopPropagation()}>
-                      <select
-                        value={prompt.metadata.cluster_id}
-                        onChange={(e) => handleLabelChange(prompt, e.target.value)}
-                        className="w-full px-2 py-1 text-sm border rounded"
-                      >
-                        <option value={UNLABELLED_CLUSTER}>{UNLABELLED_CLUSTER}</option>
-                        {clusters.map((c) => (
-                          <option key={c.prototype_id} value={c.prototype_id}>
-                            {c.label === UNLABELLED_CLUSTER ? c.prototype_id : c.label}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-
                     <td
                       className="border px-4 py-2 cursor-pointer"
-                      onClick={() => toggleExpanded(prompt.id)}
+                      onClick={() => toggleExpanded(item.id)}
                       title={isExpanded ? 'Click to collapse' : 'Click to expand'}
                     >
                       <div style={isExpanded ? expandedStyle : collapsedStyle}>
-                        {prompt.data}
+                        {item.content}
                       </div>
                     </td>
                   </tr>

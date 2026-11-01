@@ -1,13 +1,13 @@
 "use client";
 
-import { usePrompts } from "@/app/providers/prompts";
+import { useClusters } from "@/app/providers/prompts";
 import { ClusterAccuracyPlayground } from "./cluster-accuracy";
 import  { useEffect, useMemo, useState } from "react";
 import { ClusterAccuracy, Cluster } from "@/app/types";
-import { sereleumClient } from "@/app/client";
 import { ClusterRow } from "./cluster-row";
-import { SortBySelector } from "../common/sort-by";
-import { MergeClustersView } from "./clusters/merger";
+import { SortBySelector } from "../../common/sort-by";
+import { MergeClustersView } from "./merger";
+import { apiPromptsClient } from "@/app/sereleum";
 
 
 const SortKeyOptions = ['mean', 'std', 'size'] as const;
@@ -20,7 +20,7 @@ interface ClustersWrapperProps {
 
 
 export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
-  const { clusters, promptsOverview, setTopClusters, setClusters, onLoadMoreClusters } = usePrompts();
+  const { clusters, overview, setTopClusters, setClusters, onLoadMoreClusters } = useClusters();
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<ClusterAccuracy | null>(null);
   const [selectedClusterIds, setSelectedClusterIds] = useState<string[]>([]);
@@ -41,15 +41,15 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
   const [sortBy, setSortBy] = useState<SortKey>('mean');
   const [sortDirection, setSortDirection] = useState<"desc" | "asc">("desc");
 
-  const runAccuracy = async () => {
-    setRunning(true);
-    try {
-      const res = await sereleumClient.calculateClusterAccuracy();
-      setResult(res);
-    } finally {
-      setRunning(false);
-    }
-  };
+  // const runAccuracy = async () => {
+  //   setRunning(true);
+  //   try {
+  //     const res = await apiPromptsClient.calculateClusterAccuracy();
+  //     setResult(res);
+  //   } finally {
+  //     setRunning(false);
+  //   }
+  // };
 
   const toggleSelection = (id: string) => {
     setSelectedClusterIds((prev) =>
@@ -88,9 +88,9 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
     };
 
     try {
-      const updatedClusters = await sereleumClient.mergeClusters(payload);
-      setClusters(prev => [updatedClusters[0], ...prev.filter(cluster => targetClusters.some( t => t === cluster.prototype_id))])
-      setTopClusters(prev => [updatedClusters[0], ...prev.filter(cluster => targetClusters.some( t => t === cluster.prototype_id))])
+      const updatedClusters = await apiPromptsClient.mergeClusters(payload);
+      setClusters(prev => [updatedClusters[0], ...prev.filter(cluster => targetClusters.some( t => t === cluster.id))])
+      setTopClusters(prev => [updatedClusters[0], ...prev.filter(cluster => targetClusters.some( t => t === cluster.id))])
       clearSelection();
       setIsSelecting(false);
     } catch (err) {
@@ -106,7 +106,7 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
     startChooseParent();
   };
 
-  const totalClustersCount = promptsOverview.total_clusters;
+  const totalClustersCount = overview.total_clusters;
   const totalPages = Math.max(1, Math.ceil(totalClustersCount / pageSize));
   const start = page * pageSize;
   const end = start + pageSize;
@@ -120,16 +120,16 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
       let bv: number = 0;
       switch (sortBy) {
         case "mean":
-          av = a.metadata?.mean_similarity ?? 0;
-          bv = b.metadata?.mean_similarity ?? 0;
+          av = a.mean_similarity ?? 0;
+          bv = b.mean_similarity ?? 0;
           break;
         case "std":
-          av = a.metadata?.std_similarity ?? 0;
-          bv = b.metadata?.std_similarity ?? 0;
+          av = a.std_similarity ?? 0;
+          bv = b.std_similarity ?? 0;
           break;
         case "size":
-          av = a.metadata?.prototype_size ?? 0;
-          bv = b.metadata?.prototype_size ?? 0;
+          av = a.prototype_size ?? 0;
+          bv = b.prototype_size ?? 0;
           break;
       }
 
@@ -169,7 +169,7 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
 
   // helper to get cluster objects for the selected ids (preserves order of selectedClusterIds)
   const selectedClusters = selectedClusterIds
-    .map((id) => clusters.find((c) => c.prototype_id === id))
+    .map((id) => clusters.find((c) => c.id === id))
     .filter(Boolean) as Cluster[];
 
   // Minimalist label helper
@@ -217,7 +217,7 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
 
       {isRunAccVisisble && (
         <ClusterAccuracyPlayground
-          runAccuracy={runAccuracy}
+          // runAccuracy={runAccuracy}
           running={running}
           toggleDropDown={() => setDropdownOpen((prev) => !prev)}
           toggleSelection={toggleSelection}
@@ -248,11 +248,11 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
         <div className=" w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
         {pageClusters.map((cluster) => (
           <ClusterRow
-            key={cluster.prototype_id}
+            key={cluster.id}
             cluster={cluster}
             isSelecting={isSelecting}
-            selected={selectedClusterIds.includes(cluster.prototype_id)}
-            toggleSelection={() => toggleSelection(cluster.prototype_id)}
+            selected={selectedClusterIds.includes(cluster.id)}
+            toggleSelection={() => toggleSelection(cluster.id)}
           />
         ))}
       </div>

@@ -1,4 +1,4 @@
-import { Prompt, PromptsOverviewInfo , ClusterMetadata } from "@/app/types";
+import { Cluster, DocItem, OverviewInfo, Prompt, PromptsOverviewInfo } from "@/app/types";
 
 // WebSockets / SSE 
 
@@ -52,31 +52,28 @@ export interface JobReceipt {
   status: Status;
 }
 
-// HTTP 
 
-export interface PromptsPayload {
-  prompts: Prompt[];
-}
+export interface IndexItemsResponse extends JobReceipt {}
 
-
-export interface AddPromptsRequest extends PromptsPayload {}
-
-export interface AddPromptsResponse extends JobReceipt {}
-
-export interface GetPromptsRequest {
-  prompt_ids?: string[];
+export interface GetItemsRequest {
   cluster_ids?: string[];
   limit?: number;
   offset?: number
 }
 
-export interface QueryPromptsRequest {
+export interface GetItemsByIdsRequest {
+  item_ids?: string[];
+}
+
+export interface QueryItemsRequest {
   query: string;
   cluster_ids?: string[];
   limit?: number;
 }
 
-export interface GetPromptsResponse extends PromptsPayload {}
+export interface GetItemsResponse<T extends DocItem> {
+    items: T[];
+}
 
 export interface GetCountResponse {
   count: number;
@@ -86,27 +83,40 @@ export interface GetLabelsResponse {
   labels: string[];
 }
 
-export interface GetClusterMetadataResponse {
-  metadata?: ClusterMetadata | null;
-}
+export interface GetOverviewResponse extends OverviewInfo {}
 
-export interface GetClusterMetadataBatchResponse {
-  metadatas?: ClusterMetadata[] | null;
-}
-
-export interface GetPromptsOverviewResponse extends PromptsOverviewInfo {}
-
-export interface UpdateLabelParams {
+export interface RenameClusterRequest {
   cluster_id: string
   label: string;
 }
 
-export interface UpdatePromptClusterIdParams {
+export interface RenameClusterResponse {
+  updated_label: string
+}
+
+export interface MoveItemRequest {
   cluster_id: string
   id: string;
 }
 
+export interface MoveItemResponse {
+  updated_cluster_id: string
+}
 
 export interface MergeClustersRequest {
   merges: Record<string, string[]>;
+}
+
+export interface MergeClustersResponse {
+  updated_clusters: Cluster[];
+}
+
+export interface GetClustersRequest {
+  cluster_id?: string;
+  limit?: number;
+  offset?: number
+}
+
+export interface GetClustersReponse {
+  clusters: Cluster[];
 }

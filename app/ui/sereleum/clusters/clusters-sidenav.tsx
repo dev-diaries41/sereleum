@@ -1,11 +1,12 @@
 'use client';
 
-import { Cluster, UNCLUSTERED, UNLABELLED_CLUSTER } from '@/app/types';
+import { Cluster } from '@/app/types';
 import DropDownMenu from '@/app/ui/common/dropdown-menu';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import { UNLABELLED_CLUSTER } from '@/app/constants/clusters';
 
 interface ClusterListSideNavWrapperProps {
   title?: string;
@@ -34,20 +35,20 @@ export default function ClusterListSideNavWrapper({
     <DropDownMenu title={title}>
       {clusters.map((cluster) => (
         <div
-          key={cluster.prototype_id}
+          key={cluster.id}
           className="relative p-2 flex justify-between items-center text-sm hover:bg-gray-200 rounded-md transition group"
         >
           <Link
-            href={`/dashboard/clusters/cluster/${cluster.prototype_id}`}
+            href={`/dashboard/clusters/cluster/${cluster.id}`}
             className="flex-grow overflow-hidden overflow-ellipsis whitespace-nowrap pr-2"
           >
-            {cluster.label == UNLABELLED_CLUSTER? cluster.prototype_id : cluster.label}
+            {cluster.label == UNLABELLED_CLUSTER? cluster.id : cluster.label}
           </Link>
 
           {/* <button
             onClick={() =>
               setOpenId((prev) =>
-                prev === cluster.prototype_id ? null : cluster.prototype_id
+                prev === cluster.id ? null : cluster.id
               )
             }
             className="opacity-0 group-hover:opacity-100 transition"
@@ -55,7 +56,7 @@ export default function ClusterListSideNavWrapper({
             <FontAwesomeIcon icon={faEllipsisH} />
           </button>
 
-          {openId === cluster.prototype_id && (
+          {openId === cluster.id && (
             <div
               ref={menuRef}
               className="absolute right-0 top-8 z-10 bg-white rounded-md shadow-md w-40"

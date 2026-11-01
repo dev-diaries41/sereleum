@@ -1,4 +1,5 @@
-import { Cluster, UNLABELLED_CLUSTER } from "@/app/types";
+import { UNLABELLED_CLUSTER } from "@/app/constants/clusters";
+import { Cluster } from "@/app/types";
 import { useRouter } from "next/navigation";
 
 export function ClusterRow({
@@ -7,13 +8,13 @@ export function ClusterRow({
   selected,
   toggleSelection,
 }: {
-  cluster: Omit<Cluster, "embedding">;
+  cluster: Cluster;
   isSelecting?: boolean;
   selected?: boolean;
   toggleSelection?: () => void;
 }) {
   const router = useRouter();
-  const cohesionPercentage = Math.round(cluster.metadata.mean_similarity * 100);
+  const cohesionPercentage = Math.round(cluster.mean_similarity * 100);
   const hue = Math.max(0, Math.min(120, cohesionPercentage * 1.2));
   const barColor = `hsl(${hue}, 70%, 50%)`;
   const isUnlabelled = cluster.label === UNLABELLED_CLUSTER;
@@ -22,7 +23,7 @@ export function ClusterRow({
     <div
       onClick={() => {
         if (isSelecting) toggleSelection?.();
-        else router.push(`/dashboard/clusters/cluster/${cluster.prototype_id}`);
+        else router.push(`/dashboard/clusters/cluster/${cluster.id}`);
       }}
       className="block w-full h-full cursor-pointer"
     >
@@ -46,19 +47,19 @@ export function ClusterRow({
           )}
 
           <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-sm font-medium flex-shrink-0">
-            {cluster.label?.charAt(0)?.toUpperCase()}
+            {cluster.label.charAt(0)?.toUpperCase()}
           </div>
 
           <div className="flex flex-col gap-1 min-w-0 w-full">
             <div
               className="text-sm font-medium truncate"
-              title={isUnlabelled ? cluster.prototype_id : cluster.label}
+              title={isUnlabelled ? cluster.id : cluster.label}
             >
-              {isUnlabelled ? cluster.prototype_id : cluster.label}
+              {isUnlabelled ? cluster.id : cluster.label}
             </div>
-            <div className="text-xs text-gray-500 truncate">{cluster.prototype_id}</div>
+            <div className="text-xs text-gray-500 truncate">{cluster.id}</div>
             <div className="text-xs text-gray-500 truncate">
-              {cluster.metadata?.prototype_size ?? 0} items
+              {cluster.prototype_size} items
             </div>
           </div>
         </div>
@@ -79,7 +80,7 @@ export function ClusterRow({
           <div className="mt-2 text-xs text-gray-500 flex flex-wrap sm:flex-nowrap gap-3">
             <div title="Separation margin between clusters" className="truncate">
               similarity spread:{" "}
-              {cluster.metadata.std_similarity.toFixed(3)}
+              {cluster.std_similarity.toFixed(3)}
             </div>
           </div>
         </div>

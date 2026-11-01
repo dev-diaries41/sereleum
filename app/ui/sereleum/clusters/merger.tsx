@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Cluster, UNLABELLED_CLUSTER } from "@/app/types";
+import { Cluster } from "@/app/types";
 import { RadioDropDown } from "../../common/radio-dropdown";
+import { UNLABELLED_CLUSTER } from "@/app/constants/clusters";
 
 interface MergeClustersViewProps {
   selectedClusterIds: string[];
@@ -39,14 +40,14 @@ export function MergeClustersView({
     }
   };
 
-  const options = selectedClusters.map((c) => c.prototype_id);
+  const options = selectedClusters.map((c) => c.id);
 
   const labelFor = (id: string) => {
-    const c = selectedClusters.find((s) => s.prototype_id === id);
+    const c = selectedClusters.find((s) => s.id === id);
     if (!c) return id;
     return c.label === UNLABELLED_CLUSTER
-      ? c.prototype_id
-      : `${c.label} — ${c.metadata?.prototype_size ?? 0} items`;
+      ? c.id
+      : `${c.label} — ${c?.prototype_size ?? 0} items`;
   };
 
   return (

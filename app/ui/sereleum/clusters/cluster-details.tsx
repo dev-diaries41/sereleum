@@ -1,25 +1,26 @@
 'use client';
 
-import { usePrompts } from "@/app/providers/prompts";
-import { Cluster, ClusterMetadata, Prompt, UNLABELLED_CLUSTER } from "@/app/types";
+import { useClusters } from "@/app/providers/prompts";
+import { Cluster, Prompt } from "@/app/types";
 import { faCheck, faTag } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
-import { MetricsItem } from "../dashboard/metrics-item";
-import { sereleumClient } from "@/app/client";
+import { MetricsItem } from "../../dashboard/metrics-item";
+import { UNLABELLED_CLUSTER } from "@/app/constants/clusters";
+import { apiPromptsClient } from "@/app/sereleum";
 
 export function ClusterDetail({ id }: { id?: string }) {
   const router = useRouter();
-  const { clusters, setClusters, setTopClusters } = usePrompts();
+  const { clusters, setClusters, setTopClusters } = useClusters();
   const [labelDraft, setLabelDraft] = useState<string>('');
   const [saving, setSaving] = useState(false);
-  const [topPrompts, setTopPrompts] = useState<Prompt[]>([]);
-  const [isPromptsVisible, setIsPromptsVisible] = useState(false);
+  const [topItems, setTopItems] = useState<Prompt[]>([]);
+  const [isItemsVisible, setIsPromptsVisible] = useState(false);
   const cluster = useMemo(() => {
     if (!id) return undefined;
     return clusters.find(
-      (c) => ( c.prototype_id === id )|| (c.label === id)
+      (c) => ( c.id === id )|| (c.label === id)
     );
   }, [clusters, id]);
 
@@ -34,14 +35,13 @@ export function ClusterDetail({ id }: { id?: string }) {
   const saveLabel = async () => {
     setSaving(true);
     try {
-      const newLabel = await sereleumClient.updateClusterLabel(cluster?.prototype_id!, labelDraft)
+      const newLabel = await apiPromptsClient.renameCluster(cluster?.id!, labelDraft)
       setClusters((prev) =>
         prev.map((c) =>
-          c.prototype_id === cluster?.prototype_id
+          c.id === cluster?.id
             ? {
                 ...c,
                 label: newLabel,
-                metadata: { ...c.metadata, label: newLabel },
               }
             : c
         )
@@ -52,14 +52,14 @@ export function ClusterDetail({ id }: { id?: string }) {
   };
 
 
-  const getTopPrompts = async() => {
-    const fetchedPrompts = await sereleumClient.getPrompts(undefined, 10, 0, [cluster?.prototype_id!])
-    setTopPrompts(fetchedPrompts)
+  const getTopItems = async() => {
+    const items = await apiPromptsClient.getItems(10, 0, [cluster?.id!])
+    setTopItems(items)
   }
 
-  const showPrompts = async() => {
-    if(topPrompts.length == 0){
-      await getTopPrompts()
+  const showItems = async() => {
+    if(topItems.length == 0){
+      await getTopItems()
     }
     setIsPromptsVisible(prev => !prev)
   }
@@ -84,10 +84,10 @@ return (
         <div className="flex items-start justify-between mb-6">
           <div className="flex flex-col gap-4">
             <h2 className="text-2xl md:text-3xl">
-              {isUnlabelled? cluster.prototype_id: cluster.label}
+              {isUnlabelled? cluster.id: cluster.label}
             </h2>
             {!isUnlabelled && <h3 className="text-sm md:text-md text-gray-500">
-              id: {cluster.prototype_id}
+              id: {cluster.id}
             </h3>}
           </div>
 
@@ -104,16 +104,16 @@ return (
             cluster={cluster}
             labelDraft={labelDraft}
             enabled={saving}
-            isPromptsVisible={isPromptsVisible}
+            isItemsVisible={isItemsVisible}
             onLabelDraftChange={(e) => setLabelDraft(e.target.value)}
             onSaveLabel={saveLabel}
-            onShowPrompts={showPrompts}
+            onshowItems={showItems}
           />
-          <ClusterMetricsSummary metadata={cluster.metadata} />
+          <ClusterMetricsSummary cluster={cluster} />
         </div>
 
-        {topPrompts.length > 0 && isPromptsVisible && (
-          <PromptsTable prompts={topPrompts} cluster={cluster} />
+        {topItems.length > 0 && isItemsVisible && (
+          <DocItemsTable prompts={topItems} cluster={cluster} />
         )}
       </div>
     )}
@@ -125,17 +125,17 @@ return (
 interface ClusterLabelFormPromptsProps {
   cluster:  Cluster;
   labelDraft: string, enabled:boolean;
-  isPromptsVisible: boolean;
+  isItemsVisible: boolean;
   onLabelDraftChange: (e:  ChangeEvent<HTMLInputElement>) => void;
   onSaveLabel: () => Promise<void>;
-  onShowPrompts:() => Promise<void>;
+  onshowItems:() => Promise<void>;
 }
 function ClusterLabelForm({
   cluster, 
   labelDraft,
   enabled,
-  isPromptsVisible,
-  onShowPrompts,
+  isItemsVisible,
+  onshowItems,
   onSaveLabel, 
   onLabelDraftChange}: ClusterLabelFormPromptsProps
 ){
@@ -178,11 +178,11 @@ function ClusterLabelForm({
 
     <div>
       <button
-        onClick={onShowPrompts}
+        onClick={onshowItems}
         type="button"
         className="text-sm text-indigo-600 hover:underline"
       >
-        {isPromptsVisible ? "Hide" : "Show"} sample prompts
+        {isItemsVisible ? "Hide" : "Show"} sample prompts
       </button>
     </div>
   </div>
@@ -199,12 +199,12 @@ function ClusterLabelForm({
   )
 }
 
-function ClusterMetricsSummary({metadata, title = "Cluster metrics"}: {metadata: ClusterMetadata, title?: string}){
+function ClusterMetricsSummary({cluster, title = "Cluster metrics"}: {cluster: Cluster, title?: string}){
   const {
     mean_similarity,
     std_similarity,
     prototype_size,
-  } = metadata || {};
+  } = cluster || {};
 
   const pct = (v?: number | null) =>
     v === undefined || v === null ? '—' : `${Math.round(v * 100)}%`;
@@ -235,12 +235,12 @@ function ClusterMetricsSummary({metadata, title = "Cluster metrics"}: {metadata:
             Cohesion shows average similarity within the cluster, while similarity spread indicates how consistent that similarity is.
           </div>
         </div>
-      </div>
+      </div> 
     </aside>
   )
 }
 
-function PromptsTable({ prompts, cluster }: { prompts: Prompt[]; cluster: Cluster }) {
+function DocItemsTable({ prompts, cluster }: { prompts: Prompt[]; cluster: Cluster }) {
   return (
     <div className="overflow-x-auto w-full rounded-xl mt-8">
       <table className="table-fixed border-collapse border border-gray-300 w-full text-sm">
@@ -260,7 +260,6 @@ function PromptsTable({ prompts, cluster }: { prompts: Prompt[]; cluster: Cluste
         </thead>
         <tbody>
           {prompts.map((prompt) => {
-            const clusterId = prompt.metadata.cluster_id;
             return (
               <tr
                 key={prompt.id}
@@ -271,7 +270,7 @@ function PromptsTable({ prompts, cluster }: { prompts: Prompt[]; cluster: Cluste
                 </td>
 
                 <td className="border px-4 py-2 break-words">
-                  <span>{clusterId}</span>
+                  <span>{cluster.id}</span>
                 </td>
 
                 <td
@@ -284,7 +283,7 @@ function PromptsTable({ prompts, cluster }: { prompts: Prompt[]; cluster: Cluste
                 </td>
 
                 <td className="border px-4 py-2 break-words">
-                  {prompt.data}
+                  {prompt.content}
                 </td>
               </tr>
             );

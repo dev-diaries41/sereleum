@@ -1,19 +1,19 @@
 
 export const SERELEUM_BASE_URL = process.env.SERELEUM_BASE_URL || "http://127.0.0.1:8000"
-export const BASE_PROMPTS_ENDPOINT = "/api/prompts";
-export const QUERY_PROMPTS_ENDPOINT = `${BASE_PROMPTS_ENDPOINT}/query`;
-export const ADD_PROMPTS_ENDPOINT = `${BASE_PROMPTS_ENDPOINT}/add`;
-export const ADD_PROMPTS_FILE_ENDPOINT = `${BASE_PROMPTS_ENDPOINT}/add/file`;
-export const GET_PROMPTS_OVERVIEW_ENDPOINT = `${BASE_PROMPTS_ENDPOINT}/overview`;
-export const COUNT_PROMPTS_ENDPOINT = `${BASE_PROMPTS_ENDPOINT}/count`;
-export const SSE_PROMPTS_INDEX_PROGRESS = "/sse/prompts/index/progress"
 
+export const BASE_ITEMS_ENDPOINT = "/api/items";
+export const BASE_EVENTS_ENDPOINT = "/sse/events";
 export const BASE_CLUSTER_ENDPOINT = "/api/clusters";
+
+export const QUERY_ITEMS_ENDPOINT = `${BASE_ITEMS_ENDPOINT}/query`;
+export const INDEX_ENDPOINT = `${BASE_ITEMS_ENDPOINT}/index`;
+export const INDEX_FILE_ENDPOINT = `${BASE_ITEMS_ENDPOINT}/index/file`;
+export const GET_OVERVIEW_ENDPOINT = `${BASE_ITEMS_ENDPOINT}/overview`;
+export const COUNT_ITEMS_ENDPOINT = `${BASE_ITEMS_ENDPOINT}/count`;
+export const INDEX_PROGRESS_EVENT_ENDPOINT = `${BASE_EVENTS_ENDPOINT}/index/progress`
+
 export const MERGE_CLUSTERS_ENDPOINT = `${BASE_CLUSTER_ENDPOINT}/merge`;
-export const GET_TOP_CLUSTERS_ENDPOINT = `${BASE_CLUSTER_ENDPOINT}/top`;
-export const START_CLUSTER_ENDPOINT = `${BASE_CLUSTER_ENDPOINT}/start`;
-export const COUNT_CLUSTER_ENDPOINT = "/api/clusters/count";
+export const COUNT_CLUSTER_ENDPOINT = `${BASE_CLUSTER_ENDPOINT}/count`;
 export const GET_LABELS_ENDPOINT = `${BASE_CLUSTER_ENDPOINT}/labels`;
-export const CALC_CLUSTER_ACCURACY_ENDPOINT = `${BASE_CLUSTER_ENDPOINT}/accuracy`;
 export const GET_CLUSTER_PLOT_ENDPOINT = `${BASE_CLUSTER_ENDPOINT}/plot`;
-export const SSE_PROMPTS_CLUSTER_STATUS = "/sse/prompts/cluster/status";
+export const CLUSTER_STATUS_EVENT_ENDPOINT = `${BASE_EVENTS_ENDPOINT}/cluster/status`;
