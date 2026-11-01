@@ -16,7 +16,6 @@ export const navLinks: NavItem[] = [
    export const sideBarLinks: NavItem[] = [
     { name: 'Home', link: '/dashboard', icon: faHome},
     { name: 'Clusters', link: '/dashboard/clusters', icon: faLayerGroup},
-    { name: 'Prompts', link: '/dashboard/prompts', icon: faTerminal},
   ];
   
   
