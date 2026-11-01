@@ -1,6 +1,6 @@
 'use client';
 
-import { useClusters } from "@/app/providers/prompts";
+import { useManageClusters } from "@/app/providers/prompts";
 import { Cluster, Prompt } from "@/app/types";
 import { faCheck, faTag } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,78 +8,48 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { MetricsItem } from "../../dashboard/metrics-item";
 import { UNLABELLED_CLUSTER } from "@/app/constants/clusters";
-import { apiPromptsClient } from "@/app/sereleum";
+import ItemsTable from "../items-table";
 
-export function ClusterDetail({ id }: { id?: string }) {
+export function ClusterManagerView({ id }: { id?: string }) {
   const router = useRouter();
-  const { clusters, setClusters, setTopClusters } = useClusters();
+  const {clusters, onRenameCluster } = useManageClusters();
   const [labelDraft, setLabelDraft] = useState<string>('');
   const [saving, setSaving] = useState(false);
-  const [topItems, setTopItems] = useState<Prompt[]>([]);
   const [isItemsVisible, setIsPromptsVisible] = useState(false);
+
+  if (!id){
+    router.push('/dashboard/clusters')
+  }
+      
   const cluster = useMemo(() => {
-    if (!id) return undefined;
     return clusters.find(
       (c) => ( c.id === id )|| (c.label === id)
     );
   }, [clusters, id]);
 
-  const isUnlabelled = cluster?.label === UNLABELLED_CLUSTER
-  
+  if(!cluster) return <div className="mx-auto">Cluster not found</div>
 
+  const isUnlabelled = cluster.label === UNLABELLED_CLUSTER
+  
   useEffect(() => {
-    setLabelDraft(cluster?.label ?? '');
+    setLabelDraft(cluster.label);
   }, [cluster]);
 
 
-  const saveLabel = async () => {
+  const renameCluster = async () => {
     setSaving(true);
     try {
-      const newLabel = await apiPromptsClient.renameCluster(cluster?.id!, labelDraft)
-      setClusters((prev) =>
-        prev.map((c) =>
-          c.id === cluster?.id
-            ? {
-                ...c,
-                label: newLabel,
-              }
-            : c
-        )
-      );
+      await onRenameCluster(cluster.id, labelDraft);
     } finally {
       setSaving(false);
     }
   };
 
-
-  const getTopItems = async() => {
-    const items = await apiPromptsClient.getItems(10, 0, [cluster?.id!])
-    setTopItems(items)
-  }
-
-  const showItems = async() => {
-    if(topItems.length == 0){
-      await getTopItems()
-    }
-    setIsPromptsVisible(prev => !prev)
-  }
+  const showItems = () => setIsPromptsVisible(prev => !prev)
 
 
 return (
     <div className="mx-auto">
-    {!id ? (
-      <div className="text-sm text-gray-500">No cluster selected.</div>
-    ) : !cluster ? (
-      <>
-        <button
-          onClick={() => router.push('/dashboard/clusters')}
-          className="mb-4 inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm bg-gray-100"
-        >
-          Back
-        </button>
-        <div className="text-sm text-gray-500">Cluster not found.</div>
-      </>
-    ) : (
       <div className="p-8 max-w-full">
         <div className="flex items-start justify-between mb-6">
           <div className="flex flex-col gap-4">
@@ -106,29 +76,28 @@ return (
             enabled={saving}
             isItemsVisible={isItemsVisible}
             onLabelDraftChange={(e) => setLabelDraft(e.target.value)}
-            onSaveLabel={saveLabel}
+            onSaveLabel={renameCluster}
             onshowItems={showItems}
           />
           <ClusterMetricsSummary cluster={cluster} />
         </div>
 
-        {topItems.length > 0 && isItemsVisible && (
-          <DocItemsTable prompts={topItems} cluster={cluster} />
+        { isItemsVisible && (
+          <ItemsTable cluster={cluster} />
         )}
       </div>
-    )}
   </div>
 );
 
 }
 
-interface ClusterLabelFormPromptsProps {
+interface ClusterManagerFormProps {
   cluster:  Cluster;
   labelDraft: string, enabled:boolean;
   isItemsVisible: boolean;
   onLabelDraftChange: (e:  ChangeEvent<HTMLInputElement>) => void;
   onSaveLabel: () => Promise<void>;
-  onshowItems:() => Promise<void>;
+  onshowItems:() => void;
 }
 function ClusterLabelForm({
   cluster, 
@@ -137,7 +106,7 @@ function ClusterLabelForm({
   isItemsVisible,
   onshowItems,
   onSaveLabel, 
-  onLabelDraftChange}: ClusterLabelFormPromptsProps
+  onLabelDraftChange}: ClusterManagerFormProps
 ){
   return (
   <div className="relative lg:col-span-2 border border-gray-300 rounded-2xl shadow-sm p-6 flex flex-col h-full">
@@ -145,11 +114,10 @@ function ClusterLabelForm({
   <div className="mb-4">
     <h3 className="text-lg font-medium">Manage cluster label</h3>
     <p className="text-sm text-gray-500">
-  Clusters are automatically labeled when possible. You can optionally edit the label below. Use the "Show sample prompts" button to see what this cluster contains.
+  Clusters are automatically labeled when possible. You can optionally edit the label below.
     </p>
   </div>
 
-  {/* Main content grows to fill remaining space */}
   <div className="flex-1 space-y-4">
     <div>
       <label className="block text-xs font-medium text-gray-600 mb-1">
@@ -182,7 +150,7 @@ function ClusterLabelForm({
         type="button"
         className="text-sm text-indigo-600 hover:underline"
       >
-        {isItemsVisible ? "Hide" : "Show"} sample prompts
+        {isItemsVisible ? "Hide" : "Show"} items
       </button>
     </div>
   </div>
@@ -238,58 +206,4 @@ function ClusterMetricsSummary({cluster, title = "Cluster metrics"}: {cluster: C
       </div> 
     </aside>
   )
-}
-
-function DocItemsTable({ prompts, cluster }: { prompts: Prompt[]; cluster: Cluster }) {
-  return (
-    <div className="overflow-x-auto w-full rounded-xl mt-8">
-      <table className="table-fixed border-collapse border border-gray-300 w-full text-sm">
-        <colgroup>
-          <col style={{ width: '18%' }} />
-          <col style={{ width: '18%' }} />
-          <col style={{ width: '18%' }} />
-          <col style={{ width: '46%' }} />
-        </colgroup>
-        <thead>
-          <tr className="bg-gray-100 text-sm text-gray-500">
-            <th className="border px-4 py-2 text-left">Prompt ID</th>
-            <th className="border px-4 py-2 text-left">Cluster</th>
-            <th className="border px-4 py-2 text-left">Label</th>
-            <th className="border px-4 py-2 text-left">Content</th>
-          </tr>
-        </thead>
-        <tbody>
-          {prompts.map((prompt) => {
-            return (
-              <tr
-                key={prompt.id}
-                className="hover:bg-gray-50 transition-all duration-200 align-top"
-              >
-                <td className="border px-4 py-2 break-words">
-                  {prompt.id}
-                </td>
-
-                <td className="border px-4 py-2 break-words">
-                  <span>{cluster.id}</span>
-                </td>
-
-                <td
-                  className="border px-4 py-2 w-1/6"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <span className="w-full px-2 py-1 text-sm border rounded inline-block">
-                    {cluster.label}
-                  </span>
-                </td>
-
-                <td className="border px-4 py-2 break-words">
-                  {prompt.content}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  );
 }

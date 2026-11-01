@@ -1,6 +1,6 @@
 "use client";
 
-import { useClusters } from "@/app/providers/prompts";
+import { useManageClusters } from "@/app/providers/prompts";
 import  { useEffect, useMemo, useState } from "react";
 import { Cluster } from "@/app/types";
 import { ClusterRow } from "./cluster-row";
@@ -18,7 +18,7 @@ interface ClustersWrapperProps {
 }
 
 export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
-  const { clusters, overview, setTopClusters, setClusters, onLoadMoreClusters } = useClusters();
+  const { clusters, overview, setTopClusters, setClusters, onLoadMoreClusters } = useManageClusters();
   const [selectedClusterIds, setSelectedClusterIds] = useState<string[]>([]);
   const [isSelecting, setIsSelecting] = useState(false);
   const [isChoosingParent, setIsChoosingParent] = useState(false);

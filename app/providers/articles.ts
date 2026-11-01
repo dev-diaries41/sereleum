@@ -6,6 +6,6 @@ import { createItemsProvider } from "./factory";
 export const {
   ItemsContext,
   ItemsProvider,
-  useClusters,
+  useManageClusters,
   useDashboard,
 } = createItemsProvider(apiArticleClient, eventsClient);

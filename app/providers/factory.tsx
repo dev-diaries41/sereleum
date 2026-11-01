@@ -24,8 +24,6 @@ export function createItemsProvider<T extends DocItem>(
       setClusters: React.Dispatch<React.SetStateAction<Cluster[]>>;
       topClusters: Cluster[];
       setTopClusters: React.Dispatch<React.SetStateAction<Cluster[]>>;
-      items: T[];
-      setItems: React.Dispatch<React.SetStateAction<T[]>>;
       overview: OverviewInfo;
       setOverview: React.Dispatch<React.SetStateAction<OverviewInfo>>;
   }
@@ -33,7 +31,6 @@ export function createItemsProvider<T extends DocItem>(
 
   interface ItemsProviderProps<T> extends ProviderProps {
     initialClusters?: Cluster[]; 
-    initialItems?: T[];
     initialOverview?: OverviewInfo;
   }
 
@@ -43,23 +40,12 @@ export function createItemsProvider<T extends DocItem>(
   const ItemsProvider =({ 
     children, 
     initialClusters= [], 
-    initialItems = [], 
     initialOverview = defaultOverview 
   }: ItemsProviderProps<T>) => {
     const [ clusters, setClusters ] = useState<Cluster[]>(initialClusters);
     const [ topClusters, setTopClusters ] = useState<Cluster[]>(initialOverview.top_clusters);
-    const [ items, setItems ] = useState<T[]>(initialItems);
     const [ overview, setOverview ] = useState<OverviewInfo>(initialOverview);
     
-    useEffect(() => {
-      async function fetchInitialItems(){
-        const initialItems = await apiClient.getItems(undefined, 25)
-        setItems(initialItems)
-      }
-      if(items.length == 0 && initialOverview.total_items > 0) {
-          fetchInitialItems();
-        }
-    }, [initialOverview])
 
     useEffect(() => {
         setTopClusters(initialOverview.top_clusters)
@@ -72,8 +58,6 @@ export function createItemsProvider<T extends DocItem>(
         setClusters,
         topClusters, 
         setTopClusters,
-        items,
-        setItems,
         overview, 
         setOverview
       }}>
@@ -82,42 +66,33 @@ export function createItemsProvider<T extends DocItem>(
     );
   };
 
-  const useClusters = () => {
+  const useManageClusters = () => {
     const context = useContext(ItemsContext);
     if (!context) {
-      throw new Error('useClusters must be used within a ItemsProvider');
+      throw new Error('useManageClusters must be used within a ItemsProvider');
     }
 
-    const { clusters, topClusters, items, overview,  setTopClusters, setClusters, setItems } = context;
-
-    const onMoveItem = async(itemId: string, newClusterId: string) => {
-      const updatedClusterId = await apiClient.moveItem(itemId, newClusterId)
-      setItems(prev => prev.map(prevItem => prevItem.id === itemId? {...prevItem} : prevItem))
-    }
-
-    const onLoadMoreItems = async(limit: number, offset: number) => {
-      if(items.length >= overview.total_items) return
-      const result = await apiClient.getItems(limit, offset)
-      setItems(prev => [...prev, ...result] )
-    }
+    const { clusters, topClusters, overview,  setTopClusters, setClusters } = context;
 
     const onLoadMoreClusters = async(limit: number, offset: number) => {
-      if(items.length >= overview.total_items) return
+      if(clusters.length >= overview.total_clusters) return
       const result = await apiClient.getClusters(undefined, limit, offset)
       setClusters(prev => [...prev, ...result] )
+    }
+
+    const onRenameCluster = async(clusterId: string, name: string) => {
+      const newLabel = await apiClient.renameCluster(clusterId, name)
+      setClusters((prev) => prev.map((c) => c.id === clusterId? {...c, label: newLabel} : c ) );
     }
 
     return {
         clusters,
         topClusters,
-        items, 
-        overview,
+        totalClusters: overview.total_clusters,
         setTopClusters,
         setClusters,
-        setItems,
-        onMoveItem,
-        onLoadMoreItems,
         onLoadMoreClusters,
+        onRenameCluster
       };
   };
 
@@ -331,5 +306,5 @@ export function createItemsProvider<T extends DocItem>(
     }
       
   }
-    return { ItemsContext, ItemsProvider, useClusters, useDashboard };
+    return { ItemsContext, ItemsProvider, useManageClusters, useDashboard };
 }

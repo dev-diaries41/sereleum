@@ -6,7 +6,7 @@ import UserProfileWidget from '../../account/user-profile';
 import MobileNav from './mobile';
 import Logo from '../../logo';
 import ClusterListSideNavWrapper from '../../sereleum/clusters/clusters-sidenav';
-import { useClusters } from '@/app/providers/prompts';
+import { useManageClusters } from '@/app/providers/prompts';
 import NavLinks from '../links';
 
 export const SidenavToggleIcon = ({ open = true }) => (
@@ -26,7 +26,7 @@ interface SideNavProps {
 }
 export default React.memo(function SideNav({ email }: SideNavProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const {topClusters} = useClusters()
+  const {topClusters} = useManageClusters()
 
   // Prevent background scrolling when the mobile menu is open
   useEffect(() => {
