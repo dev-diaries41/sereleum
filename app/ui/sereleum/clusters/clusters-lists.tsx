@@ -16,7 +16,7 @@ interface ClustersWrapperProps {
 }
 
 export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
-  const { clusters, totalClusters, onLoadMoreClusters , onMergeClusters} = useManageClusters();
+  const { clusters, overview, onLoadMoreClusters , onMergeClusters} = useManageClusters();
   const [selectedClusterIds, setSelectedClusterIds] = useState<string[]>([]);
   const [isSelecting, setIsSelecting] = useState(false);
   const [isChoosingParent, setIsChoosingParent] = useState(false);
@@ -24,7 +24,7 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
   const [page, setPage] = useState(0);
   const [sortBy, setSortBy] = useState<SortKey>('mean');
   const [sortDirection, setSortDirection] = useState<"desc" | "asc">("desc");
-
+  
   const toggleSelection = (id: string) => {
     setSelectedClusterIds((prev) =>
       prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]
@@ -74,7 +74,7 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
     startChooseParent();
   };
 
-  const totalPages = Math.max(1, Math.ceil(totalClusters / pageSize));
+  const totalPages = Math.max(1, Math.ceil(overview.total_clusters / pageSize));
   const start = page * pageSize;
   const end = start + pageSize;
 
@@ -110,9 +110,9 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
   const pageClusters = sortedClusters.slice(start, end);
 
   useEffect(() => {
-    const maxPage = Math.max(0, Math.ceil(totalClusters / pageSize) - 1);
+    const maxPage = Math.max(0, Math.ceil(overview.total_clusters / pageSize) - 1);
     if (page > maxPage) setPage(maxPage);
-  }, [totalClusters, pageSize, page]);
+  }, [overview.total_clusters, pageSize, page]);
 
   const handleNext = () => {
     if (page + 1 < totalPages) {
@@ -178,7 +178,7 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
     {isSelecting && (
           <MergeClustersView
             selectedClusterIds={selectedClusterIds}
-            totalClustersCount={totalClusters}
+            totalClustersCount={overview.total_clusters}
             selectedClusters={selectedClusters}
             parentClusterId={parentClusterId}
             setParentClusterId={setParentClusterId}

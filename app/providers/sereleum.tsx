@@ -16,8 +16,6 @@ const defaultOverview:OverviewInfo = {
   interface SereleumContextProps {
       clusters: Cluster[];
       setClusters: React.Dispatch<React.SetStateAction<Cluster[]>>;
-      topClusters: Cluster[];
-      setTopClusters: React.Dispatch<React.SetStateAction<Cluster[]>>;
       overview: OverviewInfo;
       setOverview: React.Dispatch<React.SetStateAction<OverviewInfo>>;
   }
@@ -37,21 +35,12 @@ const defaultOverview:OverviewInfo = {
     initialOverview = defaultOverview 
   }: SereleumProviderProps) => {
     const [ clusters, setClusters ] = useState<Cluster[]>(initialClusters);
-    const [ topClusters, setTopClusters ] = useState<Cluster[]>(initialOverview.top_clusters);
     const [ overview, setOverview ] = useState<OverviewInfo>(initialOverview);
-    
-
-    useEffect(() => {
-        setTopClusters(initialOverview.top_clusters)
-      }, [initialOverview])
-
     
     return (
       <SereleumContext.Provider value={{
         clusters,
         setClusters,
-        topClusters, 
-        setTopClusters,
         overview, 
         setOverview
       }}>
@@ -66,7 +55,7 @@ const defaultOverview:OverviewInfo = {
       throw new Error('useManageClusters must be used within a SereleumProvider');
     }
 
-    const { clusters, topClusters, overview,  setTopClusters, setClusters } = context;
+    const { clusters, overview, setClusters, setOverview } = context;
 
     const onLoadMoreClusters = async(limit: number, offset: number) => {
       if(clusters.length >= overview.total_clusters) return
@@ -85,15 +74,14 @@ const defaultOverview:OverviewInfo = {
         [primaryClusterId]: secondaryClusterIds,
       };
       const updatedClusters = await apiPromptsClient.mergeClusters(merges);
+      const updatedOverview = await apiPromptsClient.getOverview(); // required because merging changes overview
       setClusters(prev => prev.map(cluster => cluster.id === updatedClusters[0].id ? updatedClusters[0] : cluster).filter(cluster => !secondaryClusterIds.includes(cluster.id)))
-      setTopClusters(prev => prev.map(cluster => cluster.id === updatedClusters[0].id ? updatedClusters[0] : cluster).filter(cluster => !secondaryClusterIds.includes(cluster.id)))
+      setOverview(updatedOverview)
     }
 
     return {
         clusters,
-        topClusters,
-        totalClusters: overview.total_clusters,
-        setTopClusters,
+        overview,
         onLoadMoreClusters,
         onRenameCluster,
         onMergeClusters
@@ -108,7 +96,7 @@ const defaultOverview:OverviewInfo = {
       throw new Error('useDashboard must be used within a SereleumProvider');
     }
 
-    const { overview, topClusters, setClusters, setOverview } = context;
+    const { overview, setClusters, setOverview } = context;
 
     const [progress, setProgress] = useState<number>(0);
     const [indexingStatus, setIndexingStatus] = useState<Status|null>(null);
@@ -119,11 +107,9 @@ const defaultOverview:OverviewInfo = {
     const [error, setError] = useState<string|null>(null);
 
     const router = useRouter();
-    const isViewAllVisible = overview.total_clusters > topClusters.length 
+    const isViewAllVisible = overview.total_clusters > overview.top_clusters.length
 
-    const updateOverview =(overview: OverviewInfo) => {
-      setOverview(overview)
-    }
+
     const handleTrackIndexProgress = (jobId: string) => {
         const eventSource = eventsClient.trackIndexProgress(jobId, {
           onProgress: (p) => {
@@ -150,7 +136,7 @@ const defaultOverview:OverviewInfo = {
           await new Promise(resolve => setTimeout(resolve, 1000))
           const updatedOverview = await apiPromptsClient.getOverview();
           const clusters = await apiPromptsClient.getClusters()
-          updateOverview(updatedOverview)
+          setOverview(updatedOverview)
           setClusters(clusters)
           setClusteringStatus("complete")
         },
@@ -299,7 +285,6 @@ const defaultOverview:OverviewInfo = {
       overview,
       trackerMinimized,
       itemsFile,
-      topClusters,
       isViewAllVisible,
       error,
       handleFileUpload,

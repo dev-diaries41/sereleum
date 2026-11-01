@@ -8,7 +8,7 @@ import { faClose, faLayerGroup, faSpinner } from '@fortawesome/free-solid-svg-ic
 import FileUploader from '../common/upload';
 import {  AcceptedMimes } from '@/app/constants/global';
 import { ClusterRow } from './clusters/cluster-row';
-import { useDashboard } from '@/app/providers/prompts';
+import { useDashboard } from '@/app/providers/sereleum';
 import { ProgressTrackerPopUp } from '../common/progress-tracker';
 import { OverviewSummary } from './overview-summary';
 import { ClusterDensityChart } from './charts/cluster-density';
@@ -25,10 +25,9 @@ interface DashboardOverviewProps {
 export function DashboardOverview({user, hasCompletedOnboarding}: DashboardOverviewProps) {
   const {
     progress, 
-    indexingStatus, 
+    indexingStatus,  
     clusteringStatus, 
     clusterPlotUrl, 
-    topClusters, 
     overview, 
     trackerMinimized, 
     itemsFile,
@@ -108,10 +107,10 @@ export function DashboardOverview({user, hasCompletedOnboarding}: DashboardOverv
             <ClustersPlot url={clusterPlotUrl}/>
           </div>
           <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <TopClustersDetails topClusters={topClusters} isViewAllVisible ={isViewAllVisible } onViewAllClusters={goToClustersPage}/>
+            <TopClustersDetails topClusters={overview.top_clusters} isViewAllVisible ={isViewAllVisible } onViewAllClusters={goToClustersPage}/>
           </div>
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 my-6">
-            {topClusters.length > 0 && <ClusterDensityChart clusters={topClusters} loading ={false}/>}
+            {overview.top_clusters.length > 0 && <ClusterDensityChart clusters={overview.top_clusters} loading ={false}/>}
           </div>
         </div>
         {indexingStatus  && <ProgressTrackerPopUp
