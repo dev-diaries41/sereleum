@@ -22,7 +22,6 @@ const defaultOverview:OverviewInfo = {
 
 
   interface SereleumProviderProps extends ProviderProps {
-    initialClusters?: Cluster[]; 
     initialOverview?: OverviewInfo;
   }
 
@@ -31,10 +30,9 @@ const defaultOverview:OverviewInfo = {
 
   const SereleumProvider =({ 
     children, 
-    initialClusters= [], 
     initialOverview = defaultOverview 
   }: SereleumProviderProps) => {
-    const [ clusters, setClusters ] = useState<Cluster[]>(initialClusters);
+    const [ clusters, setClusters ] = useState<Cluster[]>([]);
     const [ overview, setOverview ] = useState<OverviewInfo>(initialOverview);
     
     return (
@@ -96,7 +94,7 @@ const defaultOverview:OverviewInfo = {
       throw new Error('useDashboard must be used within a SereleumProvider');
     }
 
-    const { overview, setClusters, setOverview } = context;
+    const { overview, setOverview } = context;
 
     const [progress, setProgress] = useState<number>(0);
     const [indexingStatus, setIndexingStatus] = useState<Status|null>(null);
@@ -135,9 +133,7 @@ const defaultOverview:OverviewInfo = {
         onComplete: async() => {
           await new Promise(resolve => setTimeout(resolve, 1000))
           const updatedOverview = await apiPromptsClient.getOverview();
-          const clusters = await apiPromptsClient.getClusters()
           setOverview(updatedOverview)
-          setClusters(clusters)
           setClusteringStatus("complete")
         },
         onFail: (e) => {

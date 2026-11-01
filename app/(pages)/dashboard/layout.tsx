@@ -12,11 +12,10 @@ export default async function Layout({
     const session = await auth();
     const email = session?.user?.email; 
     
-    const clusters = await apiPromptsClient.getClusters()
     const overview = await apiPromptsClient.getOverview();
 
   return (
-    <SereleumProvider initialClusters={clusters} initialOverview={overview}>
+    <SereleumProvider initialOverview={overview}>
       <div className={``}>
         <Sidenav email={email}/>
         <div className="flex flex-col max-w-7xl mx-auto lg:pl-[240px] pt-16 lg:pt-0">{children}</div>
