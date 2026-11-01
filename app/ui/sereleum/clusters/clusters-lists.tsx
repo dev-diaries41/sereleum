@@ -6,8 +6,6 @@ import { Cluster } from "@/app/types";
 import { ClusterRow } from "./cluster-row";
 import { SortBySelector } from "../../common/sort-by";
 import { MergeClustersView } from "./merger";
-import { apiPromptsClient } from "@/app/sereleum";
-
 
 const SortKeyOptions = ['mean', 'std', 'size'] as const;
 type SortKey = typeof SortKeyOptions[number];
@@ -18,7 +16,7 @@ interface ClustersWrapperProps {
 }
 
 export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
-  const { clusters, overview, setTopClusters, setClusters, onLoadMoreClusters } = useManageClusters();
+  const { clusters, totalClusters, onLoadMoreClusters , onMergeClusters} = useManageClusters();
   const [selectedClusterIds, setSelectedClusterIds] = useState<string[]>([]);
   const [isSelecting, setIsSelecting] = useState(false);
   const [isChoosingParent, setIsChoosingParent] = useState(false);
@@ -39,6 +37,11 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
     setIsChoosingParent(false);
   };
 
+  const reset = () => {
+    clearSelection();
+    setIsSelecting(false);
+  }
+
   const startChooseParent = () => {
     if (selectedClusterIds.length === 0) return;
     setIsChoosingParent(true);
@@ -53,27 +56,16 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
     );
 
     if (targetClusters.length === 0) {
-      clearSelection();
-      setIsSelecting(false);
-      setIsChoosingParent(false);
+      reset()
       return;
     }
 
-    const payload: Record<string, string[]> = {
-      [parentClusterId]: targetClusters,
-    };
-
     try {
-      const updatedClusters = await apiPromptsClient.mergeClusters(payload);
-      setClusters(prev => [updatedClusters[0], ...prev.filter(cluster => targetClusters.some( t => t === cluster.id))])
-      setTopClusters(prev => [updatedClusters[0], ...prev.filter(cluster => targetClusters.some( t => t === cluster.id))])
-      clearSelection();
-      setIsSelecting(false);
+      await onMergeClusters(parentClusterId, targetClusters);
+      reset()
     } catch (err) {
       console.error("Merge failed", err);
-    } finally {
-      setIsChoosingParent(false);
-    }
+    } 
   };
 
 
@@ -82,8 +74,7 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
     startChooseParent();
   };
 
-  const totalClustersCount = overview.total_clusters;
-  const totalPages = Math.max(1, Math.ceil(totalClustersCount / pageSize));
+  const totalPages = Math.max(1, Math.ceil(totalClusters / pageSize));
   const start = page * pageSize;
   const end = start + pageSize;
 
@@ -119,9 +110,9 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
   const pageClusters = sortedClusters.slice(start, end);
 
   useEffect(() => {
-    const maxPage = Math.max(0, Math.ceil(totalClustersCount / pageSize) - 1);
+    const maxPage = Math.max(0, Math.ceil(totalClusters / pageSize) - 1);
     if (page > maxPage) setPage(maxPage);
-  }, [totalClustersCount, pageSize, page]);
+  }, [totalClusters, pageSize, page]);
 
   const handleNext = () => {
     if (page + 1 < totalPages) {
@@ -187,7 +178,7 @@ export function ClustersWrapper({ pageSize = 25 }: ClustersWrapperProps) {
     {isSelecting && (
           <MergeClustersView
             selectedClusterIds={selectedClusterIds}
-            totalClustersCount={totalClustersCount}
+            totalClustersCount={totalClusters}
             selectedClusters={selectedClusters}
             parentClusterId={parentClusterId}
             setParentClusterId={setParentClusterId}

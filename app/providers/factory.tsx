@@ -85,14 +85,24 @@ export function createItemsProvider<T extends DocItem>(
       setClusters((prev) => prev.map((c) => c.id === clusterId? {...c, label: newLabel} : c ) );
     }
 
+    // TODO: Remove usage of top cluster and revenge overviev
+    const onMergeClusters = async(primaryClusterId: string, secondaryClusterIds: string[]) => {
+      const merges: Record<string, string[]> = {
+        [primaryClusterId]: secondaryClusterIds,
+      };
+      const updatedClusters = await apiClient.mergeClusters(merges);
+      setClusters(prev => prev.map(cluster => cluster.id === updatedClusters[0].id ? updatedClusters[0] : cluster).filter(cluster => !secondaryClusterIds.includes(cluster.id)))
+      setTopClusters(prev => prev.map(cluster => cluster.id === updatedClusters[0].id ? updatedClusters[0] : cluster).filter(cluster => !secondaryClusterIds.includes(cluster.id)))
+    }
+
     return {
         clusters,
         topClusters,
         totalClusters: overview.total_clusters,
         setTopClusters,
-        setClusters,
         onLoadMoreClusters,
-        onRenameCluster
+        onRenameCluster,
+        onMergeClusters
       };
   };
 
