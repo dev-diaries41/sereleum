@@ -17,14 +17,14 @@ interface ItemsTableViewProps {
 export default function ItemsTable({ 
   cluster ,
   title = 'Items',
-  pageSize = 10, 
+  pageSize = 25, 
 }: ItemsTableViewProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(0);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   const { popUpCta, popUpDescription, popUpTitle, showPopUp, closePopUp } = usePopUp();
-  const { items, onMoveItem, onLoadMoreItems } = useClusterItems(cluster);
+  const { items, onMoveItem, onLoadMoreItems } = useClusterItems(cluster, pageSize);
 
   const toggleExpanded = (ItemId: string) => {
     setExpandedIds((prev) => {

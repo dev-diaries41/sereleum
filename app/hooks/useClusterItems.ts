@@ -1,11 +1,17 @@
 'use client'
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Cluster, DocItem, Prompt } from "../types";
 import { apiPromptsClient } from "../sereleum";
 
-export const useClusterItems = (cluster: Cluster) => {
+export const useClusterItems = (cluster: Cluster, pageSize: number) => {
     const [ items, setItems ] = useState<DocItem[]>([]);
+
+    useEffect(() => {
+       apiPromptsClient.getItems(pageSize, undefined, [cluster.id]).then(
+        result => setItems(result)
+       )
+    }, [])
     
     const onMoveItem = async(itemId: string, newClusterId: string) => {
       const updatedClusterId = await apiPromptsClient.moveItem(itemId, newClusterId)
