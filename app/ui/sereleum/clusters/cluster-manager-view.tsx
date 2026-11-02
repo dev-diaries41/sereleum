@@ -2,15 +2,18 @@
 
 import { useManageClusters } from "@/app/providers/sereleum";
 import { useRouter } from "next/navigation";
-import {  useEffect, useMemo, useState } from "react";
+import {  useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { UNLABELLED_CLUSTER } from "@/app/constants/clusters";
 import ItemsTable from "../items-table";
 import { ClusterLabelForm } from "./cluster-label-form";
 import { ClusterMetricsSummary } from "./cluster-metric-summary";
+import { Cluster } from "@/app/types";
 
 export function ClusterManagerView({ id }: { id?: string }) {
   const router = useRouter();
-  const {clusters, onRenameCluster } = useManageClusters();
+
+  const [cluster, setCluster] = useState<Cluster | null>(null);
+  const {onRenameCluster, onGetCluster} = useManageClusters();
   const [labelDraft, setLabelDraft] = useState<string>('');
   const [saving, setSaving] = useState(false);
 
@@ -18,21 +21,23 @@ export function ClusterManagerView({ id }: { id?: string }) {
     router.push('/dashboard/clusters')
   }
       
-  const cluster = useMemo(() => {
-    return clusters.find(
-      (c) => ( c.id === id )|| (c.label === id)
-    );
-  }, [clusters, id]);
+  useLayoutEffect(() => {
+    if(!id) return 
+    onGetCluster(id).then(c => setCluster(c))
+  }, [id])
+
+   useEffect(() => {
+    if(!cluster) return 
+    setLabelDraft(cluster.label);
+  }, [cluster]);
+
+
 
   if(!cluster) return <div className="mx-auto">Cluster not found</div>
 
   const isUnlabelled = cluster.label === UNLABELLED_CLUSTER
   
-  useEffect(() => {
-    setLabelDraft(cluster.label);
-  }, [cluster]);
-
-
+ 
   const renameCluster = async () => {
     setSaving(true);
     try {

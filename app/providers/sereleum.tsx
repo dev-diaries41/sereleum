@@ -62,6 +62,12 @@ const defaultOverview:OverviewInfo = {
       
     }, [initialClusters, clusters])
 
+
+    const onGetCluster = async(clusterId: string): Promise<Cluster> => {
+      const clusters =  await apiPromptsClient.getClusters(clusterId)
+      return clusters[0]
+    }
+
     const onLoadMoreClusters = async(limit: number, offset: number) => {
       if(clusters.length >= overview.total_clusters) return
       const result = await apiPromptsClient.getClusters(undefined, limit, offset)
@@ -89,7 +95,8 @@ const defaultOverview:OverviewInfo = {
         overview,
         onLoadMoreClusters,
         onRenameCluster,
-        onMergeClusters
+        onMergeClusters,
+        onGetCluster
       };
   };
 
