@@ -77,76 +77,76 @@ export default function ItemsTable({
         />
       </div>
 
-      <div className="overflow-x-auto w-full rounded-xl">
-        <table className="table-fixed border-collapse border border-gray-300 w-full text-sm">
-          <colgroup>
-            <col style={{ width: '18%' }} />
-            <col style={{ width: '18%' }} />
-            <col style={{ width: '18%' }} />
-            <col style={{ width: '46%' }} />
-          </colgroup>
-          <thead>
-            <tr className=" bg-gray-100 text-sm text-gray-500">
-              <th className="border px-4 py-2 text-left">Item Id</th>
-              <th className="border px-4 py-2 text-left">Cluster</th>
-              <th className="border px-4 py-2 text-left">Content</th>
+<div className="w-full overflow-x-auto rounded-xl border border-gray-300">
+  <table className="w-full min-w-full table-auto border-collapse text-sm">
+    <colgroup>
+      <col style={{ width: '18%' }} />
+      <col style={{ width: '18%' }} />
+      <col style={{ width: '64%' }} />
+    </colgroup>
+    <thead>
+      <tr className="bg-gray-100 text-sm text-gray-500">
+        <th className="border border-gray-300 px-4 py-2 text-left">Item Id</th>
+        <th className="border border-gray-300 px-4 py-2 text-left">Cluster</th>
+        <th className="border border-gray-300 px-4 py-2 text-left">Content</th>
+      </tr>
+    </thead>
+    <tbody>
+      {pageItems.length === 0 ? (
+        <tr>
+          <td colSpan={3} className="border border-gray-300 py-6 text-center text-gray-500">
+            {searchTerm ? 'No items match the current filters.' : 'No items stored.'}
+          </td>
+        </tr>
+      ) : (
+        pageItems.map((item) => {
+          const isLinkable = cluster.id !== UNCLUSTERED;
+          const isExpanded = expandedIds.has(item.id);
+
+          return (
+            <tr key={item.id} className="align-top transition-colors duration-200 hover:bg-gray-50">
+              <td className="border border-gray-300 px-4 py-2 break-words">
+                {item.id}
+              </td>
+              <td className="border border-gray-300 px-4 py-2 break-words">
+                {isLinkable ? (
+                  <Link href={`/dashboard/clusters/cluster/${cluster.id}`} className="text-blue-600 hover:underline">
+                    {label}
+                  </Link>
+                ) : (
+                  <span>{label}</span>
+                )}
+              </td>
+              <td
+                className="border border-gray-300 px-4 py-2 cursor-pointer"
+                onClick={() => toggleExpanded(item.id)}
+                title={isExpanded ? 'Click to collapse' : 'Click to expand'}
+              >
+                <div
+                  className="break-words"
+                  style={
+                    isExpanded
+                      ? { whiteSpace: 'pre-wrap' }
+                      : {
+                          display: '-webkit-box',
+                          WebkitLineClamp: 4,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          whiteSpace: 'normal',
+                          wordBreak: 'break-word',
+                        }
+                  }
+                >
+                  {item.content}
+                </div>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {pageItems.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="text-center py-6 text-gray-500">
-                  {searchTerm ? "No items match the current filters." : "No items stored."}
-                </td>
-              </tr>
-            ) : (
-              pageItems.map((item) => {
-                const isLinkable = cluster.id !== UNCLUSTERED;
-                const isExpanded = expandedIds.has(item.id);
-
-                const collapsedStyle: React.CSSProperties = {
-                  display: '-webkit-box',
-                  WebkitLineClamp: 4,
-                  WebkitBoxOrient: 'vertical',
-                  overflow: 'hidden',
-                  whiteSpace: 'normal',
-                  wordBreak: 'break-word',
-                };
-
-                const expandedStyle: React.CSSProperties = {
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-word',
-                };
-
-                return (
-                  <tr key={item.id} className="hover:bg-gray-50 transition-all duration-200 align-top">
-                    <td className="border px-4 py-2 break-words">{item.id}</td>
-
-                    <td className="border px-4 py-2 break-words">
-                      {isLinkable ? (
-                        <Link href={`/dashboard/clusters/cluster/${cluster.id}`} className="text-blue-600 hover:underline">
-                          {label}
-                        </Link>
-                      ) : (
-                        <span>{label}</span>
-                      )}
-                    </td>
-                    <td
-                      className="border px-4 py-2 cursor-pointer"
-                      onClick={() => toggleExpanded(item.id)}
-                      title={isExpanded ? 'Click to collapse' : 'Click to expand'}
-                    >
-                      <div style={isExpanded ? expandedStyle : collapsedStyle}>
-                        {item.content}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+          );
+        })
+      )}
+    </tbody>
+  </table>
+</div>
 
       <div className="flex gap-4 mt-4">
         <button
