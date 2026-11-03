@@ -8,6 +8,9 @@ import ItemsTable from "../items-table";
 import { ClusterLabelForm } from "./cluster-label-form";
 import { ClusterMetricsSummary } from "./cluster-metric-summary";
 import { Cluster } from "@/app/types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { capitalizeFirstLetter } from "@/app/lib/helpers";
 
 export function ClusterManagerView({ id }: { id?: string }) {
   const router = useRouter();
@@ -51,21 +54,17 @@ return (
     <div className="mx-auto">
       <div className="p-8 max-w-full">
         <div className="flex items-start justify-between mb-6">
+                <button
+  onClick={() => router.push('/dashboard/clusters')}
+  className="flex items-center gap-2 text-sm text-indigo-600 hover:underline"
+>
+  <FontAwesomeIcon icon={faArrowLeft} />
+  Back to all clusters
+</button>
           <div className="flex flex-col gap-4">
-            <h2 className="text-2xl md:text-3xl">
-              {isUnlabelled? cluster.id: cluster.label}
-            </h2>
-            {!isUnlabelled && <h3 className="text-sm md:text-md text-gray-500">
-              id: {cluster.id}
-            </h3>}
+            <h2 className="text-2xl md:text-3xl"> {isUnlabelled? capitalizeFirstLetter(UNLABELLED_CLUSTER): cluster.label} </h2>
+            <h3 className="text-sm md:text-md text-gray-500"> id: {cluster.id} </h3>
           </div>
-
-          <button
-            onClick={() => router.push('/dashboard/clusters')}
-            className="text-sm text-indigo-600 hover:underline"
-          >
-            Back to all clusters
-          </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
