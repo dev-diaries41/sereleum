@@ -20,7 +20,7 @@ export interface NavItem  {
   name: string;
   link: string;
   newPage?: boolean;
-  icon?: any
+  icon?: IconProp
 } 
 
 
@@ -153,6 +153,8 @@ export interface FeatureProps extends SectionItem {
 
 export interface HeaderProps {
   email: string | null | undefined;
+  navBarItems: NavItem[];
+  className?: string
 }
 
 export interface DashboardHeaderProps extends HeaderProps {

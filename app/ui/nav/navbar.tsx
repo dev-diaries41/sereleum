@@ -3,31 +3,16 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { HeaderProps, NavItemsProps } from '@/app/types';
-import { navLinks } from '@/app/constants/navigation';
+import { HeaderProps } from '@/app/types';
 import NavLinks from './links';
 import { usePathname } from 'next/navigation';
 import UserProfileWidget from '../account/user-profile';
 
-const NavBarItems = ({ navItems }: NavItemsProps) => {
-  return (
-    <>
-      {navItems.map((navItem, index) => {
-        return (
-          <Link key={index.toString()} href={navItem.link} className=''>
-            {navItem.name}
-          </Link>
-        );
-      })}
-    </>
-  );
-};
 
 interface NavBarProps extends Omit<HeaderProps, 'credits'>{
 
 }
-
-export default function NavBar({ email }: NavBarProps) {
+export default function NavBar({ email, navBarItems }: NavBarProps) {
   const mainCTA =  "Analyse Prompts";
 
   const pathname = usePathname();
@@ -68,7 +53,7 @@ export default function NavBar({ email }: NavBarProps) {
         {/* Dropdown menu */}
         {isOpen && (
         <div className=" absolute top-0 right-0 flex flex-col items-start w-full  min-h-[100dvh] bg-gray-100 border border-r-1 border-gray-300 pt-32 p-6 text-3xl">
-          <NavLinks navItems={navLinks} classname='flex flex-col gap-4'/>
+          <NavLinks navItems={navBarItems} classname='flex flex-col gap-4'/>
              <div className="flex-1"></div>
            {!showAccountWidget? (
           <Link
@@ -84,7 +69,7 @@ export default function NavBar({ email }: NavBarProps) {
         )}
       </div>
       <div className="md:flex items-center gap-5 hidden">
-        <NavBarItems navItems={navLinks} />
+        <NavLinks navItems={navBarItems} />
         {!showAccountWidget? (
           <Link
           href={email ? '/dashboard' : '/login'}
