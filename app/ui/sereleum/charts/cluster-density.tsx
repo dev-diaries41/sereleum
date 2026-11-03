@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import { Data, Layout } from "plotly.js-dist-min";
 import { Cluster } from "@/app/types";
 import dynamic from "next/dynamic";
-import { UNLABELLED_CLUSTER } from "@/app/constants/clusters";
 
 const MAX_LABEL_LENGTH= 24
 
@@ -27,7 +26,7 @@ export function ClusterDensityChart({
 }: ClusterDensityChartProps) {
   const { data, layout } = useMemo(() => {
     const sortedClusters = clusters.sort((a, b) => a.prototype_size - b.prototype_size);
-    const labels = sortedClusters.map(c =>truncateLabel(c.label === UNLABELLED_CLUSTER ? c.id : c.label));
+    const labels = sortedClusters.map(c =>truncateLabel(c.label || c.id));
     const values = sortedClusters.map((c) =>c.prototype_size);
 
      const data: Data[] = [

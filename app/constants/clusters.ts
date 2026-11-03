@@ -1,2 +1,2 @@
-export const UNLABELLED_CLUSTER = "unlabelled";
+export const UNLABELLED_CLUSTER = "Unlabelled";
 export const UNCLUSTERED = "unclustered"; 

@@ -1,6 +1,6 @@
 export interface Cluster {
   id: string;
-  label: string;
+  label: string | null;
   prototype_size: number;
   mean_similarity: number;
   std_similarity: number;

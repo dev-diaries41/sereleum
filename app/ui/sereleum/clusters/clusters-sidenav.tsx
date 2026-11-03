@@ -2,11 +2,8 @@
 
 import { Cluster } from '@/app/types';
 import DropDownMenu from '@/app/ui/common/dropdown-menu';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { UNLABELLED_CLUSTER } from '@/app/constants/clusters';
 
 interface ClusterListSideNavWrapperProps {
   title?: string;
@@ -42,7 +39,7 @@ export default function ClusterListSideNavWrapper({
             href={`/dashboard/clusters/cluster/${cluster.id}`}
             className="flex-grow overflow-hidden overflow-ellipsis whitespace-nowrap pr-2"
           >
-            {cluster.label == UNLABELLED_CLUSTER? cluster.id : cluster.label}
+            {cluster.label || cluster.id}
           </Link>
 
           {/* <button

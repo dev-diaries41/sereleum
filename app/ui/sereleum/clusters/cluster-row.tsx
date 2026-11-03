@@ -1,4 +1,5 @@
 import { UNLABELLED_CLUSTER } from "@/app/constants/clusters";
+import { capitalizeFirstLetter } from "@/app/lib/helpers";
 import { Cluster } from "@/app/types";
 import { useRouter } from "next/navigation";
 
@@ -17,7 +18,7 @@ export function ClusterRow({
   const cohesionPercentage = Math.round(cluster.mean_similarity * 100);
   const hue = Math.max(0, Math.min(120, cohesionPercentage * 1.2));
   const barColor = `hsl(${hue}, 70%, 50%)`;
-  const isUnlabelled = cluster.label === UNLABELLED_CLUSTER;
+  const title = cluster.label || UNLABELLED_CLUSTER
   
   return (
     <div
@@ -47,15 +48,15 @@ export function ClusterRow({
           )}
 
           <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-sm font-medium flex-shrink-0">
-            {cluster.label.charAt(0)?.toUpperCase()}
+            {title.charAt(0)?.toUpperCase()}
           </div>
 
           <div className="flex flex-col gap-1 min-w-0 w-full">
             <div
               className="text-sm font-medium truncate"
-              title={isUnlabelled ? cluster.id : cluster.label}
+              title={title}
             >
-              {isUnlabelled ? cluster.id : cluster.label}
+              {title}
             </div>
             <div className="text-xs text-gray-500 truncate">{cluster.id}</div>
             <div className="text-xs text-gray-500 truncate">

@@ -45,7 +45,7 @@ export default function ItemsTable({
   const end = start + pageSize;
   const pageItems = filteredItems.slice(start, end);
   const totalPages = Math.max(1, Math.ceil(cluster.prototype_size / pageSize));
-  const label = cluster.label !== UNLABELLED_CLUSTER ? cluster.label : cluster.id
+  const label = cluster.label || cluster.id
 
   const handleNext = () => {
     if (page + 1 < totalPages) {

@@ -2,7 +2,7 @@
 
 import { useManageClusters } from "@/app/providers/sereleum";
 import { useRouter } from "next/navigation";
-import {  useEffect, useLayoutEffect, useMemo, useState } from "react";
+import {  useEffect, useLayoutEffect, useState } from "react";
 import { UNLABELLED_CLUSTER } from "@/app/constants/clusters";
 import ItemsTable from "../items-table";
 import { ClusterLabelForm } from "./cluster-label-form";
@@ -10,7 +10,6 @@ import { ClusterMetricsSummary } from "./cluster-metric-summary";
 import { Cluster } from "@/app/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { capitalizeFirstLetter } from "@/app/lib/helpers";
 
 export function ClusterManagerView({ id }: { id?: string }) {
   const router = useRouter();
@@ -30,15 +29,12 @@ export function ClusterManagerView({ id }: { id?: string }) {
   }, [id])
 
    useEffect(() => {
-    if(!cluster) return 
+    if(!cluster || !cluster.label) return 
     setLabelDraft(cluster.label);
   }, [cluster]);
 
 
-  if(!cluster) return <div className="mx-auto">Cluster not found</div>
-
-  const isUnlabelled = cluster.label === UNLABELLED_CLUSTER
-  
+  if(!cluster) return <div className="mx-auto">Cluster not found</div>  
  
   const renameCluster = async () => {
     setSaving(true);
@@ -62,7 +58,7 @@ return (
   Back to all clusters
 </button>
           <div className="flex flex-col gap-4">
-            <h2 className="text-2xl md:text-3xl"> {isUnlabelled? capitalizeFirstLetter(UNLABELLED_CLUSTER): cluster.label} </h2>
+            <h2 className="text-2xl md:text-3xl"> {cluster.label? cluster.label : UNLABELLED_CLUSTER} </h2>
             <h3 className="text-sm md:text-md text-gray-500"> id: {cluster.id} </h3>
           </div>
         </div>
