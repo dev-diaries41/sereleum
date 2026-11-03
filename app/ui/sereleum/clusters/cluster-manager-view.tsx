@@ -35,7 +35,6 @@ export function ClusterManagerView({ id }: { id?: string }) {
   }, [cluster]);
 
 
-
   if(!cluster) return <div className="mx-auto">Cluster not found</div>
 
   const isUnlabelled = cluster.label === UNLABELLED_CLUSTER
@@ -45,6 +44,7 @@ export function ClusterManagerView({ id }: { id?: string }) {
     setSaving(true);
     try {
       await onRenameCluster(cluster.id, labelDraft);
+      setCluster(prev => prev? {...prev, label: labelDraft} : prev)
     } finally {
       setSaving(false);
     }
