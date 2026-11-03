@@ -17,7 +17,7 @@ export default async function Layout({
   return (
     <SereleumProvider initialOverview={overview}>
       <div className={``}>
-        <Sidenav email={email}/>
+        {/* <Sidenav email={email}/> */}
         <div className="flex flex-col max-w-7xl mx-auto lg:pl-[240px] pt-16 lg:pt-0">{children}</div>
       </div>
     </SereleumProvider>
