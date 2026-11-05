@@ -104,10 +104,11 @@ export interface MergeCollectionsRequest {
 }
 
 export interface MergeCollectionsResponse {
-  collections: Collection[];
+  merged_collection: Collection;
 }
 
 export interface GetCollectionsRequest {
+  collection_id?: CollectionId
   limit?: number;
   offset?: number;
 }

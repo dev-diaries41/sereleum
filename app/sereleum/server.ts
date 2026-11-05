@@ -149,6 +149,7 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
       throw new Error(text);
     }
   }
+  async getCollections(type: CollectionType, offset?: number, limit?: number, collectionId?: CollectionId): Promise<Collection[]>;
   async getCollections(type: CollectionType.CLUSTER, offset: number, limit: number, collectionId?: string): Promise<Collection[]>;
   async getCollections(type: CollectionType.TAG, offset: number, limit: number, collectionId?: number): Promise<Collection[]>;
   async getCollections(type: CollectionType, offset: number = 0, limit: number = 25, collectionId?: CollectionId): Promise<Collection[]> {
@@ -238,9 +239,9 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
   return blob.size === 0 ? null : blob;
 }
 
-async mergeCollections(type: CollectionType.CLUSTER, primaryId: string, secondaryIds: string[]): Promise<Collection[]>;
-async mergeCollections(type: CollectionType.TAG, primaryId: number, secondaryIds: number[]): Promise<Collection[]>;
-async mergeCollections(type: CollectionType, primaryCollectionId: CollectionId, secondaryCollectionIds: CollectionId[]): Promise<Collection[]> {
+async mergeCollections(type: CollectionType.CLUSTER, primaryId: string, secondaryIds: string[]): Promise<Collection>;
+async mergeCollections(type: CollectionType.TAG, primaryId: number, secondaryIds: number[]): Promise<Collection>;
+async mergeCollections(type: CollectionType, primaryCollectionId: CollectionId, secondaryCollectionIds: CollectionId[]): Promise<Collection> {
     const url = type === CollectionType.TAG? 
     `${this.baseUrl}${APIRoutes.MERGE_TAGS_ENDPOINT}`:
     `${this.baseUrl}${APIRoutes.MERGE_CLUSTERS_ENDPOINT}`
@@ -257,7 +258,7 @@ async mergeCollections(type: CollectionType, primaryCollectionId: CollectionId, 
     });
 
     const data = await this.handleResponse<MergeCollectionsResponse>(res);
-    return data.collections
+    return data.merged_collection
   }
 
 }
