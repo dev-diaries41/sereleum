@@ -104,7 +104,6 @@ export function DashboardOverview({user, hasCompletedOnboarding}: DashboardOverv
           {error && <InlinePopUp description={error} isError={true} onClose={resetError}/>}
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
             <OverviewSummary overview={overview}/>
-            <ClustersPlot url={clusterPlotUrl}/>
           </div>
           <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
             <TopClustersDetails topClusters={overview.top_clusters} isViewAllVisible ={isViewAllVisible } onViewAllClusters={goToClustersPage}/>
