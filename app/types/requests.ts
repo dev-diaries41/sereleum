@@ -57,8 +57,8 @@ export interface JobReceipt {
 export interface IndexItemsResponse extends JobReceipt {}
 
 export interface GetItemsRequest {
-  tag_ids?: number[];
-  cluster_ids?: string[];
+  tag_ids?: CollectionId[];
+  cluster_ids?: CollectionId[];
   limit?: number;
   offset?: number
 }

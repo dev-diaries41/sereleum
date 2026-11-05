@@ -20,6 +20,7 @@ import {
   MoveItemsRequest,
 } from "@/app/types";
 import * as APIRoutes from "@/app/sereleum/routes";
+import { CollectionType } from "../enums/collections";
 
 export class SereleumApiClient<T extends DocItem = DocItem> {
   private baseUrl: string;
@@ -55,20 +56,20 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
     return this.handleResponse<IndexItemsResponse>(res);
   }
 
-
-  async getItems(clusterIds?: string[], tagIds?: number[], limit?: number, offset?: number): Promise<T[]> {
+  async getItems(type: CollectionType.TAG, collectionIds?: number[], limit?: number, offset?: number): Promise<T[]>
+  async getItems(type: CollectionType.CLUSTER, collectionIds?: string[], limit?: number, offset?: number): Promise<T[]>
+  async getItems(type: CollectionType, collectionIds?: CollectionId[], limit?: number, offset?: number): Promise<T[]> {
     const url = `${this.baseUrl}${APIRoutes.BASE_ITEMS_ENDPOINT}`;
     const payload: GetItemsRequest = { 
       limit: limit, 
       offset: offset
     };
-    if(clusterIds){
-      payload.cluster_ids = clusterIds
+    if(type == CollectionType.CLUSTER){
+      payload.cluster_ids = collectionIds
+    }else{
+      payload.tag_ids = collectionIds
     }
-     if(tagIds){
-      payload.tag_ids = tagIds
-    }
-
+  
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -119,7 +120,7 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
   }
 
   async moveItems(itemIds: string[], newColletionId: string, type: CollectionType.CLUSTER): Promise<void>;
-  async moveItems(itemIds: string[], newColletionId: number, type: CollectionType.TAG, currentCollectionId: CollectionId): Promise<void>;
+  async moveItems(itemIds: string[], newColletionId: number, type: CollectionType.TAG, currentCollectionId: number): Promise<void>;
   async moveItems(itemIds: string[], newColletionId: CollectionId, type: CollectionType, currentCollectionId?: CollectionId): Promise<void> {
     const payload: MoveItemsRequest = { 
       new_collection_id: newColletionId,
