@@ -1,4 +1,5 @@
 import { Cluster, DocItem, OverviewInfo, Prompt, PromptsOverviewInfo } from "@/app/types";
+import { CollectionId } from "./collections";
 
 // WebSockets / SSE 
 
@@ -103,9 +104,13 @@ export interface MoveItemResponse {
   updated_cluster_id: string
 }
 
-export interface MergeClustersRequest {
-  merges: Record<string, string[]>;
+export interface MergeRequest {
+  primary_collection_id: CollectionId
+  secondary_collection_ids: List[CollectionId]
 }
+
+
+
 
 export interface MergeClustersResponse {
   updated_clusters: Cluster[];
