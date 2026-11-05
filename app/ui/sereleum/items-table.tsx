@@ -1,57 +1,68 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import PopUp from '../common/popup';
-import { Cluster } from '@/app/types/';
+import { Collection } from '@/app/types/';
+import { CollectionType } from '@/app/enums/collections';
 import usePopUp from '@/app/hooks/usePopUp';
-import { UNCLUSTERED, UNLABELLED_CLUSTER } from '@/app/constants/clusters';
-import { useClusterItems } from '@/app/hooks/useClusterItems';
+import { useCollectionItems } from '@/app/hooks/useCollectionItems';
 
 interface ItemsTableViewProps {
   title?: string;
   pageSize?: number;
-  cluster: Cluster;
+  collection: Collection;
 }
 
-export default function ItemsTable({ 
-  cluster ,
+export default function ItemsTable({
+  collection,
   title = 'Items',
-  pageSize = 25, 
+  pageSize = 25,
 }: ItemsTableViewProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(0);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
-  const { popUpCta, popUpDescription, popUpTitle, showPopUp, closePopUp } = usePopUp();
-  const { items, onMoveItem, onLoadMoreItems } = useClusterItems(cluster, pageSize);
+  const { popUpCta, popUpDescription, popUpTitle, closePopUp } = usePopUp();
 
-  const toggleExpanded = (ItemId: string) => {
+  const {
+    items,
+    onMoveTagItems,
+    onMoveClusterItems,
+    onLoadMoreItems,
+  } = useCollectionItems(collection, pageSize);
+
+  const isCluster = collection.type === CollectionType.CLUSTER;
+  const collectionLabel = isCluster ? 'Cluster' : 'Tag';
+  const collectionUrl = isCluster
+    ? `/dashboard/clusters/cluster/${collection.id}`
+    : `/dashboard/tags/tag/${collection.id}`;
+
+
+  const toggleExpanded = (itemId: string) => {
     setExpandedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(ItemId)) next.delete(ItemId);
-      else next.add(ItemId);
+      if (next.has(itemId)) next.delete(itemId);
+      else next.add(itemId);
       return next;
     });
   };
 
   const filteredItems = items.filter(
-    (p) =>
-      p.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.content.toLowerCase().includes(searchTerm.toLowerCase())
+    (item) =>
+      item.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const start = page * pageSize;
   const end = start + pageSize;
   const pageItems = filteredItems.slice(start, end);
-  const totalPages = Math.max(1, Math.ceil(cluster.prototype_size / pageSize));
-  const label = cluster.label || cluster.id
+  const totalPages = Math.max(1, Math.ceil(collection.size / pageSize));
 
   const handleNext = () => {
     if (page + 1 < totalPages) {
       setPage(page + 1);
-      const needMore = end >= items.length;
-      if (needMore) {
+      if (end >= items.length) {
         onLoadMoreItems(pageSize, items.length);
       }
     }
@@ -70,83 +81,78 @@ export default function ItemsTable({
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
-            setPage(0); // reset to first page when searching
+            setPage(0);
           }}
-          placeholder="Search by item ID, cluster, label, or content..."
+          placeholder="Search by item ID or content..."
           className="border border-gray-300 rounded px-4 py-2 w-full max-w-md"
         />
       </div>
 
-<div className="w-full overflow-x-auto rounded-xl border border-gray-300">
-  <table className="w-full min-w-full table-auto border-collapse text-sm">
-    <colgroup>
-      <col style={{ width: '18%' }} />
-      <col style={{ width: '18%' }} />
-      <col style={{ width: '64%' }} />
-    </colgroup>
-    <thead>
-      <tr className="bg-gray-100 text-sm text-gray-500">
-        <th className="border border-gray-300 px-4 py-2 text-left">Item Id</th>
-        <th className="border border-gray-300 px-4 py-2 text-left">Cluster</th>
-        <th className="border border-gray-300 px-4 py-2 text-left">Content</th>
-      </tr>
-    </thead>
-    <tbody>
-      {pageItems.length === 0 ? (
-        <tr>
-          <td colSpan={3} className="border border-gray-300 py-6 text-center text-gray-500">
-            {searchTerm ? 'No items match the current filters.' : 'No items stored.'}
-          </td>
-        </tr>
-      ) : (
-        pageItems.map((item) => {
-          const isLinkable = cluster.id !== UNCLUSTERED;
-          const isExpanded = expandedIds.has(item.id);
-
-          return (
-            <tr key={item.id} className="align-top transition-colors duration-200 hover:bg-gray-50">
-              <td className="border border-gray-300 px-4 py-2 break-words">
-                {item.id}
-              </td>
-              <td className="border border-gray-300 px-4 py-2 break-words">
-                {isLinkable ? (
-                  <Link href={`/dashboard/clusters/cluster/${cluster.id}`} className="text-blue-600 hover:underline">
-                    {label}
-                  </Link>
-                ) : (
-                  <span>{label}</span>
-                )}
-              </td>
-              <td
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => toggleExpanded(item.id)}
-                title={isExpanded ? 'Click to collapse' : 'Click to expand'}
-              >
-                <div
-                  className="break-words"
-                  style={
-                    isExpanded
-                      ? { whiteSpace: 'pre-wrap' }
-                      : {
-                          display: '-webkit-box',
-                          WebkitLineClamp: 4,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          whiteSpace: 'normal',
-                          wordBreak: 'break-word',
-                        }
-                  }
-                >
-                  {item.content}
-                </div>
-              </td>
+      <div className="w-full overflow-x-auto rounded-xl border border-gray-300">
+        <table className="w-full min-w-full table-auto border-collapse text-sm">
+          <colgroup>
+            <col style={{ width: '18%' }} />
+            <col style={{ width: '18%' }} />
+            <col style={{ width: '64%' }} />
+          </colgroup>
+          <thead>
+            <tr className="bg-gray-100 text-sm text-gray-500">
+              <th className="border border-gray-300 px-4 py-2 text-left">Item Id</th>
+              <th className="border border-gray-300 px-4 py-2 text-left">{collectionLabel}</th>
+              <th className="border border-gray-300 px-4 py-2 text-left">Content</th>
             </tr>
-          );
-        })
-      )}
-    </tbody>
-  </table>
-</div>
+          </thead>
+          <tbody>
+            {pageItems.length === 0 ? (
+              <tr>
+                <td colSpan={3} className="border border-gray-300 py-6 text-center text-gray-500">
+                  {searchTerm ? 'No items match the current filters.' : 'No items stored.'}
+                </td>
+              </tr>
+            ) : (
+              pageItems.map((item) => {
+                const isExpanded = expandedIds.has(item.id);
+
+                return (
+                  <tr key={item.id} className="align-top transition-colors duration-200 hover:bg-gray-50">
+                    <td className="border border-gray-300 px-4 py-2 break-words">
+                      {item.id}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2 break-words">
+                      <Link href={collectionUrl} className="text-blue-600 hover:underline">
+                        {collection.name}
+                      </Link>
+                    </td>
+                    <td
+                      className="border border-gray-300 px-4 py-2 cursor-pointer"
+                      onClick={() => toggleExpanded(item.id)}
+                      title={isExpanded ? 'Click to collapse' : 'Click to expand'}
+                    >
+                      <div
+                        className="break-words"
+                        style={
+                          isExpanded
+                            ? { whiteSpace: 'pre-wrap' }
+                            : {
+                                display: '-webkit-box',
+                                WebkitLineClamp: 4,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                whiteSpace: 'normal',
+                                wordBreak: 'break-word',
+                              }
+                        }
+                      >
+                        {item.content}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
 
       <div className="flex gap-4 mt-4">
         <button
@@ -157,7 +163,7 @@ export default function ItemsTable({
           Previous
         </button>
         <span className="px-2 py-2">
-          Page {page + 1} of {totalPages || 1}
+          Page {page + 1} of {totalPages}
         </span>
         <button
           onClick={handleNext}
