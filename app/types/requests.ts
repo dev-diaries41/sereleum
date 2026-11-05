@@ -1,5 +1,5 @@
 import { Cluster, DocItem, OverviewInfo, Prompt, PromptsOverviewInfo } from "@/app/types";
-import { CollectionId } from "./collections";
+import { Collection, CollectionId } from "./collections";
 
 // WebSockets / SSE 
 
@@ -57,6 +57,7 @@ export interface JobReceipt {
 export interface IndexItemsResponse extends JobReceipt {}
 
 export interface GetItemsRequest {
+  tag_ids?: number[];
   cluster_ids?: string[];
   limit?: number;
   offset?: number
@@ -86,42 +87,31 @@ export interface GetLabelsResponse {
 
 export interface GetOverviewResponse extends OverviewInfo {}
 
-export interface RenameClusterRequest {
-  cluster_id: string
-  label: string;
+export interface RenameCollectionRequest {
+  collection_id: CollectionId
+  name: string;
 }
 
-export interface RenameClusterResponse {
-  updated_label: string
+export interface MoveItemsRequest {
+  item_ids: string[];
+  new_collection_id: CollectionId;
+  current_collection_id?: CollectionId;
 }
 
-export interface MoveItemRequest {
-  cluster_id: string
-  id: string;
+export interface MergeCollectionsRequest {
+  primary_collection_id: CollectionId;
+  secondary_collection_ids: CollectionId[];
 }
 
-export interface MoveItemResponse {
-  updated_cluster_id: string
+export interface MergeCollectionsResponse {
+  collections: Collection[];
 }
 
-export interface MergeRequest {
-  primary_collection_id: CollectionId
-  secondary_collection_ids: List[CollectionId]
-}
-
-
-
-
-export interface MergeClustersResponse {
-  updated_clusters: Cluster[];
-}
-
-export interface GetClustersRequest {
-  cluster_id?: string;
+export interface GetCollectionsRequest {
   limit?: number;
-  offset?: number
+  offset?: number;
 }
 
-export interface GetClustersReponse {
-  clusters: Cluster[];
+export interface GetCollectionsReponse {
+  collections: Collection[];
 }

@@ -1,24 +1,23 @@
 import {
   GetItemsRequest,
   IndexItemsResponse,
-  RenameClusterRequest,
-  Cluster,
-  MoveItemRequest,
   QueryItemsRequest,
-  MergeClustersRequest,
   ClusterOptions,
   GetItemsByIdsRequest,
   GetItemsResponse,
   GetOverviewResponse,
-  RenameClusterResponse,
-  MoveItemResponse,
   JobReceipt,
-  GetClustersRequest,
-  GetClustersReponse,
   GetCountResponse,
-  MergeClustersResponse,
   DocItem,
   OverviewInfo,
+  MergeCollectionsRequest,
+  MergeCollectionsResponse,
+  Collection,
+  RenameCollectionRequest,
+  CollectionId,
+  GetCollectionsRequest,
+  GetCollectionsReponse,
+  MoveItemsRequest,
 } from "@/app/types";
 import * as APIRoutes from "@/app/sereleum/routes";
 
@@ -56,13 +55,19 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
     return this.handleResponse<IndexItemsResponse>(res);
   }
 
-  async getItems(limit?: number, offset?: number, clusterIds?: string[]): Promise<T[]> {
+
+  async getItems(clusterIds?: string[], tagIds?: number[], limit?: number, offset?: number): Promise<T[]> {
     const url = `${this.baseUrl}${APIRoutes.BASE_ITEMS_ENDPOINT}`;
     const payload: GetItemsRequest = { 
-      cluster_ids: clusterIds,
       limit: limit, 
       offset: offset
     };
+    if(clusterIds){
+      payload.cluster_ids = clusterIds
+    }
+     if(tagIds){
+      payload.tag_ids = tagIds
+    }
 
     const res = await fetch(url, {
       method: "POST",
@@ -90,12 +95,11 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
     return data.items;
   }
 
-  async queryItems(query: string, limit?: number, clusterIds?: string[]): Promise<T[]> {
+  async queryItems(query: string, limit?: number): Promise<T[]> {
     const url = `${this.baseUrl}${APIRoutes.QUERY_ITEMS_ENDPOINT}`;
     const payload: QueryItemsRequest = { 
       query,
-      cluster_ids: clusterIds,
-      limit: limit, 
+      limit, 
     };
 
     const res = await fetch(url, {
@@ -114,28 +118,40 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
     return this.handleResponse<GetOverviewResponse>(res);
   }
 
-  async moveItem( ItemId: string, clusterId: string): Promise<string> {
-    const payload: MoveItemRequest = { cluster_id: clusterId, id: ItemId };
+  async moveItems(itemIds: string[], newColletionId: string, type: CollectionType.CLUSTER): Promise<void>;
+  async moveItems(itemIds: string[], newColletionId: number, type: CollectionType.TAG, currentCollectionId: CollectionId): Promise<void>;
+  async moveItems(itemIds: string[], newColletionId: CollectionId, type: CollectionType, currentCollectionId?: CollectionId): Promise<void> {
+    const payload: MoveItemsRequest = { 
+      new_collection_id: newColletionId,
+      item_ids: itemIds 
+    };
+    if(currentCollectionId){
+      payload.current_collection_id = currentCollectionId
+    }
          
     const params = new URLSearchParams(
       Object.fromEntries(
         Object.entries(payload).map(([key, value]) => [key, String(value)])
       )
     );
-    const url = `${this.baseUrl}${APIRoutes.BASE_ITEMS_ENDPOINT}?${params.toString()}`;
-
+    const url = type === CollectionType.TAG? 
+      `${this.baseUrl}${APIRoutes.MOVE_TAG_ITEMS_ENDPOINT}?${params.toString()}`:
+      `${this.baseUrl}${APIRoutes.MOVE_CLUSTER_ITEMS_ENDPOINT}?${params.toString()}`
+    
     const res = await fetch(url, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
     });
 
-    const data = await this.handleResponse<MoveItemResponse>(res);
-    return data.updated_cluster_id;
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text);
+    }
   }
-
-  async getClusters(clusterId?: string, offset: number = 0, limit: number = 25): Promise<Cluster[]> {
-      const query: GetClustersRequest = { 
-        cluster_id: clusterId || "",
+  async getCollections(type: CollectionType.CLUSTER, offset: number, limit: number): Promise<Collection[]>;
+  async getCollections(type: CollectionType.TAG, offset: number, limit: number): Promise<Collection[]>;
+  async getCollections(type: CollectionType, offset: number = 0, limit: number = 25): Promise<Collection[]> {
+      const query: GetCollectionsRequest = { 
         offset: offset, 
         limit: limit
       };
@@ -145,10 +161,13 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
         Object.entries(query).map(([key, value]) => [key, String(value)])
       )
     );
-    const url = `${this.baseUrl}${APIRoutes.BASE_CLUSTER_ENDPOINT}?${params.toString()}`;
+    const url = type === CollectionType.TAG? 
+      `${this.baseUrl}${APIRoutes.BASE_TAG_ENDPOINT}?${params.toString()}`:
+      `${this.baseUrl}${APIRoutes.BASE_CLUSTER_ENDPOINT}?${params.toString()}`
+    
     const res = await fetch(url, { method: "GET" });
-    const data = await this.handleResponse<GetClustersReponse>(res);
-    return data.clusters;
+    const data = await this.handleResponse<GetCollectionsReponse>(res);
+    return data.collections;
   }
 
 
@@ -158,31 +177,41 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
     const data = await this.handleResponse<GetCountResponse>(res);
     return data.count;
   }
+  async countCollections(type: CollectionType.TAG): Promise<number>
+  async countCollections(type: CollectionType.CLUSTER): Promise<number>
+  async countCollections(type: CollectionType): Promise<number> {
+    const url = type === CollectionType.TAG? 
+      `${this.baseUrl}${APIRoutes.COUNT_TAGS_ENDPOINT}`:
+      `${this.baseUrl}${APIRoutes.COUNT_CLUSTER_ENDPOINT}`
 
-  async countClusters(): Promise<number> {
-    const url = `${this.baseUrl}${APIRoutes.COUNT_CLUSTER_ENDPOINT}`;
     const res = await fetch(url, { method: "GET" });
     const data = await this.handleResponse<GetCountResponse>(res);
     return data.count;
   }
 
-  async renameCluster(clusterId: string, label: string): Promise<string> {
-    const payload: RenameClusterRequest = { cluster_id: clusterId, label };
-         
-    const params = new URLSearchParams(
-      Object.fromEntries(
-        Object.entries(payload).map(([key, value]) => [key, String(value)])
-      )
-    );
-    const url = `${this.baseUrl}${APIRoutes.BASE_CLUSTER_ENDPOINT}?${params.toString()}`;
+    async renameCollection(collectionId: string, name: string, type: CollectionType.CLUSTER): Promise<void>;
+    async renameCollection(collectionId: number, name: string, type: CollectionType.TAG): Promise<void>;
+    async renameCollection(collectionId: CollectionId, name: string, type: CollectionType): Promise<void> {
+      const payload: RenameCollectionRequest = { collection_id: collectionId, name };
+          
+      const params = new URLSearchParams(
+        Object.fromEntries(
+          Object.entries(payload).map(([key, value]) => [key, String(value)])
+        )
+      );
+      const url = type === CollectionType.TAG? 
+      `${this.baseUrl}${APIRoutes.BASE_TAG_ENDPOINT}?${params.toString()}`:
+      `${this.baseUrl}${APIRoutes.BASE_CLUSTER_ENDPOINT}?${params.toString()}`
 
-    const res = await fetch(url, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-    });
+      const res = await fetch(url, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+      });
 
-    const data = await this.handleResponse<RenameClusterResponse>(res);
-    return data.updated_label;
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text);
+      }
   }
 
 
@@ -205,10 +234,16 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
   return blob.size === 0 ? null : blob;
 }
 
-  async mergeClusters(merges: Record<string, string[]>): Promise<Cluster[]> {
-    const url = `${this.baseUrl}${APIRoutes.MERGE_CLUSTERS_ENDPOINT}`;
-    const payload: MergeClustersRequest = { 
-      merges,
+async mergeCollections(type: CollectionType.CLUSTER, primaryId: string, secondaryIds: string[]): Promise<Collection[]>;
+async mergeCollections(type: CollectionType.TAG, primaryId: number, secondaryIds: number[]): Promise<Collection[]>;
+async mergeCollections(type: CollectionType, primaryCollectionId: CollectionId, secondaryCollectionIds: CollectionId[]): Promise<Collection[]> {
+    const url = type === CollectionType.TAG? 
+    `${this.baseUrl}${APIRoutes.MERGE_TAGS_ENDPOINT}`:
+    `${this.baseUrl}${APIRoutes.MERGE_CLUSTERS_ENDPOINT}`
+
+    const payload: MergeCollectionsRequest = { 
+      primary_collection_id: primaryCollectionId,
+      secondary_collection_ids: secondaryCollectionIds
     };
 
     const res = await fetch(url, {
@@ -217,8 +252,8 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
       body: JSON.stringify(payload),
     });
 
-    const data = await this.handleResponse<MergeClustersResponse>(res);
-    return data.updated_clusters
+    const data = await this.handleResponse<MergeCollectionsResponse>(res);
+    return data.collections
   }
 
 }

@@ -1,4 +1,4 @@
-import { Cluster } from "../cluster";
+import { Collection } from "../collections";
 
 export interface DocItem {
   id: string;
@@ -8,5 +8,7 @@ export interface DocItem {
 export interface OverviewInfo {
   total_items: number;
   total_clusters: number;
-  top_clusters: Cluster[];
+  total_tags: number;
+  top_clusters: Collection[];
+  top_tags: Collection[];
 }
