@@ -149,13 +149,17 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
       throw new Error(text);
     }
   }
-  async getCollections(type: CollectionType.CLUSTER, offset: number, limit: number): Promise<Collection[]>;
-  async getCollections(type: CollectionType.TAG, offset: number, limit: number): Promise<Collection[]>;
-  async getCollections(type: CollectionType, offset: number = 0, limit: number = 25): Promise<Collection[]> {
+  async getCollections(type: CollectionType.CLUSTER, offset: number, limit: number, collectionId?: string): Promise<Collection[]>;
+  async getCollections(type: CollectionType.TAG, offset: number, limit: number, collectionId?: number): Promise<Collection[]>;
+  async getCollections(type: CollectionType, offset: number = 0, limit: number = 25, collectionId?: CollectionId): Promise<Collection[]> {
       const query: GetCollectionsRequest = { 
         offset: offset, 
         limit: limit
       };
+
+      if(collectionId){
+        query.collection_id = collectionId
+      }
       
     const params = new URLSearchParams(
       Object.fromEntries(
@@ -178,8 +182,7 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
     const data = await this.handleResponse<GetCountResponse>(res);
     return data.count;
   }
-  async countCollections(type: CollectionType.TAG): Promise<number>
-  async countCollections(type: CollectionType.CLUSTER): Promise<number>
+  
   async countCollections(type: CollectionType): Promise<number> {
     const url = type === CollectionType.TAG? 
       `${this.baseUrl}${APIRoutes.COUNT_TAGS_ENDPOINT}`:
