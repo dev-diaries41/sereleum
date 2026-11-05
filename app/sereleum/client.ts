@@ -1,5 +1,5 @@
 
-import * as APIRoutes from "@/app/constants/api";
+import * as APIRoutes from "@/app/sereleum/routes";
 
 export class SereleumEventsClient {
   private baseUrl: string;

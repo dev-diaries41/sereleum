@@ -1,4 +1,4 @@
-import { SERELEUM_BASE_URL } from "@/app/constants/api";
+import { SERELEUM_BASE_URL } from "@/app/sereleum/routes";
 import { NextRequest, NextResponse } from "next/server";
 
 type RouteContext = {

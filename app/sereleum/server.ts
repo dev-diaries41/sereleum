@@ -20,7 +20,7 @@ import {
   DocItem,
   OverviewInfo,
 } from "@/app/types";
-import * as APIRoutes from "@/app/constants/api";
+import * as APIRoutes from "@/app/sereleum/routes";
 
 export class SereleumApiClient<T extends DocItem = DocItem> {
   private baseUrl: string;
