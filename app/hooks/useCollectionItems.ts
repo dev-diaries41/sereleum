@@ -5,12 +5,8 @@ import {  Collection, CollectionId, DocItem } from "../types";
 import { apiPromptsClient } from "../sereleum";
 import { CollectionType } from "../enums/collections";
 
-export const useCollectionItems = <T extends CollectionType = CollectionType>(collection: Collection<T>, pageSize: number) => {
-    const [ items, setItems ] = useState<DocItem[]>([]);
-
-    useEffect(() => {
-      apiPromptsClient.getItems(collection.type, [collection.id], pageSize).then(result => setItems(result))
-    }, [])
+export const useCollectionItems = <T extends CollectionType = CollectionType>(collection: Collection<T>, initialItems: DocItem[] = []) => {
+    const [ items, setItems ] = useState<DocItem[]>(initialItems);
     
     const onMoveItems = async(itemIds: string[], newColletionId: CollectionId<T>) => {
       await apiPromptsClient.moveItems(itemIds, newColletionId, collection.type)

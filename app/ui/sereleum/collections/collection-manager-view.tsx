@@ -15,6 +15,7 @@ import { FloatingActionButton } from "../../common/fab";
 import { useCollectionItems } from "@/app/hooks/useCollectionItems";
 
 interface CollectionManagerProps<T extends CollectionType> {
+  initialItems?: DocItem[];
   collectionToView: Collection<T>;
   type: T;
   pageSize?: number;
@@ -23,6 +24,7 @@ interface CollectionManagerProps<T extends CollectionType> {
 export function CollectionManagerView<T extends CollectionType>({
   collectionToView,
   type,
+  initialItems = [],
   pageSize = 25,
 }: CollectionManagerProps<T>) {
   const router = useRouter();
@@ -34,7 +36,7 @@ export function CollectionManagerView<T extends CollectionType>({
   const [actionsOpen, setActionsOpen] = useState(false);
 
   const { onRenameCollection } = useManageCollections<T>(type);
-  const { items, onLoadMoreItems } = useCollectionItems<T>(collection, pageSize);
+  const { items, onLoadMoreItems } = useCollectionItems<T>(collection, initialItems);
   const { selectedItems, excludedItems, selectAll, isSelecting, selectedCount, setSelectAll, toggleSelectedItem, toggleSelectionMode, clearSelection } = useSelection<DocItem>();
 
   const isCluster = type === CollectionType.CLUSTER;
@@ -190,6 +192,7 @@ export function CollectionManagerView<T extends CollectionType>({
           isSelected={isItemSelected}
           onRowClick={handleRowClick}
           onLoadMoreItems={onLoadMoreItems}
+          pageSize={pageSize}
         />
       </div>
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">

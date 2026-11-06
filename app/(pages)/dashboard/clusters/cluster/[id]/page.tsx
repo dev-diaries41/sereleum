@@ -10,11 +10,12 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const { id } = await params;
   const type = CollectionType.CLUSTER
   const collection = ( await apiPromptsClient.getCollections(type, 0, 1, id))[0]
+  const items = await apiPromptsClient.getItems(type, [collection.id], 25)
 
   return (
     <ErrorBoundary errorComponent={ErrorComponent}>
       <Suspense fallback={<Loading />}>
-        <CollectionManagerView collectionToView={collection} type={type} />
+        <CollectionManagerView collectionToView={collection} type={type}  initialItems={items}/>
       </Suspense>
     </ErrorBoundary>
   );

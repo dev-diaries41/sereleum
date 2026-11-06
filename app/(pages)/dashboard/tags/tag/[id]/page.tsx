@@ -13,11 +13,12 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     const type = CollectionType.TAG
     const tagId = parseNumber(id)
     const collection = ( await apiPromptsClient.getCollections(type, 0, 1, tagId))[0]
-  
+    const items = await apiPromptsClient.getItems(type, [collection.id], 25)
+
   return (
     <ErrorBoundary errorComponent={ErrorComponent}>
       <Suspense fallback={<Loading />}>
-        <CollectionManagerView collectionToView={collection} type={CollectionType.TAG} />
+        <CollectionManagerView collectionToView={collection} type={CollectionType.TAG} initialItems={items} />
       </Suspense>
     </ErrorBoundary>
   );
