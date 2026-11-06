@@ -3,14 +3,16 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useState } from "react";
 import ItemsTable from "../items-table";
-import { Collection, CollectionId, DocItem } from "@/app/types";
+import { ActionConfig, Collection, CollectionId, DocItem } from "@/app/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faCheck, faPen, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faCheck, faFolder, faPen, faTag, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useManageCollections } from "@/app/hooks/useManageCollection";
 import { useSelection } from "@/app/hooks/useSelection";
 import { CollectionType } from "@/app/enums/collections";
 import { capitalizeFirstLetter } from "@/app/lib/helpers";
 import { SelectionControls } from "../../common/selection-controls";
+import { ActionsMenu } from "../../common/action-menu";
+import { FloatingActionButton } from "../../common/fab";
 
 interface CollectionManagerProps<T extends CollectionType> {
   id?: CollectionId<T>;
@@ -27,22 +29,14 @@ export function CollectionManagerView<T extends CollectionType>({
   const [labelDraft, setLabelDraft] = useState('');
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [actionsOpen, setActionsOpen] = useState(false);
 
-
-  const {
-    selectedItems,
-    excludedItems,
-    selectAll,
-    isSelecting,
-    selectedCount,
-    setSelectAll,
-    toggleSelectedItem,
-    toggleSelectionMode,
-    clearSelection
-  } = useSelection<DocItem>();
+  const { selectedItems, excludedItems, selectAll, isSelecting, selectedCount, setSelectAll, toggleSelectedItem, toggleSelectionMode, clearSelection } = useSelection<DocItem>();
 
   const isCluster = type === CollectionType.CLUSTER;
   const collectionLabel = isCluster ? 'cluster' : 'tag';
+  const collectionName = collection?.name && collection.name !== id ? collection.name : 'Unknown collection';   // collection.name defaults to id
+
 
   useLayoutEffect(() => {
     if (!id) {
@@ -53,18 +47,43 @@ export function CollectionManagerView<T extends CollectionType>({
   }, [id]);
 
 
+  useEffect(() => {
+    if(!collection) return
+    setLabelDraft(collectionName);
+  }, [collection, id]);
+
 
   if (!collection) {
     return <div className="mx-auto">{capitalizeFirstLetter(collectionLabel)} not found</div>;
   }
 
-  // collection.name defaults to id
-  const collectionName = collection?.name !== id ? collection?.name : 'Unknown collection' 
 
-
-  useEffect(() => {
-    setLabelDraft(collection.name !== id ? collection.name : 'Unknown collection');
-  }, [collection, id]);
+const actions: ActionConfig[] = [
+  {
+    label: "Add tag",
+    icon: faTag,
+    onClick: () => {
+      setActionsOpen(false);
+      // TODO: Implement Add tag
+    }
+  },
+  {
+    label: "Move",
+    icon: faFolder,
+    onClick: () => {
+      setActionsOpen(false);
+      // TODO: Implement Move
+    }
+  },
+  {
+    label: "Delete",
+    icon: faTrash,
+    onClick: () => {
+      setActionsOpen(false);
+      // TODO: Implement Delete
+    }
+  }
+];
 
   const handleRowClick = (item: DocItem) => {
     if (!isSelecting) return;
@@ -100,9 +119,6 @@ export function CollectionManagerView<T extends CollectionType>({
     setEditing(false);
   };
 
-  if (!collection) {
-    return <div className="mx-auto">{capitalizeFirstLetter(collectionLabel)} not found</div>;
-  }
 
   return (
     <div className="mx-auto">
@@ -182,6 +198,13 @@ export function CollectionManagerView<T extends CollectionType>({
           isSelecting={isSelecting}
           isSelected={isItemSelected}
           onRowClick={handleRowClick}
+        />
+      </div>
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+        {actionsOpen && <ActionsMenu actions={actions} />}
+        <FloatingActionButton
+          isOpen={actionsOpen}
+          onClick={() => setActionsOpen(open => !open)}
         />
       </div>
     </div>
