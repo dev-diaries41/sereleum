@@ -179,7 +179,6 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
 
     {isSelecting && (
           <MergeCollectionsView<T>
-            selectedCollectionIds={selectedCollectionIds}
             totalCollectionsCount={totalCollections}
             selectedCollections={selectedCollections}
             parentCollectionId={parentCollectionId}

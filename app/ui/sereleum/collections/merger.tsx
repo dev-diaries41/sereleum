@@ -4,7 +4,6 @@ import { CollectionType } from "@/app/enums/collections";
 import { RadioDropDown } from "../../common/radio-dropdown";
 
 interface MergeCollectionsViewProps<T extends CollectionType> {
-  selectedCollectionIds: CollectionId<T>[];
   totalCollectionsCount: number;
   selectedCollections: Collection<T>[];
   parentCollectionId: CollectionId<T> | null;
@@ -18,7 +17,6 @@ interface MergeCollectionsViewProps<T extends CollectionType> {
 }
 
 export function MergeCollectionsView<T extends CollectionType>({
-  selectedCollectionIds,
   totalCollectionsCount,
   selectedCollections,
   parentCollectionId,
@@ -61,7 +59,7 @@ export function MergeCollectionsView<T extends CollectionType>({
         <div className="flex items-center gap-3">
           <div className="text-sm font-medium">Selected</div>
           <div className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-sm font-semibold">
-            {selectedCollectionIds.length}
+            {selectedCollections.length}
           </div>
           <div className="text-sm text-gray-500">
             of {totalCollectionsCount}
@@ -70,7 +68,7 @@ export function MergeCollectionsView<T extends CollectionType>({
 
         <div className="flex items-center gap-2">
           <button
-            disabled={selectedCollectionIds.length === 0 || (isChoosingParent && parentCollectionId === null)}
+            disabled={selectedCollections.length === 0 || (isChoosingParent && parentCollectionId === null)}
             onClick={handleButtonClick}
             className="px-4 py-2 rounded-md bg-rose-600 text-white text-sm disabled:opacity-60"
           >
@@ -103,7 +101,7 @@ export function MergeCollectionsView<T extends CollectionType>({
               </div>
             </div>
             <div className="text-sm text-gray-600">
-              {selectedCollectionIds.length} {pluralLabel} selected
+              {selectedCollections.length} {pluralLabel} selected
             </div>
           </div>
 
