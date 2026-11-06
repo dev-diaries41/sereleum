@@ -6,31 +6,33 @@ import PopUp from "../common/popup";
 import { Collection, DocItem } from "@/app/types/";
 import { CollectionType } from "@/app/enums/collections";
 import usePopUp from "@/app/hooks/usePopUp";
-import { useCollectionItems } from "@/app/hooks/useCollectionItems";
 
 interface ItemsTableViewProps<T extends CollectionType> {
   title?: string;
+  items: DocItem[];
   pageSize?: number;
   collection: Collection<T>;
   isSelecting: boolean;
   isSelected: (item: DocItem) => boolean;
   onRowClick: (item: DocItem) => void;
+  onLoadMoreItems: (limit: number, offset: number) => void
 }
 
 export default function ItemsTable<T extends CollectionType = CollectionType>({
   collection,
   title = "Items",
   pageSize = 25,
+  items,
   isSelecting,
   isSelected,
-  onRowClick
+  onRowClick,
+  onLoadMoreItems
 }: ItemsTableViewProps<T>) {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(0);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   const { popUpCta, popUpDescription, popUpTitle, closePopUp } = usePopUp();
-  const { items, onLoadMoreItems } = useCollectionItems<T>(collection, pageSize);
 
   const isCluster = collection.type === CollectionType.CLUSTER;
   const collectionLabel = isCluster ? "Cluster" : "Tag";

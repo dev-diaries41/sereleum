@@ -12,24 +12,29 @@ import { CollectionType } from "@/app/enums/collections";
 import { SelectionControls } from "../../common/selection-controls";
 import { ActionsMenu } from "../../common/action-menu";
 import { FloatingActionButton } from "../../common/fab";
+import { useCollectionItems } from "@/app/hooks/useCollectionItems";
 
 interface CollectionManagerProps<T extends CollectionType> {
   collectionToView: Collection<T>;
   type: T;
+  pageSize?: number;
 }
 
 export function CollectionManagerView<T extends CollectionType>({
   collectionToView,
-  type
+  type,
+  pageSize = 25,
 }: CollectionManagerProps<T>) {
   const router = useRouter();
+
   const [collection, setCollection] = useState<Collection<T>>(collectionToView);
-  const { onRenameCollection } = useManageCollections<T>(type);
   const [labelDraft, setLabelDraft] = useState('');
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
   const [actionsOpen, setActionsOpen] = useState(false);
 
+  const { onRenameCollection } = useManageCollections<T>(type);
+  const { items, onLoadMoreItems } = useCollectionItems<T>(collection, pageSize);
   const { selectedItems, excludedItems, selectAll, isSelecting, selectedCount, setSelectAll, toggleSelectedItem, toggleSelectionMode, clearSelection } = useSelection<DocItem>();
 
   const isCluster = type === CollectionType.CLUSTER;
@@ -178,11 +183,13 @@ export function CollectionManagerView<T extends CollectionType>({
       />
 
         <ItemsTable
+          items = {items}
           collection={collection}
           title={`${collection.size} Items`}
           isSelecting={isSelecting}
           isSelected={isItemSelected}
           onRowClick={handleRowClick}
+          onLoadMoreItems={onLoadMoreItems}
         />
       </div>
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
