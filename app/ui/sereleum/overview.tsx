@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import FileUploader from '../common/upload';
 import {  AcceptedMimes } from '@/app/constants/global';
-import { useDashboard } from '@/app/providers/sereleum';
 import { ProgressTrackerPopUp } from '../common/progress-tracker';
 import { OverviewSummary } from './overview-summary';
 import {InlinePopUp} from '../common/inline-popup';
@@ -14,6 +13,7 @@ import { Questionnaire } from '../onboarding/questionnaire';
 import { ONBOARDING_WELCOME_MESSAGE, ONBOARDING_WELCOME_TITLE, onboardingQuestions } from '@/app/constants/content/onboarding';
 import { TopCollectionsContainer } from './collections/top-collections';
 import { CollectionType } from '@/app/enums/collections';
+import { useDashboard } from '@/app/hooks/useDashboard';
 
 interface DashboardOverviewProps {
   user?: Partial<User>;
