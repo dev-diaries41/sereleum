@@ -2,21 +2,25 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 
-interface RadioDropDownProps<
-  T extends readonly string[] = readonly string[]
-> {
-  options: T;
-  value: T[number];
-  onSelect: (key: T[number]) => void;
-  labelFor: (key: T[number]) => string;
+interface RadioDropDownProps<T extends string | number> {
+  options: readonly T[];
+  value: T | "";
+  onSelect: (key: T) => void;
+  labelFor: (key: T) => string;
   open: boolean;
   onClose?: () => void;
   className?: string;
 }
 
-export function RadioDropDown<
-  T extends readonly string[] = readonly string[]
->({ options, value, onSelect, labelFor, open, onClose, className = "" }: RadioDropDownProps<T>) {
+export function RadioDropDown<T extends string | number>({
+  options,
+  value,
+  onSelect,
+  labelFor,
+  open,
+  onClose,
+  className = "",
+}: RadioDropDownProps<T>) {
   return (
     <AnimatePresence>
       {open && (
@@ -29,10 +33,12 @@ export function RadioDropDown<
           <div className="p-3 flex flex-col gap-2">
             {options.map((k) => (
               <label
-                key={k}
-                className={`flex items-center justify-start gap-2 px-3 py-2 rounded cursor-pointer hover:bg-gray-50 ${value === k ? 'bg-indigo-50' : ''}`}
+                key={String(k)}
+                className={`flex items-center justify-start gap-2 px-3 py-2 rounded cursor-pointer hover:bg-gray-50 ${
+                  value === k ? "bg-indigo-50" : ""
+                }`}
               >
-                 <input
+                <input
                   type="radio"
                   name="sort"
                   checked={value === k}
@@ -45,7 +51,6 @@ export function RadioDropDown<
                 <div>
                   <div className="text-sm font-medium">{labelFor(k)}</div>
                 </div>
-               
               </label>
             ))}
           </div>
