@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { CollectionRow } from "../clusters/collection-row";
+import { CollectionRow } from "./collection-row";
 import { faLayerGroup, faTags } from "@fortawesome/free-solid-svg-icons";
 import { CollectionType } from "@/app/enums/collections";
 import { Collection } from "@/app/types";

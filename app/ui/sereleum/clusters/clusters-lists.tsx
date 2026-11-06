@@ -3,7 +3,7 @@
 import { useManageClusters } from "@/app/providers/sereleum";
 import  { useEffect, useMemo, useState } from "react";
 import { Cluster } from "@/app/types";
-import { ClusterRow } from "./cluster-row";
+import { ClusterRow } from "../collections/collection-row";
 import { SortBySelector } from "../../common/sort-by";
 import { MergeClustersView } from "./merger";
 

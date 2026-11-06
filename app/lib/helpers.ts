@@ -33,6 +33,10 @@ export function convertToNumber(value: string | number, defaultValue: number): n
 
   return parsedValue;
 }
+export function parseNumber(value: string): number | undefined {
+  const parsed = Number(value)
+  return isNaN(parsed)? undefined : parsed
+}
 
 
 export function getCurrentMonth() {
