@@ -1,31 +1,30 @@
 'use client';
 
 import { useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ItemsTable from "../items-table";
-import { ActionConfig, Collection, CollectionId, DocItem } from "@/app/types";
+import { ActionConfig, Collection, DocItem } from "@/app/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faCheck, faFolder, faPen, faTag, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useManageCollections } from "@/app/hooks/useManageCollection";
 import { useSelection } from "@/app/hooks/useSelection";
 import { CollectionType } from "@/app/enums/collections";
-import { capitalizeFirstLetter } from "@/app/lib/helpers";
 import { SelectionControls } from "../../common/selection-controls";
 import { ActionsMenu } from "../../common/action-menu";
 import { FloatingActionButton } from "../../common/fab";
 
 interface CollectionManagerProps<T extends CollectionType> {
-  id?: CollectionId<T>;
+  collectionToView: Collection<T>;
   type: T;
 }
 
 export function CollectionManagerView<T extends CollectionType>({
-  id,
+  collectionToView,
   type
 }: CollectionManagerProps<T>) {
   const router = useRouter();
-  const [collection, setCollection] = useState<Collection<T> | null>(null);
-  const { onRenameCollection, onGetCollection } = useManageCollections<T>(type);
+  const [collection, setCollection] = useState<Collection<T>>(collectionToView);
+  const { onRenameCollection } = useManageCollections<T>(type);
   const [labelDraft, setLabelDraft] = useState('');
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -35,55 +34,41 @@ export function CollectionManagerView<T extends CollectionType>({
 
   const isCluster = type === CollectionType.CLUSTER;
   const collectionLabel = isCluster ? 'cluster' : 'tag';
-  const collectionName = collection?.name && collection.name !== id ? collection.name : 'Unknown collection';   // collection.name defaults to id
-
-
-  useLayoutEffect(() => {
-    if (!id) {
-      router.push(isCluster ? '/dashboard/clusters' : '/dashboard/tags');
-      return;
-    }
-    onGetCollection(id).then(c => setCollection(c));
-  }, [id]);
+  const collectionName = collection?.name && collection.name !== collection.id ? collection.name : 'Unknown collection';   // collection.name defaults to id
 
 
   useEffect(() => {
     if(!collection) return
     setLabelDraft(collectionName);
-  }, [collection, id]);
+  }, [collection]);
 
 
-  if (!collection) {
-    return <div className="mx-auto">{capitalizeFirstLetter(collectionLabel)} not found</div>;
-  }
-
-
-const actions: ActionConfig[] = [
-  {
-    label: "Add tag",
-    icon: faTag,
-    onClick: () => {
-      setActionsOpen(false);
-      // TODO: Implement Add tag
+  const actions: ActionConfig[] = [
+    {
+      label: "Add tag",
+      icon: faTag,
+      onClick: () => {
+        setActionsOpen(false);
+        // TODO: Implement Add tag
+      }
+    },
+    {
+      label: "Move",
+      icon: faFolder,
+      onClick: () => {
+        setActionsOpen(false);
+        // TODO: Implement Move
+      }
+    },
+    {
+      label: "Delete",
+      icon: faTrash,
+      onClick: () => {
+        setActionsOpen(false);
+        // TODO: Implement Delete
+      }
     }
-  },
-  {
-    label: "Move",
-    icon: faFolder,
-    onClick: () => {
-      setActionsOpen(false);
-      // TODO: Implement Move
-    }
-  },
-  {
-    label: "Delete",
-    icon: faTrash,
-    onClick: () => {
-      setActionsOpen(false);
-      // TODO: Implement Delete
-    }
-  }
-];
+  ];
 
   const handleRowClick = (item: DocItem) => {
     if (!isSelecting) return;
@@ -178,7 +163,7 @@ const actions: ActionConfig[] = [
                 </>
               )}
             </div>
-            <h3 className="text-sm md:text-md text-gray-500">id: {id}</h3>
+            <h3 className="text-sm md:text-md text-gray-500">id: {collection.id}</h3>
           </div>
         </div>
 

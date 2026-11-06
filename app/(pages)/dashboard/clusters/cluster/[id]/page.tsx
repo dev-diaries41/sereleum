@@ -1,20 +1,20 @@
-'use client'
-import  { Suspense } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { Suspense } from 'react';
 import { ErrorBoundary } from 'next/dist/client/components/error-boundary';
-import ErrorComponent from "./error"
-import Loading from "./loading"
+import ErrorComponent from './error';
+import Loading from './loading';
 import { CollectionType } from '@/app/enums/collections';
 import { CollectionManagerView } from '@/app/ui/sereleum/collections/collection-manager-view';
+import { apiPromptsClient } from '@/app/sereleum';
 
-export default function Page(props:  { params: Promise<{ id: string }> }) {
-  const params = useParams();
-  const clusterId = params?.id as string | undefined;
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const type = CollectionType.CLUSTER
+  const collection = ( await apiPromptsClient.getCollections(type, 0, 1, id))[0]
 
   return (
     <ErrorBoundary errorComponent={ErrorComponent}>
       <Suspense fallback={<Loading />}>
-        <CollectionManagerView id={clusterId} type={CollectionType.CLUSTER} />
+        <CollectionManagerView collectionToView={collection} type={type} />
       </Suspense>
     </ErrorBoundary>
   );
