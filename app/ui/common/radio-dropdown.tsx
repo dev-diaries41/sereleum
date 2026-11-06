@@ -1,22 +1,21 @@
+
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
 
-interface RadioDropDownProps<T extends string | number> {
-  options: readonly T[];
-  value: T | "";
-  onSelect: (key: T) => void;
-  labelFor: (key: T) => string;
+interface RadioDropDownProps<T> {
+  options: readonly [string, T][];
+  value: T | null;
+  onSelect: (value: T) => void;
   open: boolean;
   onClose?: () => void;
   className?: string;
 }
 
-export function RadioDropDown<T extends string | number>({
+export function RadioDropDown<T>({
   options,
   value,
   onSelect,
-  labelFor,
   open,
   onClose,
   className = "",
@@ -31,26 +30,24 @@ export function RadioDropDown<T extends string | number>({
           className={`absolute top-8 left-0 mt-2 w-56 bg-white rounded-md border z-20 shadow-sm ${className}`}
         >
           <div className="p-3 flex flex-col gap-2">
-            {options.map((k) => (
+            {options.map(([label, option]) => (
               <label
-                key={String(k)}
+                key={label}
                 className={`flex items-center justify-start gap-2 px-3 py-2 rounded cursor-pointer hover:bg-gray-50 ${
-                  value === k ? "bg-indigo-50" : ""
+                  Object.is(value, option) ? "bg-indigo-50" : ""
                 }`}
               >
                 <input
                   type="radio"
-                  name="sort"
-                  checked={value === k}
+                  name="selector"
+                  checked={Object.is(value, option)}
                   onChange={() => {
-                    onSelect(k);
+                    onSelect(option);
                     onClose?.();
                   }}
                   className="ml-2"
                 />
-                <div>
-                  <div className="text-sm font-medium">{labelFor(k)}</div>
-                </div>
+                <div className="text-sm font-medium">{label}</div>
               </label>
             ))}
           </div>
