@@ -1,5 +1,6 @@
 import { Cluster, DocItem, OverviewInfo, Prompt, PromptsOverviewInfo } from "@/app/types";
 import { Collection, CollectionId } from "./collections";
+import { CollectionType } from "../enums/collections";
 
 // WebSockets / SSE 
 
@@ -103,8 +104,8 @@ export interface MergeCollectionsRequest {
   secondary_collection_ids: CollectionId[];
 }
 
-export interface MergeCollectionsResponse {
-  merged_collection: Collection;
+export interface MergeCollectionsResponse<T extends CollectionType = CollectionType>  {
+  merged_collection: Collection<T>;
 }
 
 export interface GetCollectionsRequest {
@@ -113,6 +114,6 @@ export interface GetCollectionsRequest {
   offset?: number;
 }
 
-export interface GetCollectionsReponse {
-  collections: Collection[];
+export interface GetCollectionsReponse<T extends CollectionType = CollectionType> {
+  collections: Collection<T>[];
 }
