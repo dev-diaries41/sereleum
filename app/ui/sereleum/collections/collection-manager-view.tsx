@@ -3,12 +3,14 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useState } from "react";
 import ItemsTable from "../items-table";
-import { Collection, CollectionId } from "@/app/types";
+import { Collection, CollectionId, DocItem } from "@/app/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faCheck, faPen, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useManageCollections } from "@/app/hooks/useManageCollection";
+import { useSelection } from "@/app/hooks/useSelection";
 import { CollectionType } from "@/app/enums/collections";
 import { capitalizeFirstLetter } from "@/app/lib/helpers";
+import { SelectionControls } from "../../common/selection-controls";
 
 interface CollectionManagerProps<T extends CollectionType> {
   id?: CollectionId<T>;
@@ -20,12 +22,24 @@ export function CollectionManagerView<T extends CollectionType>({
   type
 }: CollectionManagerProps<T>) {
   const router = useRouter();
-
   const [collection, setCollection] = useState<Collection<T> | null>(null);
   const { onRenameCollection, onGetCollection } = useManageCollections<T>(type);
   const [labelDraft, setLabelDraft] = useState('');
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
+
+
+  const {
+    selectedItems,
+    excludedItems,
+    selectAll,
+    isSelecting,
+    selectedCount,
+    setSelectAll,
+    toggleSelectedItem,
+    toggleSelectionMode,
+    clearSelection
+  } = useSelection<DocItem>();
 
   const isCluster = type === CollectionType.CLUSTER;
   const collectionLabel = isCluster ? 'cluster' : 'tag';
@@ -35,18 +49,35 @@ export function CollectionManagerView<T extends CollectionType>({
       router.push(isCluster ? '/dashboard/clusters' : '/dashboard/tags');
       return;
     }
-
     onGetCollection(id).then(c => setCollection(c));
   }, [id]);
 
-  useEffect(() => {
-    if (!collection) return;
-    setLabelDraft(collection.name !== id ? collection.name : 'Unknown collection');
-  }, [collection, id]);
+
 
   if (!collection) {
     return <div className="mx-auto">{capitalizeFirstLetter(collectionLabel)} not found</div>;
   }
+
+  // collection.name defaults to id
+  const collectionName = collection?.name !== id ? collection?.name : 'Unknown collection' 
+
+
+  useEffect(() => {
+    setLabelDraft(collection.name !== id ? collection.name : 'Unknown collection');
+  }, [collection, id]);
+
+  const handleRowClick = (item: DocItem) => {
+    if (!isSelecting) return;
+    toggleSelectedItem(item, collection.size);
+  };
+
+  const isItemSelected = (item: DocItem) =>
+    selectedItems.has(item) || (selectAll && !excludedItems.has(item));
+
+  const handleDone = () => {
+    clearSelection();
+    toggleSelectionMode();
+  };
 
   const renameCollection = async () => {
     if (!labelDraft.trim() || labelDraft.trim() === collection.name.trim()) {
@@ -68,6 +99,10 @@ export function CollectionManagerView<T extends CollectionType>({
     setLabelDraft(collection.name);
     setEditing(false);
   };
+
+  if (!collection) {
+    return <div className="mx-auto">{capitalizeFirstLetter(collectionLabel)} not found</div>;
+  }
 
   return (
     <div className="mx-auto">
@@ -95,7 +130,6 @@ export function CollectionManagerView<T extends CollectionType>({
                     }}
                     className="text-2xl md:text-3xl font-normal border-b-2 border-indigo-500 bg-transparent outline-none min-w-0 w-full"
                   />
-
                   <button
                     onClick={renameCollection}
                     disabled={saving || !labelDraft.trim()}
@@ -104,7 +138,6 @@ export function CollectionManagerView<T extends CollectionType>({
                   >
                     <FontAwesomeIcon icon={faCheck} />
                   </button>
-
                   <button
                     onClick={cancelEditing}
                     disabled={saving}
@@ -117,9 +150,8 @@ export function CollectionManagerView<T extends CollectionType>({
               ) : (
                 <>
                   <h2 className="text-2xl md:text-3xl">
-                    {collection.name !== id ? collection.name : 'Unknown collection'}
+                    {collectionName}
                   </h2>
-
                   <button
                     onClick={() => setEditing(true)}
                     className="text-gray-400 hover:text-indigo-600 transition-colors"
@@ -130,12 +162,27 @@ export function CollectionManagerView<T extends CollectionType>({
                 </>
               )}
             </div>
-
             <h3 className="text-sm md:text-md text-gray-500">id: {id}</h3>
           </div>
         </div>
 
-        <ItemsTable collection={collection} title={`${collection.size} Items`} />
+      <SelectionControls
+        isSelecting={isSelecting}
+        selectedCount={selectedCount}
+        totalCount={collection.size}
+        onSelect={toggleSelectionMode}
+        onSelectAllChange={checked => setSelectAll(checked, collection.size)}
+        onClearSelection={clearSelection}
+        onDone={handleDone}
+      />
+
+        <ItemsTable
+          collection={collection}
+          title={`${collection.size} Items`}
+          isSelecting={isSelecting}
+          isSelected={isItemSelected}
+          onRowClick={handleRowClick}
+        />
       </div>
     </div>
   );

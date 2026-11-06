@@ -1,45 +1,45 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import PopUp from '../common/popup';
-import { Collection } from '@/app/types/';
-import { CollectionType } from '@/app/enums/collections';
-import usePopUp from '@/app/hooks/usePopUp';
-import { useCollectionItems } from '@/app/hooks/useCollectionItems';
+import { useState } from "react";
+import Link from "next/link";
+import PopUp from "../common/popup";
+import { Collection, DocItem } from "@/app/types/";
+import { CollectionType } from "@/app/enums/collections";
+import usePopUp from "@/app/hooks/usePopUp";
+import { useCollectionItems } from "@/app/hooks/useCollectionItems";
 
 interface ItemsTableViewProps<T extends CollectionType> {
   title?: string;
   pageSize?: number;
   collection: Collection<T>;
+  isSelecting: boolean;
+  isSelected: (item: DocItem) => boolean;
+  onRowClick: (item: DocItem) => void;
 }
 
 export default function ItemsTable<T extends CollectionType = CollectionType>({
   collection,
-  title = 'Items',
+  title = "Items",
   pageSize = 25,
+  isSelecting,
+  isSelected,
+  onRowClick
 }: ItemsTableViewProps<T>) {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(0);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   const { popUpCta, popUpDescription, popUpTitle, closePopUp } = usePopUp();
-
-  const {
-    items,
-    onMoveItems,
-    onLoadMoreItems,
-  } = useCollectionItems<T>(collection, pageSize);
+  const { items, onLoadMoreItems } = useCollectionItems<T>(collection, pageSize);
 
   const isCluster = collection.type === CollectionType.CLUSTER;
-  const collectionLabel = isCluster ? 'Cluster' : 'Tag';
+  const collectionLabel = isCluster ? "Cluster" : "Tag";
   const collectionUrl = isCluster
     ? `/dashboard/clusters/cluster/${collection.id}`
     : `/dashboard/tags/tag/${collection.id}`;
 
-
   const toggleExpanded = (itemId: string) => {
-    setExpandedIds((prev) => {
+    setExpandedIds(prev => {
       const next = new Set(prev);
       if (next.has(itemId)) next.delete(itemId);
       else next.add(itemId);
@@ -48,7 +48,7 @@ export default function ItemsTable<T extends CollectionType = CollectionType>({
   };
 
   const filteredItems = items.filter(
-    (item) =>
+    item =>
       item.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -75,25 +75,29 @@ export default function ItemsTable<T extends CollectionType = CollectionType>({
     <div className="flex flex-col mx-auto w-full items-center justify-center py-8 px-4">
       <div className="w-full flex flex-col gap-8 md:flex-row justify-between mb-12">
         <h1 className="text-xl md:text-2xl">{title}</h1>
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setPage(0);
-          }}
-          placeholder="Search by item ID or content..."
-          className="border border-gray-300 rounded px-4 py-2 w-full max-w-md"
-        />
+
+        <div className="flex gap-3 w-full max-w-md">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={e => {
+              setSearchTerm(e.target.value);
+              setPage(0);
+            }}
+            placeholder="Search by item ID or content..."
+            className="border border-gray-300 rounded px-4 py-2 w-full"
+          />
+        </div>
       </div>
 
       <div className="w-full overflow-x-auto rounded-xl border border-gray-300">
         <table className="w-full min-w-full table-auto border-collapse text-sm">
           <colgroup>
-            <col style={{ width: '18%' }} />
-            <col style={{ width: '18%' }} />
-            <col style={{ width: '64%' }} />
+            <col style={{ width: "18%" }} />
+            <col style={{ width: "18%" }} />
+            <col style={{ width: "64%" }} />
           </colgroup>
+
           <thead>
             <tr className="bg-gray-100 text-sm text-gray-500">
               <th className="border border-gray-300 px-4 py-2 text-left">Item Id</th>
@@ -101,44 +105,74 @@ export default function ItemsTable<T extends CollectionType = CollectionType>({
               <th className="border border-gray-300 px-4 py-2 text-left">Content</th>
             </tr>
           </thead>
+
           <tbody>
             {pageItems.length === 0 ? (
               <tr>
                 <td colSpan={3} className="border border-gray-300 py-6 text-center text-gray-500">
-                  {searchTerm ? 'No items match the current filters.' : 'No items stored.'}
+                  {searchTerm ? "No items match the current filters." : "No items stored."}
                 </td>
               </tr>
             ) : (
-              pageItems.map((item) => {
-                const isExpanded = expandedIds.has(item.id);
+              pageItems.map(item => {
+                const expanded = expandedIds.has(item.id);
+                const selected = isSelected(item);
 
                 return (
-                  <tr key={item.id} className="align-top transition-colors duration-200 hover:bg-gray-50">
+                  <tr
+                    key={item.id}
+                    onClick={() => {
+                      if (isSelecting) onRowClick(item);
+                    }}
+                    className={`align-top transition-colors duration-200 hover:bg-gray-50 ${
+                      isSelecting ? "cursor-pointer" : ""
+                    } ${selected ? "bg-indigo-50" : ""}`}
+                  >
                     <td className="border border-gray-300 px-4 py-2 break-words">
-                      {item.id}
+                      <div className="flex items-center gap-2">
+                        {isSelecting && (
+                          <input
+                            type="checkbox"
+                            checked={selected}
+                            onChange={() => onRowClick(item)}
+                            onClick={e => e.stopPropagation()}
+                          />
+                        )}
+                        {item.id}
+                      </div>
                     </td>
+
                     <td className="border border-gray-300 px-4 py-2 break-words">
-                      <Link href={collectionUrl} className="text-blue-600 hover:underline">
+                      <Link
+                        href={collectionUrl}
+                        className="text-blue-600 hover:underline"
+                        onClick={e => e.stopPropagation()}
+                      >
                         {collection.name}
                       </Link>
                     </td>
+
                     <td
                       className="border border-gray-300 px-4 py-2 cursor-pointer"
-                      onClick={() => toggleExpanded(item.id)}
-                      title={isExpanded ? 'Click to collapse' : 'Click to expand'}
+                      onClick={e => {
+                        e.stopPropagation();
+                        if (isSelecting) onRowClick(item);
+                        else toggleExpanded(item.id);
+                      }}
+                      title={expanded ? "Click to collapse" : "Click to expand"}
                     >
                       <div
                         className="break-words"
                         style={
-                          isExpanded
-                            ? { whiteSpace: 'pre-wrap' }
+                          expanded && !isSelecting
+                            ? { whiteSpace: "pre-wrap" }
                             : {
-                                display: '-webkit-box',
+                                display: "-webkit-box",
                                 WebkitLineClamp: 4,
-                                WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden',
-                                whiteSpace: 'normal',
-                                wordBreak: 'break-word',
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                                whiteSpace: "normal",
+                                wordBreak: "break-word"
                               }
                         }
                       >
@@ -161,9 +195,11 @@ export default function ItemsTable<T extends CollectionType = CollectionType>({
         >
           Previous
         </button>
+
         <span className="px-2 py-2">
           Page {page + 1} of {totalPages}
         </span>
+
         <button
           onClick={handleNext}
           disabled={page + 1 >= totalPages}
