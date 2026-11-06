@@ -8,17 +8,17 @@ import { CollectionType } from '@/app/enums/collections';
 import usePopUp from '@/app/hooks/usePopUp';
 import { useCollectionItems } from '@/app/hooks/useCollectionItems';
 
-interface ItemsTableViewProps {
+interface ItemsTableViewProps<T extends CollectionType> {
   title?: string;
   pageSize?: number;
-  collection: Collection;
+  collection: Collection<T>;
 }
 
-export default function ItemsTable({
+export default function ItemsTable<T extends CollectionType = CollectionType>({
   collection,
   title = 'Items',
   pageSize = 25,
-}: ItemsTableViewProps) {
+}: ItemsTableViewProps<T>) {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(0);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -27,10 +27,9 @@ export default function ItemsTable({
 
   const {
     items,
-    onMoveTagItems,
-    onMoveClusterItems,
+    onMoveItems,
     onLoadMoreItems,
-  } = useCollectionItems(collection, pageSize);
+  } = useCollectionItems<T>(collection, pageSize);
 
   const isCluster = collection.type === CollectionType.CLUSTER;
   const collectionLabel = isCluster ? 'Cluster' : 'Tag';
