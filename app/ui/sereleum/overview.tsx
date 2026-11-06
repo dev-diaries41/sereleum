@@ -1,6 +1,6 @@
 'use client';
 
-import {  User } from '@/app/types';
+import {  OverviewInfo, User } from '@/app/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import FileUploader from '../common/upload';
@@ -16,11 +16,12 @@ import { CollectionType } from '@/app/enums/collections';
 import { useDashboard } from '@/app/hooks/useDashboard';
 
 interface DashboardOverviewProps {
+  initialOverview: OverviewInfo;
   user?: Partial<User>;
   hasCompletedOnboarding?: boolean;
 }
 
-export function DashboardOverview({user, hasCompletedOnboarding}: DashboardOverviewProps) {
+export function DashboardOverview({user, hasCompletedOnboarding, initialOverview}: DashboardOverviewProps) {
   const {
     progress, 
     indexingStatus,  
@@ -36,7 +37,7 @@ export function DashboardOverview({user, hasCompletedOnboarding}: DashboardOverv
     updateTrackerVisibility, 
     updateItemsFile,
     resetError
-  } = useDashboard()
+  } = useDashboard(initialOverview)
   
   const {isVisible, isOnboarded, onCompleteOnboarding} = useOnboarding(user?.email);
 

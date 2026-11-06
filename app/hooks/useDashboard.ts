@@ -7,18 +7,8 @@ import { useRouter } from 'next/navigation';
 import { apiPromptsClient, eventsClient } from '../sereleum';
 
 
-const defaultOverview:OverviewInfo = {
-  total_clusters: 0,
-  total_items: 0,
-  total_tags: 0,
-  top_tags: [],
-  top_clusters: [],
-}
-
-
-
-export const useDashboard = () => {
-    const [overview, setOverview ] = useState<OverviewInfo>(defaultOverview);
+export const useDashboard = (initialOverview: OverviewInfo) => {
+    const [overview, setOverview ] = useState<OverviewInfo>(initialOverview);
     const [progress, setProgress] = useState<number>(0);
     const [indexingStatus, setIndexingStatus] = useState<Status|null>(null);
     const [clusteringStatus, setClusteringStatus] = useState<Status|null>(null);
