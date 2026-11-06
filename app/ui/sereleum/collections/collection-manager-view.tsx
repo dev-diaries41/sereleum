@@ -135,7 +135,7 @@ export function CollectionManagerView<T extends CollectionType>({
           </div>
         </div>
 
-        <ItemsTable collection={collection} />
+        <ItemsTable collection={collection} title={`${collection.size} Items`} />
       </div>
     </div>
   );
