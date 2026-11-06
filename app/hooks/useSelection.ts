@@ -76,6 +76,10 @@ export function useSelection<T>() {
     return allItems;
   }, [state.selectAll, state.selectedItems, state.excludedItems]);
 
+
+  const isItemSelected = (item: T) => state.selectedItems.has(item) || (state.selectAll && !state.excludedItems.has(item));
+  
+
   return {
     ...state,
     setState,
@@ -85,5 +89,6 @@ export function useSelection<T>() {
     setSelectAll,
     toggleSelectionMode,
     getSelectedItems,
+    isItemSelected
   };
 }
