@@ -32,8 +32,13 @@ export function MergeCollectionsView<T extends CollectionType>({
 }: MergeCollectionsViewProps<T>) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const isCluster = selectedCollections[0]?.type === CollectionType.CLUSTER;
-  const label = isCluster ? "cluster" : "tag";
+ const label = (() => {
+  switch (selectedCollections[0]?.type) {
+    case CollectionType.CLUSTER: return "cluster";
+    case CollectionType.TAG: return "tag";
+    default: return '';
+  }
+})();
   const pluralLabel = `${label}s`;
 
   const handleButtonClick = () => {
@@ -69,7 +74,7 @@ export function MergeCollectionsView<T extends CollectionType>({
             onClick={handleButtonClick}
             className="px-4 py-2 rounded-md bg-rose-600 text-white text-sm disabled:opacity-60"
           >
-            {isChoosingParent ? "Confirm merge" : `Merge ${pluralLabel}`}
+            {isChoosingParent ? "Confirm merge" : `Merge`}
           </button>
           <button
             onClick={() => {
