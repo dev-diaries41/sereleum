@@ -10,7 +10,6 @@ export const OVERVIEW_ENDPOINT = "/api/overview";
 export const QUERY_ITEMS_ENDPOINT = `${BASE_ITEMS_ENDPOINT}/query`;
 export const INDEX_ENDPOINT = `${BASE_ITEMS_ENDPOINT}/index`;
 export const INDEX_FILE_ENDPOINT = `${BASE_ITEMS_ENDPOINT}/index/file`;
-export const GET_OVERVIEW_ENDPOINT = `${BASE_ITEMS_ENDPOINT}/overview`;
 export const COUNT_ITEMS_ENDPOINT = `${BASE_ITEMS_ENDPOINT}/count`;
 export const INDEX_PROGRESS_EVENT_ENDPOINT = `${BASE_EVENTS_ENDPOINT}/index/progress`
 

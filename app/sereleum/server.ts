@@ -112,7 +112,7 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
   }
 
   async getOverview(): Promise<OverviewInfo> {
-    const url = `${this.baseUrl}${APIRoutes.GET_OVERVIEW_ENDPOINT}`;
+    const url = `${this.baseUrl}${APIRoutes.OVERVIEW_ENDPOINT}`;
     const res = await fetch(url, { method: "GET" });
     return this.handleResponse<GetOverviewResponse>(res);
   }
