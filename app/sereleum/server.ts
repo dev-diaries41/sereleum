@@ -56,9 +56,7 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
     return this.handleResponse<IndexItemsResponse>(res);
   }
 
-  async getItems(type: CollectionType.TAG, collectionIds?: number[], limit?: number, offset?: number): Promise<T[]>
-  async getItems(type: CollectionType.CLUSTER, collectionIds?: string[], limit?: number, offset?: number): Promise<T[]>
-  async getItems(type: CollectionType, collectionIds?: CollectionId[], limit?: number, offset?: number): Promise<T[]> {
+  async getItems<TCollectionType extends CollectionType>(type: TCollectionType, collectionIds?: CollectionId<TCollectionType>[], limit?: number, offset?: number): Promise<T[]> {
     const url = `${this.baseUrl}${APIRoutes.BASE_ITEMS_ENDPOINT}`;
     const payload: GetItemsRequest = { 
       limit: limit, 
