@@ -1,16 +1,26 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Collection, CollectionId } from "@/app/types";
-import { SortBySelector } from "../../common/sort-by";
+import { ActionConfig, Collection, CollectionId } from "@/app/types";
 import { CollectionType } from "@/app/enums/collections";
 import { useManageCollections } from "@/app/hooks/useManageCollection";
 import { useSelection } from "@/app/hooks/useSelection";
 import { CollectionRow } from "./collection-row";
-import { MergeCollectionsView } from "./merger";
+import { SelectionControls } from "../../common/selection-controls";
+import { FloatingActionButton } from "../../common/fab";
+import { ActionsMenu } from "../../common/action-menu";
+import { faChevronDown, faChevronUp, faCodeMerge, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Selector } from "../../common/selector";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { SelectorModal } from "../../common/selector-modal";
+
 
 const SortKeyOptions = ["size"] as const;
 type SortKey = typeof SortKeyOptions[number];
+
+const sortOptions: [string, SortKey][] = [
+  ["Size", 'size'],
+];
 
 interface CollectionsWrapperProps<T extends CollectionType> {
   type: T;
@@ -25,66 +35,70 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
   type,
   totalCollections,
 }: CollectionsWrapperProps<T>) {
-  const { collections, onLoadMoreCollections, onMergeCollections } =
-    useManageCollections<T>(type, initialCollections, totalCollections);
+  
+  const { collections, onLoadMoreCollections, onMergeCollections } =useManageCollections<T>(type, initialCollections, totalCollections);
 
   const {
+    selectedCount,
     selectedItems: selectedCollectionIds,
     isSelecting,
     toggleSelectedItem,
     toggleSelectionMode,
+    setSelectAll,
     clearSelection: clearSelectedItems,
     resetSelection,
+    isItemSelected
   } = useSelection<CollectionId<T>>();
 
-  const [isChoosingParent, setIsChoosingParent] = useState(false);
-  const [parentCollectionId, setParentCollectionId] =useState<CollectionId<T> | null>(null);
+  const [isMerging, setIsMerging] = useState(false);
   const [page, setPage] = useState(0);
   const [sortBy, setSortBy] = useState<SortKey>("size");
   const [sortDirection, setSortDirection] = useState<"desc" | "asc">("desc");
-  
+  const [actionsOpen, setActionsOpen] = useState(false);
+
   const isCluster = type === CollectionType.CLUSTER;
   const collectionLabel = isCluster ? "Clusters" : "Tags";
 
+  const actions: ActionConfig[] = [
+    {
+      enabled: selectedCollectionIds.size > 1,
+      label: "Merge",
+      icon: faCodeMerge,
+      onClick: () => {
+        setActionsOpen(false);
+        setIsMerging(true);
+      }
+    },
+    {
+      enabled: selectedCollectionIds.size === 1,
+      label: "Rename",
+      icon: faPencil,
+      onClick: () => {
+        setActionsOpen(false);
+        // TODO:
+      }
+    },
+    {
+      enabled: selectedCollectionIds.size > 0,
+      label: "Delete",
+      icon: faTrash,
+      onClick: () => {
+        setActionsOpen(false);
+        // TODO:
+      }
+    }
+  ];
+
   const clearSelection = () => {
     clearSelectedItems();
-    setParentCollectionId(null);
-    setIsChoosingParent(false);
+    setIsMerging(false);
   };
 
-  const reset = () => {
-    resetSelection();
-    setParentCollectionId(null);
-    setIsChoosingParent(false);
-  };
-
-  const startChooseParent = () => {
-    if (selectedCollectionIds.size === 0) return;
-
-    setIsChoosingParent(true);
-    setParentCollectionId((prev) => prev ?? [...selectedCollectionIds][0]);
-  };
-
-  const handleMergeCollectionsClick = () => {
-    if (selectedCollectionIds.size === 0) return;
-    startChooseParent();
-  };
-
-  const handleConfirmMerge = async () => {
-    if (parentCollectionId === null) return;
-
-    const secondaryCollectionIds = [...selectedCollectionIds].filter(
-      (id) => id !== parentCollectionId
-    );
-
-    if (secondaryCollectionIds.length === 0) {
-      reset();
-      return;
-    }
-
+  const handleConfirmMerge = async (parentCollectionId: CollectionId<T>) => {
+    const secondaryCollectionIds = [...selectedCollectionIds].filter(id => id !== parentCollectionId);
     try {
       await onMergeCollections(parentCollectionId, secondaryCollectionIds);
-      reset();
+      setIsMerging(false);
     } catch (err) {
       console.error("Merge failed", err);
     }
@@ -93,24 +107,7 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
   const totalPages = Math.max(1, Math.ceil(totalCollections / pageSize));
   const start = page * pageSize;
   const end = start + pageSize;
-
-  const sortedCollections = useMemo(() => {
-    const copy = [...collections];
-
-    copy.sort((a, b) => {
-      const av = a.size ?? 0;
-      const bv = b.size ?? 0;
-
-      if (av === bv) return 0;
-
-      const result = av < bv ? -1 : 1;
-      return sortDirection === "asc" ? result : -result;
-    });
-
-    return copy;
-  }, [collections, sortDirection, sortBy]);
-
-  const pageCollections = sortedCollections.slice(start, end);
+  const pageCollections = collections.slice(start, end);
 
   useEffect(() => {
     const maxPage = Math.max(0, Math.ceil(totalCollections / pageSize) - 1);
@@ -136,11 +133,6 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
     [collections, selectedCollectionIds]
   );
 
-  const labelFor = (key: SortKey) => {
-    if (key === "size") return "Size";
-    return "Default";
-  };
-
   if (collections.length === 0) {
     return (
       <div className="text-sm text-gray-500 py-8 text-center">
@@ -149,47 +141,39 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
     );
   }
 
+  const collectionOptions: [string,  CollectionId<T>][]  = [...selectedCollections].map(c => [c.name, c.id] )
+
   return (
     <div className="flex flex-col mx-auto w-full items-center justify-center py-8 px-2 gap-4">
       <div className="w-full flex flex-col gap-4 md:flex-row justify-between mb-2 items-center">
         <h1 className="text-xl md:text-2xl">{collectionLabel}</h1>
-
-        <div className="flex gap-3 items-center">
-          <button
-            onClick={() => {
-              toggleSelectionMode();
-              if (isSelecting) clearSelection();
-            }}
-            className="px-4 py-2 rounded-md text-sm border-2 font-medium border-indigo-600"
-          >
-            Manage {collectionLabel.toLocaleLowerCase()}
-          </button>
-        </div>
+        <SelectionControls
+            isSelecting={isSelecting}
+            selectedCount={selectedCount}
+            totalCount={totalCollections}
+            onSelect={toggleSelectionMode}
+            onSelectAllChange={checked => setSelectAll(checked, totalCollections)}
+            onClearSelection={clearSelection}
+            onDone={() => resetSelection()}
+          />
       </div>
 
-      <SortBySelector
-        options={SortKeyOptions}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-        sortDirection={sortDirection}
-        setSortDirection={setSortDirection}
-        labelFor={labelFor}
-      />
-
-      {isSelecting && (
-        <MergeCollectionsView<T>
-          totalCollectionsCount={totalCollections}
-          selectedCollections={selectedCollections}
-          parentCollectionId={parentCollectionId}
-          setParentCollectionId={setParentCollectionId}
-          handleMergeCollectionsClick={handleMergeCollectionsClick}
-          clearSelection={clearSelection}
-          setIsSelecting={resetSelection}
-          isChoosingParent={isChoosingParent}
-          setIsChoosingParent={setIsChoosingParent}
-          handleConfirmMerge={handleConfirmMerge}
-        />
-      )}
+      <Selector
+        label = 'Sort by:'
+        options={sortOptions}
+        selectedOption={sortBy}
+        onSelect={(value) => setSortBy(value)}
+      >
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setSortDirection((d) => (d === 'desc' ? 'asc' : 'desc'));
+          }}
+          className="ml-2 text-gray-400 text-xs"
+        >
+          <FontAwesomeIcon icon={sortDirection === 'desc' ? faChevronDown : faChevronUp} />
+        </button>
+      </Selector>
 
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
         {pageCollections.map((c) => (
@@ -197,7 +181,7 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
             key={c.id}
             collection={c}
             isSelecting={isSelecting}
-            selected={selectedCollectionIds.has(c.id)}
+            selected={isItemSelected(c.id)}
             toggleSelection={() => toggleSelectedItem(c.id, totalCollections)}
           />
         ))}
@@ -224,6 +208,23 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
           Next
         </button>
       </div>
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+        {actionsOpen && <ActionsMenu actions={actions} />}
+        <FloatingActionButton
+          isOpen={actionsOpen}
+          onClick={() => setActionsOpen(open => !open)}
+        />
+      </div>
+
+      <SelectorModal
+        label={'Primary collection'}
+        options={collectionOptions}
+        isVisible ={isMerging}
+        title="Select primary collection"
+        onClose={()=>setIsMerging(false)}
+        onConfirm={handleConfirmMerge}
+        />
+      
     </div>
   );
 }
