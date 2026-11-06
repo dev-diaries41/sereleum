@@ -104,7 +104,7 @@ export function DashboardOverview({user, hasCompletedOnboarding, initialOverview
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
             <OverviewSummary overview={overview}/>
           </div>
-          <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6 pb-8">
             <TopCollectionsContainer 
             type={CollectionType.CLUSTER}
             topCollections={overview.top_clusters} 
