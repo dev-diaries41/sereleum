@@ -27,7 +27,7 @@ export function RadioDropDown<T>({
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
-          className={`absolute top-8 left-0 mt-2 w-56 bg-white rounded-md border z-20 shadow-sm ${className}`}
+          className={`absolute top-8 left-0 mt-2 bg-white rounded-md border z-20 shadow-sm ${className}`}
         >
           <div className="p-3 flex flex-col gap-2">
             {options.map(([label, option]) => (

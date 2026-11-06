@@ -2,8 +2,6 @@
 "use client";
 
 import { ReactNode, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { RadioDropDown } from "./radio-dropdown";
 
 interface SelectorProps<T> {
@@ -30,7 +28,7 @@ export function Selector<T>({
         <span className="text-sm font-medium">{label}</span>
         <div
           onClick={() => setDropdownOpen((open) => !open)}
-          className="flex items-center gap-2 px-3 py-2 bg-white border rounded-md shadow-sm hover:shadow-md text-sm max-w-[140px]"
+          className="flex items-center gap-2 px-3 py-2 bg-white border rounded-md shadow-sm hover:shadow-md text-sm "
         >
           <span className="font-medium truncate">{selectedLabel}</span>
           {children}
