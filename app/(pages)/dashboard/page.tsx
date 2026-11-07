@@ -5,7 +5,7 @@ import ErrorComponent from './error';
 import { ErrorBoundary } from 'next/dist/client/components/error-boundary';
 import { auth } from '@/auth';
 import { User, UserMetadata } from '@/app/types';
-import { apiPromptsClient } from '@/app/sereleum';
+import { apiClient } from '@/app/sereleum';
 
 export const revalidate = 120;
 
@@ -14,7 +14,7 @@ export default async function Page() {
     const user = session?.user as Partial<User>;
     const metadata = user?.metadata as UserMetadata;
 
-    const overview = await apiPromptsClient.getOverview()
+    const overview = await apiClient.getOverview()
 
     return (
         <ErrorBoundary errorComponent={ErrorComponent}>

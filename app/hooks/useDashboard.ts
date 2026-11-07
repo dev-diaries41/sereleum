@@ -4,7 +4,7 @@ import { OverviewInfo, Status } from '@/app/types';
 import { StorageKeys } from '../constants/global';
 import * as LocalStorage from "@/app/lib/client/storage/session"
 import { useRouter } from 'next/navigation';
-import { apiPromptsClient, eventsClient } from '../sereleum';
+import { apiClient, eventsClient } from '../sereleum';
 
 
 export const useDashboard = (initialOverview: OverviewInfo) => {
@@ -43,7 +43,7 @@ export const useDashboard = (initialOverview: OverviewInfo) => {
       const eventSource = eventsClient.trackClusterStatus(jobId, {
         onComplete: async() => {
           await new Promise(resolve => setTimeout(resolve, 1000))
-          const updatedOverview = await apiPromptsClient.getOverview();
+          const updatedOverview = await apiClient.getOverview();
           setOverview(updatedOverview)
           setClusteringStatus("complete")
         },
@@ -95,7 +95,7 @@ export const useDashboard = (initialOverview: OverviewInfo) => {
 
     const handleFileUpload = async() => {
       if(!itemsFile) return
-      const res = await apiPromptsClient.indexItems(itemsFile, {autoLabel: false})
+      const res = await apiClient.indexItems(itemsFile, {autoLabel: false})
       setItemsFile(null)
       setIndexingStatus(res.status)
       LocalStorage.set(StorageKeys.indexingJobId, res.job_id)

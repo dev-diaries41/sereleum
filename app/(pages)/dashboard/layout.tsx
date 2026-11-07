@@ -1,5 +1,5 @@
 import { dashboardLinks } from "@/app/constants/navigation";
-import { apiPromptsClient } from "@/app/sereleum";
+import { apiClient } from "@/app/sereleum";
 import DashboardHeader from "@/app/ui/dashboard/header";
 import { auth } from "@/auth";
 
@@ -12,7 +12,7 @@ export default async function Layout({
     const session = await auth();
     const email = session?.user?.email; 
     
-    const overview = await apiPromptsClient.getOverview();
+    const overview = await apiClient.getOverview();
 
   return (
       <div className={``}>
