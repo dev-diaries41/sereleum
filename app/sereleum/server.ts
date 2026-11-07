@@ -211,26 +211,6 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
       }
   }
 
-
- async getClusterPlotBlob(
-  method: "tsne" | "pca" = "tsne"
-): Promise<Blob | null> {
-  const url = `${this.baseUrl}${APIRoutes.GET_CLUSTER_PLOT_ENDPOINT}?method=${method}`;
-  const res = await fetch(url);
-
-  if (res.status === 204) {
-    return null;
-  }
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text);
-  }
-
-  const blob = await res.blob();
-  return blob.size === 0 ? null : blob;
-}
-
 async mergeCollections<T extends CollectionType>(type: T, primaryCollectionId: CollectionId, secondaryCollectionIds: CollectionId[]): Promise<Collection<T>> {
     const url = type === CollectionType.TAG? 
     `${this.baseUrl}${APIRoutes.MERGE_TAGS_ENDPOINT}`:
