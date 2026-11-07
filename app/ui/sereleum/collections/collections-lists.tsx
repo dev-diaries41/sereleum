@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { ActionConfig, Collection, CollectionId } from "@/app/types";
 import { CollectionType } from "@/app/enums/collections";
 import { useManageCollections } from "@/app/hooks/useManageCollection";
@@ -16,12 +17,11 @@ import { SelectorModal } from "../../common/selector-modal";
 import { viewCollection } from "@/app/lib/nav";
 import { useRouter } from "next/navigation";
 
-
 const SortKeyOptions = ["size"] as const;
 type SortKey = typeof SortKeyOptions[number];
 
 const sortOptions: [string, SortKey][] = [
-  ["Size", 'size'],
+  ["Size", "size"],
 ];
 
 interface CollectionsWrapperProps<T extends CollectionType> {
@@ -37,9 +37,20 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
   type,
   totalCollections,
 }: CollectionsWrapperProps<T>) {
-  
   const router = useRouter();
-  const { collections, onLoadMoreCollections, onMergeCollections } =useManageCollections<T>(type, initialCollections, totalCollections);
+
+  const {
+    collections,
+    page,
+    totalPages,
+    pageCollections,
+    loading,
+    hasNextPage,
+    hasPrevPage,
+    onNextPage,
+    onPrevPage,
+    onMergeCollections,
+  } = useManageCollections<T>(type, initialCollections, totalCollections, pageSize);
 
   const {
     selectedCount,
@@ -54,7 +65,6 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
   } = useSelection<CollectionId<T>>();
 
   const [isMerging, setIsMerging] = useState(false);
-  const [page, setPage] = useState(0);
   const [sortBy, setSortBy] = useState<SortKey>("size");
   const [sortDirection, setSortDirection] = useState<"desc" | "asc">("desc");
   const [actionsOpen, setActionsOpen] = useState(false);
@@ -62,12 +72,6 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
   const isCluster = type === CollectionType.CLUSTER;
   const collectionLabel = isCluster ? "Clusters" : "Tags";
 
-  const totalPages = Math.max(1, Math.ceil(totalCollections / pageSize));
-  const start = page * pageSize;
-  const end = start + pageSize;
-  const pageCollections = collections.slice(start, end);
-
-  
   const actions: ActionConfig[] = [
     {
       enabled: selectedCollectionIds.size > 1,
@@ -84,7 +88,7 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
       icon: faPencil,
       onClick: () => {
         setActionsOpen(false);
-        // TODO:
+        // TODO
       }
     },
     {
@@ -93,16 +97,10 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
       icon: faTrash,
       onClick: () => {
         setActionsOpen(false);
-        // TODO:
+        // TODO
       }
     }
   ];
-
-  useEffect(() => {
-    const maxPage = Math.max(0, Math.ceil(totalCollections / pageSize) - 1);
-    if (page > maxPage) setPage(maxPage);
-  }, [totalCollections, pageSize, page]);
-
 
   const clearSelection = () => {
     clearSelectedItems();
@@ -110,7 +108,10 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
   };
 
   const handleConfirmMerge = async (parentCollectionId: CollectionId<T>) => {
-    const secondaryCollectionIds = [...selectedCollectionIds].filter(id => id !== parentCollectionId);
+    const secondaryCollectionIds = [...selectedCollectionIds].filter(
+      id => id !== parentCollectionId
+    );
+
     try {
       await onMergeCollections(parentCollectionId, secondaryCollectionIds);
       setIsMerging(false);
@@ -120,31 +121,20 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
   };
 
   const handleCollectionClick = (collection: Collection<T>) => {
-    if(isSelecting){
-      toggleSelectedItem(collection.id, totalCollections)
-    }else{
-      viewCollection(router, collection)      
+    if (isSelecting) {
+      toggleSelectedItem(collection.id, totalCollections);
+    } else {
+      viewCollection(router, collection);
     }
-  }
-
-  const handleNext = () => {
-    if (page + 1 < totalPages) {
-      setPage((p) => p + 1);
-
-      if (end >= collections.length) {
-        onLoadMoreCollections(pageSize, collections.length);
-      }
-    }
-  };
-
-  const handlePrev = () => {
-    if (page > 0) setPage((p) => p - 1);
   };
 
   const selectedCollections = useMemo(
-    () => collections.filter((c) => selectedCollectionIds.has(c.id)),
+    () => collections.filter(c => selectedCollectionIds.has(c.id)),
     [collections, selectedCollectionIds]
   );
+
+  const collectionOptions: [string, CollectionId<T>][] =
+    selectedCollections.map(c => [c.name, c.id]);
 
   if (collections.length === 0) {
     return (
@@ -154,43 +144,41 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
     );
   }
 
-  const collectionOptions: [string,  CollectionId<T>][]  = [...selectedCollections].map(c => [c.name, c.id] )
-
   return (
     <div className="flex flex-col mx-auto w-full items-center justify-center py-8 px-2 gap-4">
       <div className="w-full flex flex-col gap-4 md:flex-row justify-between mb-2 items-center">
         <h1 className="text-xl md:text-2xl">{collectionLabel}</h1>
         <SelectionControls
-            label={`Manage ${collectionLabel}`}
-            isSelecting={isSelecting}
-            selectedCount={selectedCount}
-            totalCount={totalCollections}
-            onSelect={toggleSelectionMode}
-            onSelectAllChange={checked => setSelectAll(checked, totalCollections)}
-            onClearSelection={clearSelection}
-            onDone={() => resetSelection()}
-          />
+          label={`Manage ${collectionLabel}`}
+          isSelecting={isSelecting}
+          selectedCount={selectedCount}
+          totalCount={totalCollections}
+          onSelect={toggleSelectionMode}
+          onSelectAllChange={checked => setSelectAll(checked, totalCollections)}
+          onClearSelection={clearSelection}
+          onDone={() => resetSelection()}
+        />
       </div>
 
       <Selector
-        label = 'Sort by:'
+        label="Sort by:"
         options={sortOptions}
         selectedOption={sortBy}
-        onSelect={(value) => setSortBy(value)}
+        onSelect={value => setSortBy(value)}
       >
         <button
-          onClick={(e) => {
+          onClick={e => {
             e.stopPropagation();
-            setSortDirection((d) => (d === 'desc' ? 'asc' : 'desc'));
+            setSortDirection(d => d === "desc" ? "asc" : "desc");
           }}
           className="ml-2 text-gray-400 text-xs"
         >
-          <FontAwesomeIcon icon={sortDirection === 'desc' ? faChevronDown : faChevronUp} />
+          <FontAwesomeIcon icon={sortDirection === "desc" ? faChevronDown : faChevronUp} />
         </button>
       </Selector>
 
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-        {pageCollections.map((c) => (
+        {pageCollections.map(c => (
           <CollectionRow
             key={c.id}
             collection={c}
@@ -203,8 +191,8 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
 
       <div className="flex gap-4 mt-4">
         <button
-          onClick={handlePrev}
-          disabled={page === 0}
+          onClick={onPrevPage}
+          disabled={!hasPrevPage || loading}
           className="px-4 py-2 border rounded disabled:opacity-50"
         >
           Previous
@@ -215,13 +203,14 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
         </span>
 
         <button
-          onClick={handleNext}
-          disabled={page + 1 >= totalPages}
+          onClick={onNextPage}
+          disabled={!hasNextPage || loading}
           className="px-4 py-2 border rounded disabled:opacity-50"
         >
           Next
         </button>
       </div>
+
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
         {actionsOpen && <ActionsMenu actions={actions} />}
         <FloatingActionButton
@@ -231,14 +220,13 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
       </div>
 
       <SelectorModal
-        label={'Primary collection'}
+        label="Primary collection"
         options={collectionOptions}
-        isVisible ={isMerging}
+        isVisible={isMerging}
         title="Select primary collection"
-        onClose={()=>setIsMerging(false)}
+        onClose={() => setIsMerging(false)}
         onConfirm={handleConfirmMerge}
-        />
-      
+      />
     </div>
   );
 }
