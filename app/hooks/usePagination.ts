@@ -1,34 +1,28 @@
-
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
 
-interface UsePaginationProps<T> {
+interface UsePaginationOptions<T> {
   initialItems?: T[];
   totalItems: number;
-  pageSize: number;
+  pageSize?: number;
   fetchPage: (offset: number, limit: number) => Promise<T[]>;
 }
 
-export function usePagination<T>({
+export const usePagination = <T>({
   initialItems = [],
   totalItems,
-  pageSize,
+  pageSize = 25,
   fetchPage
-}: UsePaginationProps<T>) {
+}: UsePaginationOptions<T>) => {
   const [pages, setPages] = useState<Map<number, T[]>>(
-    () => initialItems.length > 0
-      ? new Map([[0, initialItems]])
-      : new Map()
+    () => initialItems.length > 0 ? new Map([[0, initialItems]]) : new Map()
   );
-
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-
   const pageItems = pages.get(page) ?? [];
-
   const hasNextPage = page + 1 < totalPages;
   const hasPrevPage = page > 0;
 
@@ -39,21 +33,15 @@ export function usePagination<T>({
     [pages]
   );
 
-  const onLoadPage = useCallback(async (targetPage: number) => {
-    if (
-      targetPage < 0 ||
-      targetPage >= totalPages ||
-      pages.has(targetPage)
-    ) return;
+  const onLoadMore = useCallback(async (targetPage: number) => {
+    if (targetPage < 0 || targetPage >= totalPages || pages.has(targetPage)) return;
 
     setLoading(true);
-
     try {
       const results = await fetchPage(targetPage * pageSize, pageSize);
 
       setPages(prev => {
         if (prev.has(targetPage)) return prev;
-
         const next = new Map(prev);
         next.set(targetPage, results);
         return next;
@@ -61,39 +49,34 @@ export function usePagination<T>({
     } finally {
       setLoading(false);
     }
-  }, [pages, totalPages, pageSize, fetchPage]);
+  }, [totalPages, pages, fetchPage, pageSize]);
 
   const onGoToPage = useCallback(async (targetPage: number) => {
     if (targetPage < 0 || targetPage >= totalPages) return;
-
-    await onLoadPage(targetPage);
+    await onLoadMore(targetPage);
     setPage(targetPage);
-  }, [totalPages, onLoadPage]);
+  }, [totalPages, onLoadMore]);
 
-  const onNextPage = () => {
-    if (hasNextPage) return onGoToPage(page + 1);
-  };
+  const onNextPage = useCallback(
+    () => hasNextPage && onGoToPage(page + 1),
+    [hasNextPage, page, onGoToPage]
+  );
 
-  const onPrevPage = () => {
-    if (hasPrevPage) setPage(prev => prev - 1);
-  };
+  const onPrevPage = useCallback(
+    () => hasPrevPage && setPage(page - 1),
+    [hasPrevPage, page]
+  );
 
   const updatePages = useCallback(
-    (updater: (items: T[]) => T[]) => {
-      setPages(prev => {
-        const next = new Map(prev);
-
-        for (const [key, items] of next) {
-          next.set(key, updater(items));
-        }
-
-        return next;
-      });
+    (updater: (pages: Map<number, T[]>) => Map<number, T[]>) => {
+      setPages(updater);
     },
     []
   );
 
   return {
+    pages,
+    setPages: updatePages,
     items,
     pageItems,
     page,
@@ -101,10 +84,9 @@ export function usePagination<T>({
     loading,
     hasNextPage,
     hasPrevPage,
-    onLoadPage,
-    onGoToPage,
     onNextPage,
     onPrevPage,
-    updatePages
+    onGoToPage,
+    onLoadMore
   };
-}
+};

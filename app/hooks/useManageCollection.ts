@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback } from "react";
 import { Collection, CollectionId } from "@/app/types";
 import { sereleumApiClient } from "../sereleum";
 import { CollectionType } from "../enums/collections";
+import { usePagination } from "./usePagination";
 
 export const useManageCollections = <T extends CollectionType = CollectionType>(
   type: T,
@@ -11,60 +12,35 @@ export const useManageCollections = <T extends CollectionType = CollectionType>(
   totalCollections: number = 0,
   pageSize: number = 25
 ) => {
- const [pages, setPages] = useState<Map<number, Collection<T>[]>>(() => initialCollections.length > 0 ? new Map([[0, initialCollections]]) : new Map() );
-  const [page, setPage] = useState(0);
-  const [loading, setLoading] = useState(false);
-
-  const totalPages = Math.max(1, Math.ceil(totalCollections / pageSize));
-  const pageCollections = pages.get(page) ?? [];
-  const hasNextPage = page + 1 < totalPages;
-  const hasPrevPage = page > 0;
-
-  const collections = useMemo(
-    () => Array.from(pages.entries())
-      .sort(([a], [b]) => a - b)
-      .flatMap(([, items]) => items),
-    [pages]
+  const fetchPage = useCallback(
+    (offset: number, limit: number) =>
+      sereleumApiClient.getCollections(type, offset, limit),
+    [type]
   );
 
-  const onLoadMoreCollections = useCallback(async (targetPage: number) => {
-    if (targetPage < 0 || targetPage >= totalPages || pages.has(targetPage)) return;
+  const pagination = usePagination({
+    initialItems: initialCollections,
+    totalItems: totalCollections,
+    pageSize,
+    fetchPage
+  });
 
-    setLoading(true);
-    try {
-      const results = await sereleumApiClient.getCollections(
-        type,
-        targetPage * pageSize,
-        pageSize
-      );
-
-      setPages(prev => {
-        if (prev.has(targetPage)) return prev;
-        const next = new Map(prev);
-        next.set(targetPage, results);
-        return next;
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [type, pageSize, totalPages, pages]);
-
-  const onGoToPage = useCallback(async (targetPage: number) => {
-    if (targetPage < 0 || targetPage >= totalPages) return;
-    await onLoadMoreCollections(targetPage);
-    setPage(targetPage);
-  }, [totalPages, onLoadMoreCollections]);
-
-  const onNextPage = () => hasNextPage && onGoToPage(page + 1);
-  const onPrevPage = () => hasPrevPage && setPage(page - 1);
-
-  const onRenameCollection = async (collectionId: CollectionId<T>, name: string) => {
+  const onRenameCollection = async (
+    collectionId: CollectionId<T>,
+    name: string
+  ) => {
     await sereleumApiClient.renameCollection(collectionId, name, type);
-    setPages(prev => {
+
+    pagination.setPages(prev => {
       const next = new Map(prev);
+
       for (const [key, items] of next) {
-        next.set(key, items.map(c => c.id === collectionId ? { ...c, name } : c));
+        next.set(
+          key,
+          items.map(c => c.id === collectionId ? { ...c, name } : c)
+        );
       }
+
       return next;
     });
   };
@@ -79,29 +55,27 @@ export const useManageCollections = <T extends CollectionType = CollectionType>(
       secondaryCollectionIds
     );
 
-    setPages(prev => {
+    pagination.setPages(prev => {
       const next = new Map<number, Collection<T>[]>();
+
       for (const [key, items] of prev) {
-        next.set(key, items
-          .map(c => c.id === mergedCollection.id ? mergedCollection : c)
-          .filter(c => !secondaryCollectionIds.includes(c.id)));
+        next.set(
+          key,
+          items
+            .map(c => c.id === mergedCollection.id ? mergedCollection : c)
+            .filter(c => !secondaryCollectionIds.includes(c.id))
+        );
       }
+
       return next;
     });
   };
 
   return {
-    collections,
-    pageCollections,
-    page,
-    totalPages,
-    loading,
-    hasNextPage,
-    hasPrevPage,
-    onNextPage,
-    onPrevPage,
-    onGoToPage,
-    onLoadMoreCollections,
+    ...pagination,
+    collections: pagination.items,
+    pageCollections: pagination.pageItems,
+    onLoadMoreCollections: pagination.onLoadMore,
     onRenameCollection,
     onMergeCollections
   };

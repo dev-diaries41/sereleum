@@ -1,94 +1,42 @@
-
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { Collection, CollectionId, DocItem } from "../types";
 import { sereleumApiClient } from "../sereleum";
 import { CollectionType } from "../enums/collections";
+import { usePagination } from "./usePagination";
 
 export const useCollectionItems = <T extends CollectionType = CollectionType>(
   collection: Collection<T>,
   initialItems: DocItem[] = [],
   pageSize: number = 25
 ) => {
-  const [pages, setPages] = useState<Map<number, DocItem[]>>(
-    () => initialItems.length > 0
-      ? new Map([[0, initialItems]])
-      : new Map()
-  );
-  const [page, setPage] = useState(0);
-  const [loading, setLoading] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
 
-  const totalPages = Math.max(1, Math.ceil(collection.size / pageSize));
-  const pageItems = pages.get(page) ?? [];
-  const hasNextPage = page + 1 < totalPages;
-  const hasPrevPage = page > 0;
-
-  const items = useMemo(
-    () => Array.from(pages.entries())
-      .sort(([a], [b]) => a - b)
-      .flatMap(([, items]) => items),
-    [pages]
+  const fetchPage = useCallback(
+    (offset: number, limit: number) =>
+      sereleumApiClient.getItems(collection.type, [collection.id], limit, offset),
+    [collection.id, collection.type]
   );
 
-  const onLoadMoreItems = useCallback(async (targetPage: number) => {
-    if (
-      targetPage < 0 ||
-      targetPage >= totalPages ||
-      pages.has(targetPage)
-    ) return;
-
-    setLoading(true);
-
-    try {
-      const result = await sereleumApiClient.getItems(
-        collection.type,
-        [collection.id],
-        pageSize,
-        targetPage * pageSize
-      );
-
-      setPages(prev => {
-        if (prev.has(targetPage)) return prev;
-
-        const next = new Map(prev);
-        next.set(targetPage, result);
-        return next;
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [collection.id, collection.type, pageSize, totalPages, pages]);
-
-  const onGoToPage = useCallback(async (targetPage: number) => {
-    if (targetPage < 0 || targetPage >= totalPages) return;
-
-    await onLoadMoreItems(targetPage);
-    setPage(targetPage);
-  }, [totalPages, onLoadMoreItems]);
-
-  const onNextPage = () => hasNextPage && onGoToPage(page + 1);
-  const onPrevPage = () => hasPrevPage && setPage(page - 1);
+  const pagination = usePagination({
+    initialItems,
+    totalItems: collection.size,
+    pageSize,
+    fetchPage
+  });
 
   const onMoveItems = async (
     itemIds: string[],
     newCollectionId: CollectionId<T>
   ) => {
-    await sereleumApiClient.moveItems(
-      itemIds,
-      newCollectionId,
-      collection.type
-    );
+    await sereleumApiClient.moveItems(itemIds, newCollectionId, collection.type);
 
-    setPages(prev => {
+    pagination.setPages(prev => {
       const next = new Map<number, DocItem[]>();
 
-      for (const [key, pageItems] of prev) {
-        next.set(
-          key,
-          pageItems.filter(item => !itemIds.includes(item.id))
-        );
+      for (const [key, items] of prev) {
+        next.set(key, items.filter(item => !itemIds.includes(item.id)));
       }
 
       return next;
@@ -110,20 +58,11 @@ export const useCollectionItems = <T extends CollectionType = CollectionType>(
   };
 
   return {
-    items,
-    pageItems,
-    page,
-    totalPages,
-    loading,
-    hasNextPage,
-    hasPrevPage,
-    tags,
-    onNextPage,
-    onPrevPage,
-    onGoToPage,
-    onLoadMoreItems,
+    ...pagination,
+    onLoadMoreItems: pagination.onLoadMore,
     onMoveItems,
     onTagItems,
+    tags,
     loadTags
   };
 };
