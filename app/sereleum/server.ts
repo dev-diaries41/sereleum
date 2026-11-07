@@ -169,11 +169,13 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
     }
   }
   // async getCollections(type: CollectionType, offset?: number, limit?: number, collectionId?: CollectionId): Promise<Collection[]>;
-  async getCollections<TCollectionType extends CollectionType>(type: TCollectionType, offset: number = 0, limit: number = 25, collectionId?: CollectionId<TCollectionType>): Promise<Collection<TCollectionType>[]> {
+  async getCollections<TCollectionType extends CollectionType>(type: TCollectionType, offset: number = 0, limit?: number, collectionId?: CollectionId<TCollectionType>): Promise<Collection<TCollectionType>[]> {
       const query: GetCollectionsRequest = { 
         offset: offset, 
-        limit: limit
       };
+      if (limit !== undefined) {
+        query.limit = limit
+      }
 
       if(collectionId){
         query.collection_id = collectionId

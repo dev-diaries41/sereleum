@@ -22,7 +22,7 @@ export function CollectionRow({
         if (isSelecting) toggleSelection?.();
         else router.push(
           collection.type === CollectionType.TAG
-            ? `/dashboard/tags/${collection.id}`
+            ? `/dashboard/tags/tag/${collection.id}`
             : `/dashboard/clusters/cluster/${collection.id}`
         );
       }}

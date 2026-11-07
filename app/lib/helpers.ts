@@ -96,3 +96,30 @@ export function convertSnakeToCamel<T>(
 
   return camelCased as T;
 }
+
+
+
+export function checkAutoCompletion(
+  query: string,
+  substringEnd: number,
+  tags: string[],
+  startWithHashtag: boolean = true
+): string[] {
+  const safeEnd = Math.max(0, Math.min(substringEnd, query.length));
+  const prefix = query.substring(0, safeEnd);
+
+  const pattern = startWithHashtag
+    ? /^#([a-zA-Z0-9]*)$/
+    : /^([a-zA-Z0-9]*)$/;
+
+  const match = prefix.match(pattern);
+
+  if (match) {
+    const partialTag = match[1];
+    return tags.filter(tag =>
+      tag.toLowerCase().startsWith(partialTag.toLowerCase())
+    );
+  }
+
+  return [];
+}

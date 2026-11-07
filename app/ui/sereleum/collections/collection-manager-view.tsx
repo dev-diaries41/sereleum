@@ -13,6 +13,7 @@ import { SelectionControls } from "../../common/selection-controls";
 import { ActionsMenu } from "../../common/action-menu";
 import { FloatingActionButton } from "../../common/fab";
 import { useCollectionItems } from "@/app/hooks/useCollectionItems";
+import { TagAdder } from "../tags/tag-adder";
 
 interface CollectionManagerProps<T extends CollectionType> {
   initialItems?: DocItem[];
@@ -30,14 +31,16 @@ export function CollectionManagerView<T extends CollectionType>({
   const router = useRouter();
 
   const [collection, setCollection] = useState<Collection<T>>(collectionToView);
-  const [labelDraft, setLabelDraft] = useState('');
+  const [name, setName] = useState('');
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
   const [actionsOpen, setActionsOpen] = useState(false);
+  const [isTagging, setIsTagging] = useState(false);
+  const [isMoving, setIsMoving] = useState(false);
 
   const { onRenameCollection } = useManageCollections<T>(type);
-  const { items, onLoadMoreItems } = useCollectionItems<T>(collection, initialItems);
-  const { selectedItems, excludedItems, selectAll, isSelecting, selectedCount, setSelectAll, toggleSelectedItem, toggleSelectionMode, clearSelection } = useSelection<DocItem>();
+  const { items, tags, onLoadMoreItems, onTagItems, loadTags } = useCollectionItems<T>(collection, initialItems);
+  const { isSelecting, selectedCount, selectedItems,  resetSelection, setSelectAll, toggleSelectedItem, toggleSelectionMode, clearSelection, isItemSelected, getSelectedItems } = useSelection<string>();
 
   const isCluster = type === CollectionType.CLUSTER;
   const collectionLabel = isCluster ? 'cluster' : 'tag';
@@ -45,29 +48,39 @@ export function CollectionManagerView<T extends CollectionType>({
 
 
   useEffect(() => {
+    if(!isTagging) return 
+    loadTags()
+  }, [isTagging])
+
+
+  useEffect(() => {
     if(!collection) return
-    setLabelDraft(collectionName);
+    setName(collectionName);
   }, [collection]);
 
 
   const actions: ActionConfig[] = [
     {
+      enabled: selectedCount > 0,
       label: "Add tag",
       icon: faTag,
       onClick: () => {
         setActionsOpen(false);
-        // TODO: Implement Add tag
+        setIsTagging(true);
       }
     },
     {
+      enabled: selectedCount > 0,
       label: "Move",
       icon: faFolder,
       onClick: () => {
         setActionsOpen(false);
+        setIsMoving(true);
         // TODO: Implement Move
       }
     },
     {
+      enabled: selectedCount > 0,
       label: "Delete",
       icon: faTrash,
       onClick: () => {
@@ -79,11 +92,8 @@ export function CollectionManagerView<T extends CollectionType>({
 
   const handleRowClick = (item: DocItem) => {
     if (!isSelecting) return;
-    toggleSelectedItem(item, collection.size);
+    toggleSelectedItem(item.id, collection.size);
   };
-
-  const isItemSelected = (item: DocItem) =>
-    selectedItems.has(item) || (selectAll && !excludedItems.has(item));
 
   const handleDone = () => {
     clearSelection();
@@ -91,15 +101,15 @@ export function CollectionManagerView<T extends CollectionType>({
   };
 
   const renameCollection = async () => {
-    if (!labelDraft.trim() || labelDraft.trim() === collection.name.trim()) {
+    if (!name.trim() || name.trim() === collection.name.trim()) {
       setEditing(false);
       return;
     }
 
     setSaving(true);
     try {
-      await onRenameCollection(collection.id, labelDraft.trim());
-      setCollection(prev => prev ? { ...prev, name: labelDraft.trim() } : prev);
+      await onRenameCollection(collection.id, name.trim());
+      setCollection(prev => prev ? { ...prev, name: name.trim() } : prev);
       setEditing(false);
     } finally {
       setSaving(false);
@@ -107,8 +117,20 @@ export function CollectionManagerView<T extends CollectionType>({
   };
 
   const cancelEditing = () => {
-    setLabelDraft(collection.name);
+    setName(collection.name);
     setEditing(false);
+  };
+
+
+  const tagItems = async (tag: string) => {
+    try {
+      // TODO: make api accept include and exclude ids
+      await onTagItems(tag, Array.from(selectedItems));
+      setIsTagging(false);
+      resetSelection()
+    } catch(e){
+      console.error(e)
+    }
   };
 
 
@@ -130,8 +152,8 @@ export function CollectionManagerView<T extends CollectionType>({
                 <>
                   <input
                     autoFocus
-                    value={labelDraft}
-                    onChange={e => setLabelDraft(e.target.value)}
+                    value={name}
+                    onChange={e => setName(e.target.value)}
                     onKeyDown={e => {
                       if (e.key === 'Enter') renameCollection();
                       if (e.key === 'Escape') cancelEditing();
@@ -140,7 +162,7 @@ export function CollectionManagerView<T extends CollectionType>({
                   />
                   <button
                     onClick={renameCollection}
-                    disabled={saving || !labelDraft.trim()}
+                    disabled={saving || !name.trim()}
                     className="text-green-600 hover:text-green-700 disabled:opacity-50"
                     title="Save name"
                   >
@@ -174,15 +196,15 @@ export function CollectionManagerView<T extends CollectionType>({
           </div>
         </div>
 
-      <SelectionControls
-        isSelecting={isSelecting}
-        selectedCount={selectedCount}
-        totalCount={collection.size}
-        onSelect={toggleSelectionMode}
-        onSelectAllChange={checked => setSelectAll(checked, collection.size)}
-        onClearSelection={clearSelection}
-        onDone={handleDone}
-      />
+        <SelectionControls
+          isSelecting={isSelecting}
+          selectedCount={selectedCount}
+          totalCount={collection.size}
+          onSelect={toggleSelectionMode}
+          onSelectAllChange={checked => setSelectAll(checked, collection.size)}
+          onClearSelection={clearSelection}
+          onDone={handleDone}
+        />
 
         <ItemsTable
           items = {items}
@@ -197,11 +219,17 @@ export function CollectionManagerView<T extends CollectionType>({
       </div>
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
         {actionsOpen && <ActionsMenu actions={actions} />}
-        <FloatingActionButton
+        {isSelecting &&  <FloatingActionButton
           isOpen={actionsOpen}
           onClick={() => setActionsOpen(open => !open)}
-        />
+        />}
       </div>
+      <TagAdder
+      tags = {tags}
+      isVisible ={isTagging}
+      onClose ={()=> setIsTagging(false)}
+      onAddTag ={tagItems}
+      />
     </div>
   );
 }
