@@ -43,13 +43,13 @@ export function DashboardOverview({user, hasCompletedOnboarding, initialOverview
 
   return (
     <div className="flex-1 mx-auto w-full p-8">
-      {( !hasCompletedOnboarding && isVisible && !isOnboarded ) &&(
+      {/* {( !hasCompletedOnboarding && isVisible && !isOnboarded ) &&(
       <Questionnaire 
       onComplete={onCompleteOnboarding} 
       onboardingQuestions={onboardingQuestions} 
       welcomeMessage={ONBOARDING_WELCOME_MESSAGE} 
       welcomeTitle={ONBOARDING_WELCOME_TITLE}/>
-      )}
+      )} */}
       <div className="flex flex-col w-full items-center">
         <div className="w-full flex items-center justify-between mb-12">
           <div>
