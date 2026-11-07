@@ -140,32 +140,29 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
 
   }
 
-  async moveItems<TCollectionType extends CollectionType>(itemIds: string[], newColletionId: CollectionId<TCollectionType>, type: TCollectionType, currentCollectionId?: CollectionId<TCollectionType>): Promise<void> {
-    const payload: MoveItemsRequest = { 
-      new_collection_id: newColletionId,
-      item_ids: itemIds 
+  async moveItems<TCollectionType extends CollectionType>( itemIds: string[], newCollectionId: CollectionId<TCollectionType>, type: TCollectionType, currentCollectionId?: CollectionId<TCollectionType> ): Promise<void> {
+    const payload: MoveItemsRequest = {
+      new_collection_id: newCollectionId,
+      item_ids: itemIds,
+      ...(currentCollectionId && {
+        current_collection_id: currentCollectionId,
+      }),
     };
-    if(currentCollectionId){
-      payload.current_collection_id = currentCollectionId
-    }
-         
-    const params = new URLSearchParams(
-      Object.fromEntries(
-        Object.entries(payload).map(([key, value]) => [key, String(value)])
-      )
-    );
-    const url = type === CollectionType.TAG? 
-      `${this.baseUrl}${APIRoutes.MOVE_TAG_ITEMS_ENDPOINT}?${params.toString()}`:
-      `${this.baseUrl}${APIRoutes.MOVE_CLUSTER_ITEMS_ENDPOINT}?${params.toString()}`
-    
+
+    const url = type === CollectionType.TAG
+      ? `${this.baseUrl}${APIRoutes.MOVE_TAG_ITEMS_ENDPOINT}`
+      : `${this.baseUrl}${APIRoutes.MOVE_CLUSTER_ITEMS_ENDPOINT}`;
+
     const res = await fetch(url, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
-      const text = await res.text();
-      throw new Error(text);
+      throw new Error(await res.text());
     }
   }
   // async getCollections(type: CollectionType, offset?: number, limit?: number, collectionId?: CollectionId): Promise<Collection[]>;
