@@ -1,4 +1,5 @@
-'use client';
+
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -10,32 +11,42 @@ import usePopUp from "@/app/hooks/usePopUp";
 interface ItemsTableViewProps<T extends CollectionType> {
   title?: string;
   items: DocItem[];
-  pageSize?: number;
   collection: Collection<T>;
   isSelecting: boolean;
   isSelected: (itemId: string) => boolean;
   onRowClick: (item: DocItem) => void;
-  onLoadMoreItems: (limit: number, offset: number) => void
+  page: number;
+  totalPages: number;
+  loading: boolean;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  onNextPage: () => void;
+  onPrevPage: () => void;
 }
 
 export default function ItemsTable<T extends CollectionType = CollectionType>({
   collection,
   title = "Items",
-  pageSize = 25,
   items,
   isSelecting,
   isSelected,
   onRowClick,
-  onLoadMoreItems
+  page,
+  totalPages,
+  loading,
+  hasNextPage,
+  hasPrevPage,
+  onNextPage,
+  onPrevPage
 }: ItemsTableViewProps<T>) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [page, setPage] = useState(0);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   const { popUpCta, popUpDescription, popUpTitle, closePopUp } = usePopUp();
 
   const isCluster = collection.type === CollectionType.CLUSTER;
   const collectionLabel = isCluster ? "Cluster" : "Tag";
+
   const collectionUrl = isCluster
     ? `/dashboard/clusters/cluster/${collection.id}`
     : `/dashboard/tags/tag/${collection.id}`;
@@ -43,8 +54,10 @@ export default function ItemsTable<T extends CollectionType = CollectionType>({
   const toggleExpanded = (itemId: string) => {
     setExpandedIds(prev => {
       const next = new Set(prev);
+
       if (next.has(itemId)) next.delete(itemId);
       else next.add(itemId);
+
       return next;
     });
   };
@@ -55,24 +68,6 @@ export default function ItemsTable<T extends CollectionType = CollectionType>({
       item.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const start = page * pageSize;
-  const end = start + pageSize;
-  const pageItems = filteredItems.slice(start, end);
-  const totalPages = Math.max(1, Math.ceil(collection.size / pageSize));
-
-  const handleNext = () => {
-    if (page + 1 < totalPages) {
-      setPage(page + 1);
-      if (end >= items.length) {
-        onLoadMoreItems(pageSize, items.length);
-      }
-    }
-  };
-
-  const handlePrev = () => {
-    if (page > 0) setPage(page - 1);
-  };
-
   return (
     <div className="flex flex-col mx-auto w-full items-center justify-center py-8 px-4">
       <div className="w-full flex flex-col gap-8 md:flex-row justify-between mb-12">
@@ -82,10 +77,7 @@ export default function ItemsTable<T extends CollectionType = CollectionType>({
           <input
             type="text"
             value={searchTerm}
-            onChange={e => {
-              setSearchTerm(e.target.value);
-              setPage(0);
-            }}
+            onChange={e => setSearchTerm(e.target.value)}
             placeholder="Search by item ID or content..."
             className="border border-gray-300 rounded px-4 py-2 w-full"
           />
@@ -109,14 +101,18 @@ export default function ItemsTable<T extends CollectionType = CollectionType>({
           </thead>
 
           <tbody>
-            {pageItems.length === 0 ? (
+            {filteredItems.length === 0 ? (
               <tr>
                 <td colSpan={3} className="border border-gray-300 py-6 text-center text-gray-500">
-                  {searchTerm ? "No items match the current filters." : "No items stored."}
+                  {loading
+                    ? "Loading items..."
+                    : searchTerm
+                      ? "No items match the current filters."
+                      : "No items stored."}
                 </td>
               </tr>
             ) : (
-              pageItems.map(item => {
+              filteredItems.map(item => {
                 const expanded = expandedIds.has(item.id);
                 const selected = isSelected(item.id);
 
@@ -158,6 +154,7 @@ export default function ItemsTable<T extends CollectionType = CollectionType>({
                       className="border border-gray-300 px-4 py-2 cursor-pointer"
                       onClick={e => {
                         e.stopPropagation();
+
                         if (isSelecting) onRowClick(item);
                         else toggleExpanded(item.id);
                       }}
@@ -191,8 +188,8 @@ export default function ItemsTable<T extends CollectionType = CollectionType>({
 
       <div className="flex gap-4 mt-4">
         <button
-          onClick={handlePrev}
-          disabled={page === 0}
+          onClick={onPrevPage}
+          disabled={!hasPrevPage || loading}
           className="px-4 py-2 border rounded disabled:opacity-50"
         >
           Previous
@@ -203,8 +200,8 @@ export default function ItemsTable<T extends CollectionType = CollectionType>({
         </span>
 
         <button
-          onClick={handleNext}
-          disabled={page + 1 >= totalPages}
+          onClick={onNextPage}
+          disabled={!hasNextPage || loading}
           className="px-4 py-2 border rounded disabled:opacity-50"
         >
           Next
