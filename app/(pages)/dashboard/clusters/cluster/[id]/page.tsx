@@ -4,13 +4,13 @@ import ErrorComponent from './error';
 import Loading from './loading';
 import { CollectionType } from '@/app/enums/collections';
 import { CollectionManagerView } from '@/app/ui/sereleum/collections/collection-manager-view';
-import { apiClient } from '@/app/sereleum';
+import { sereleumApiClient } from '@/app/sereleum';
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const type = CollectionType.CLUSTER
-  const collection = ( await apiClient.getCollections(type, 0, 1, id))[0]
-  const items = await apiClient.getItems(type, [collection.id], 25)
+  const collection = ( await sereleumApiClient.getCollections(type, 0, 1, id))[0]
+  const items = await sereleumApiClient.getItems(type, [collection.id], 25)
 
   return (
     <ErrorBoundary errorComponent={ErrorComponent}>

@@ -4,7 +4,7 @@ import { OverviewInfo, Status } from '@/app/types';
 import { StorageKeys } from '../constants/global';
 import * as LocalStorage from "@/app/lib/client/storage/session"
 import { useRouter } from 'next/navigation';
-import { apiClient, eventsClient } from '../sereleum';
+import { sereleumApiClient, sereleumEventsClient } from '../sereleum';
 
 
 export const useDashboard = (initialOverview: OverviewInfo) => {
@@ -20,7 +20,7 @@ export const useDashboard = (initialOverview: OverviewInfo) => {
     const isViewAllVisible = overview.total_clusters > overview.top_clusters.length
 
     const handleTrackIndexProgress = (jobId: string) => {
-        const eventSource = eventsClient.trackIndexProgress(jobId, {
+        const eventSource = sereleumEventsClient.trackIndexProgress(jobId, {
           onProgress: (p) => {
             setProgress(p)
           },
@@ -40,10 +40,10 @@ export const useDashboard = (initialOverview: OverviewInfo) => {
 
     const handleTrackClusteringStatus = (jobId: string) => {
       setClusteringStatus('queued')
-      const eventSource = eventsClient.trackClusterStatus(jobId, {
+      const eventSource = sereleumEventsClient.trackClusterStatus(jobId, {
         onComplete: async() => {
           await new Promise(resolve => setTimeout(resolve, 1000))
-          const updatedOverview = await apiClient.getOverview();
+          const updatedOverview = await sereleumApiClient.getOverview();
           setOverview(updatedOverview)
           setClusteringStatus("complete")
         },
@@ -95,7 +95,7 @@ export const useDashboard = (initialOverview: OverviewInfo) => {
 
     const handleFileUpload = async() => {
       if(!itemsFile) return
-      const res = await apiClient.indexItems(itemsFile, {autoLabel: false})
+      const res = await sereleumApiClient.indexItems(itemsFile, {autoLabel: false})
       setItemsFile(null)
       setIndexingStatus(res.status)
       LocalStorage.set(StorageKeys.indexingJobId, res.job_id)
