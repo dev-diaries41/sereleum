@@ -11,11 +11,12 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const type = CollectionType.CLUSTER
   const collection = ( await sereleumApiClient.getCollections(type, 0, 1, id))[0]
   const items = await sereleumApiClient.getItems(type, [collection.id], 25)
+  const totalClusters = await sereleumApiClient.countCollections(CollectionType.CLUSTER)
 
   return (
     <ErrorBoundary errorComponent={ErrorComponent}>
       <Suspense fallback={<Loading />}>
-        <CollectionManagerView collectionToView={collection} type={type}  initialItems={items}/>
+        <CollectionManagerView collectionToView={collection} type={type}  initialItems={items} totalCollections={totalClusters}/>
       </Suspense>
     </ErrorBoundary>
   );

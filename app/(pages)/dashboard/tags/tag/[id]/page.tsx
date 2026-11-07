@@ -14,11 +14,12 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     const tagId = parseNumber(id)
     const collection = ( await sereleumApiClient.getCollections(type, 0, 1, tagId))[0]
     const items = await sereleumApiClient.getItems(type, [collection.id], 25)
+    const totalTags = await sereleumApiClient.countCollections(CollectionType.TAG)
 
   return (
     <ErrorBoundary errorComponent={ErrorComponent}>
       <Suspense fallback={<Loading />}>
-        <CollectionManagerView collectionToView={collection} type={CollectionType.TAG} initialItems={items} />
+        <CollectionManagerView collectionToView={collection} type={CollectionType.TAG} initialItems={items} totalCollections={totalTags}/>
       </Suspense>
     </ErrorBoundary>
   );

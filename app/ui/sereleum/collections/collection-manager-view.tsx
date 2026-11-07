@@ -14,15 +14,19 @@ import { ActionsMenu } from "../../common/action-menu";
 import { FloatingActionButton } from "../../common/fab";
 import { useCollectionItems } from "@/app/hooks/useCollectionItems";
 import { TagAdder } from "../tags/tag-adder";
+import { Modal } from "../../common/modal";
+import { CollectionPicker } from "./collection-picker";
 
 interface CollectionManagerProps<T extends CollectionType> {
   initialItems?: DocItem[];
+  totalCollections: number;
   collectionToView: Collection<T>;
   type: T;
   pageSize?: number;
 }
 
 export function CollectionManagerView<T extends CollectionType>({
+  totalCollections,
   collectionToView,
   type,
   initialItems = [],
@@ -38,8 +42,22 @@ export function CollectionManagerView<T extends CollectionType>({
   const [isTagging, setIsTagging] = useState(false);
   const [isMoving, setIsMoving] = useState(false);
 
-  const { onRenameCollection } = useManageCollections<T>(type);
-  const { items, tags, onLoadMoreItems, onTagItems, loadTags } = useCollectionItems<T>(collection, initialItems);
+  const { onRenameCollection } = useManageCollections<T>(type, [], totalCollections);
+  const {
+  items,
+  pageItems,
+  page,
+  totalPages,
+  loading,
+  hasNextPage,
+  hasPrevPage,
+  onNextPage,
+  onPrevPage,
+  tags,
+  onMoveItems,
+  onTagItems,
+  loadTags
+} = useCollectionItems<T>(collection, initialItems, pageSize);
   const { isSelecting, selectedCount, selectedItems,  resetSelection, setSelectAll, toggleSelectedItem, toggleSelectionMode, clearSelection, isItemSelected, getSelectedItems } = useSelection<string>();
 
   const isCluster = type === CollectionType.CLUSTER;
@@ -76,7 +94,6 @@ export function CollectionManagerView<T extends CollectionType>({
       onClick: () => {
         setActionsOpen(false);
         setIsMoving(true);
-        // TODO: Implement Move
       }
     },
     {
@@ -133,10 +150,21 @@ export function CollectionManagerView<T extends CollectionType>({
     }
   };
 
+  const moveItems = async (collection: Collection<T>) => {
+    try {
+      // TODO: make api accept include and exclude ids
+      await onMoveItems(Array.from(selectedItems), collection.id);
+      setIsMoving(false);
+      resetSelection()
+    } catch(e){
+      console.error(e)
+    }
+  };
+
 
   return (
-    <div className="mx-auto">
-      <div className="p-8 max-w-full">
+    <div className="w-full mx-auto">
+      <div className="p-8">
         <div className="flex items-start justify-between mb-6">
           <button
             onClick={() => router.push(isCluster ? '/dashboard/clusters' : '/dashboard/tags')}
@@ -206,15 +234,20 @@ export function CollectionManagerView<T extends CollectionType>({
           onDone={handleDone}
         />
 
-        <ItemsTable
-          items = {items}
+          <ItemsTable
+          items={pageItems}
           collection={collection}
           title={`${collection.size} Items`}
           isSelecting={isSelecting}
           isSelected={isItemSelected}
           onRowClick={handleRowClick}
-          onLoadMoreItems={onLoadMoreItems}
-          pageSize={pageSize}
+          page={page}
+          totalPages={totalPages}
+          loading={loading}
+          hasNextPage={hasNextPage}
+          hasPrevPage={hasPrevPage}
+          onNextPage={onNextPage}
+          onPrevPage={onPrevPage}
         />
       </div>
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
@@ -230,6 +263,14 @@ export function CollectionManagerView<T extends CollectionType>({
         onClose ={()=> setIsTagging(false)}
         onAddTag ={tagItems}
       />
+
+      <Modal isOpen={isMoving} onClose={() => setIsMoving(false)}>
+        <CollectionPicker
+        type={type}
+        totalCollections={totalCollections}
+        onPick={moveItems}
+        />
+      </Modal>
     </div>
   );
 }
