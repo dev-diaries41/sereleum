@@ -13,7 +13,7 @@ interface ItemsTableViewProps<T extends CollectionType> {
   pageSize?: number;
   collection: Collection<T>;
   isSelecting: boolean;
-  isSelected: (item: DocItem) => boolean;
+  isSelected: (itemId: string) => boolean;
   onRowClick: (item: DocItem) => void;
   onLoadMoreItems: (limit: number, offset: number) => void
 }
@@ -118,7 +118,7 @@ export default function ItemsTable<T extends CollectionType = CollectionType>({
             ) : (
               pageItems.map(item => {
                 const expanded = expandedIds.has(item.id);
-                const selected = isSelected(item);
+                const selected = isSelected(item.id);
 
                 return (
                   <tr
