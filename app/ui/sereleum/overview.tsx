@@ -14,6 +14,8 @@ import { ONBOARDING_WELCOME_MESSAGE, ONBOARDING_WELCOME_TITLE, onboardingQuestio
 import { TopCollectionsContainer } from './collections/top-collections';
 import { CollectionType } from '@/app/enums/collections';
 import { useDashboard } from '@/app/hooks/useDashboard';
+import { useRouter } from 'next/navigation';
+import { viewCollection } from '@/app/lib/nav';
 
 interface DashboardOverviewProps {
   initialOverview: OverviewInfo;
@@ -39,7 +41,9 @@ export function DashboardOverview({user, hasCompletedOnboarding, initialOverview
     resetError
   } = useDashboard(initialOverview)
   
-  const {isVisible, isOnboarded, onCompleteOnboarding} = useOnboarding(user?.email);
+  // const {isVisible, isOnboarded, onCompleteOnboarding} = useOnboarding(user?.email);
+
+  const router = useRouter();
 
   return (
     <div className="flex-1 mx-auto w-full p-8">
@@ -110,6 +114,7 @@ export function DashboardOverview({user, hasCompletedOnboarding, initialOverview
             topCollections={overview.top_clusters} 
             isViewAllVisible ={isViewAllVisible } 
             onViewAllCollections={goToClustersPage}
+            onCollectionClick={(collection) => viewCollection(router, collection)}
             />
           </div>
              <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -118,6 +123,7 @@ export function DashboardOverview({user, hasCompletedOnboarding, initialOverview
             topCollections={overview.top_tags} 
             isViewAllVisible ={isViewAllVisible } 
             onViewAllCollections={goToTagsPage}
+            onCollectionClick={(collection) => viewCollection(router, collection)}
             />
           </div>
        

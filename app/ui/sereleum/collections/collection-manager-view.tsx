@@ -225,10 +225,10 @@ export function CollectionManagerView<T extends CollectionType>({
         />}
       </div>
       <TagAdder
-      tags = {tags}
-      isVisible ={isTagging}
-      onClose ={()=> setIsTagging(false)}
-      onAddTag ={tagItems}
+        tags = {tags}
+        isVisible ={isTagging}
+        onClose ={()=> setIsTagging(false)}
+        onAddTag ={tagItems}
       />
     </div>
   );

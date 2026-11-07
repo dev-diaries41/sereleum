@@ -13,6 +13,8 @@ import { faChevronDown, faChevronUp, faCodeMerge, faPencil, faTrash } from "@for
 import { Selector } from "../../common/selector";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SelectorModal } from "../../common/selector-modal";
+import { viewCollection } from "@/app/lib/nav";
+import { useRouter } from "next/navigation";
 
 
 const SortKeyOptions = ["size"] as const;
@@ -36,6 +38,7 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
   totalCollections,
 }: CollectionsWrapperProps<T>) {
   
+  const router = useRouter();
   const { collections, onLoadMoreCollections, onMergeCollections } =useManageCollections<T>(type, initialCollections, totalCollections);
 
   const {
@@ -59,6 +62,12 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
   const isCluster = type === CollectionType.CLUSTER;
   const collectionLabel = isCluster ? "Clusters" : "Tags";
 
+  const totalPages = Math.max(1, Math.ceil(totalCollections / pageSize));
+  const start = page * pageSize;
+  const end = start + pageSize;
+  const pageCollections = collections.slice(start, end);
+
+  
   const actions: ActionConfig[] = [
     {
       enabled: selectedCollectionIds.size > 1,
@@ -89,6 +98,12 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
     }
   ];
 
+  useEffect(() => {
+    const maxPage = Math.max(0, Math.ceil(totalCollections / pageSize) - 1);
+    if (page > maxPage) setPage(maxPage);
+  }, [totalCollections, pageSize, page]);
+
+
   const clearSelection = () => {
     clearSelectedItems();
     setIsMerging(false);
@@ -104,15 +119,13 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
     }
   };
 
-  const totalPages = Math.max(1, Math.ceil(totalCollections / pageSize));
-  const start = page * pageSize;
-  const end = start + pageSize;
-  const pageCollections = collections.slice(start, end);
-
-  useEffect(() => {
-    const maxPage = Math.max(0, Math.ceil(totalCollections / pageSize) - 1);
-    if (page > maxPage) setPage(maxPage);
-  }, [totalCollections, pageSize, page]);
+  const handleCollectionClick = (collection: Collection<T>) => {
+    if(isSelecting){
+      toggleSelectedItem(collection.id, totalCollections)
+    }else{
+      viewCollection(router, collection)      
+    }
+  }
 
   const handleNext = () => {
     if (page + 1 < totalPages) {
@@ -183,7 +196,7 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
             collection={c}
             isSelecting={isSelecting}
             selected={isItemSelected(c.id)}
-            toggleSelection={() => toggleSelectedItem(c.id, totalCollections)}
+            onClick={() => handleCollectionClick(c)}
           />
         ))}
       </div>

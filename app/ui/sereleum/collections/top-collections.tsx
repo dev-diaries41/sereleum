@@ -9,6 +9,7 @@ interface TopCollectionsContainerProps {
   type: CollectionType;
   topCollections: Collection[];
   isViewAllVisible: boolean;
+  onCollectionClick: (collection: Collection) => void;
   onViewAllCollections: () => void;
 }
 
@@ -18,10 +19,14 @@ export function TopCollectionsContainer({
   topCollections,
   isViewAllVisible,
   onViewAllCollections,
+  onCollectionClick
 }: TopCollectionsContainerProps) {
+  
   const isCluster = type === CollectionType.CLUSTER;
   const label = isCluster ? "Clusters" : "Tags";
   const sortedCollections = [...topCollections].sort((a, b) => b.size - a.size);
+
+ 
 
   return (
     <div className="lg:col-span-3 border border-gray-300 rounded-2xl shadow-sm p-6">
@@ -63,7 +68,7 @@ export function TopCollectionsContainer({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
           {sortedCollections.slice(0, topN).map((collection) => (
             <div key={`${collection.type}-${collection.id}`} className="w-full">
-              <CollectionRow collection={collection} />
+              <CollectionRow collection={collection} onClick={() => onCollectionClick(collection)}/>
             </div>
           ))}
         </div>
