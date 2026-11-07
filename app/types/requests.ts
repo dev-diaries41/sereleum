@@ -117,3 +117,8 @@ export interface GetCollectionsRequest {
 export interface GetCollectionsReponse<T extends CollectionType = CollectionType> {
   collections: Collection<T>[];
 }
+
+export interface TagRequest {
+  tag: string | number;
+  item_ids: string[];
+}

@@ -23,3 +23,4 @@ export const CLUSTER_STATUS_EVENT_ENDPOINT = `${BASE_EVENTS_ENDPOINT}/cluster/st
 export const MOVE_TAG_ITEMS_ENDPOINT = `${BASE_TAG_ENDPOINT}/move`;
 export const MERGE_TAGS_ENDPOINT = `${BASE_TAG_ENDPOINT}/merge`;
 export const COUNT_TAGS_ENDPOINT = `${BASE_TAG_ENDPOINT}/count`;
+export const TAGS_ITEMS_ENDPOINT = `${BASE_TAG_ENDPOINT}/tag`;

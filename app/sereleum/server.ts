@@ -18,6 +18,7 @@ import {
   GetCollectionsRequest,
   GetCollectionsReponse,
   MoveItemsRequest,
+  TagRequest,
 } from "@/app/types";
 import * as APIRoutes from "@/app/sereleum/routes";
 import { CollectionType } from "../enums/collections";
@@ -35,6 +36,12 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
       throw new Error(text);
     }
     return res.json();
+  }
+
+  async getOverview(): Promise<OverviewInfo> {
+    const url = `${this.baseUrl}${APIRoutes.OVERVIEW_ENDPOINT}`;
+    const res = await fetch(url, { method: "GET" });
+    return this.handleResponse<GetOverviewResponse>(res);
   }
 
   async indexItems(file: File, clusterOptions?: Partial<ClusterOptions>): Promise<JobReceipt> {
@@ -111,10 +118,26 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
     return data.items;
   }
 
-  async getOverview(): Promise<OverviewInfo> {
-    const url = `${this.baseUrl}${APIRoutes.OVERVIEW_ENDPOINT}`;
-    const res = await fetch(url, { method: "GET" });
-    return this.handleResponse<GetOverviewResponse>(res);
+
+  async tagItems(tag: string | number, itemIds: string[]): Promise<void> {
+    const url = `${this.baseUrl}${APIRoutes.TAGS_ITEMS_ENDPOINT}`
+
+    const payload: TagRequest = { 
+      tag,
+      item_ids: itemIds
+    };
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text);
+    }
+
   }
 
   async moveItems<TCollectionType extends CollectionType>(itemIds: string[], newColletionId: CollectionId<TCollectionType>, type: TCollectionType, currentCollectionId?: CollectionId<TCollectionType>): Promise<void> {
