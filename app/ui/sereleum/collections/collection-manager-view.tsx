@@ -44,7 +44,7 @@ export function CollectionManagerView<T extends CollectionType>({
 
   const { onRenameCollection } = useManageCollections<T>({type, initialTotalCollections});
   const {
-  totalItems: totalCollections,
+  totalItems,
   pageItems,
   page,
   totalPages,
@@ -235,10 +235,10 @@ export function CollectionManagerView<T extends CollectionType>({
           onDone={handleDone}
         />
 
-          <ItemsTable
+        <ItemsTable
           items={pageItems}
           collection={collection}
-          title={`${collection.size} Items`}
+          title={`${totalItems} Items`}
           isSelecting={isSelecting}
           isSelected={isItemSelected}
           onRowClick={handleRowClick}
@@ -268,7 +268,7 @@ export function CollectionManagerView<T extends CollectionType>({
       <Modal isOpen={isMoving} onClose={() => setIsMoving(false)}>
         <CollectionPicker
         type={type}
-        totalCollections={totalCollections}
+        totalCollections={initialTotalCollections}
         onPick={moveClusterItems}
         />
       </Modal>
