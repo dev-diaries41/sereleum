@@ -119,8 +119,11 @@ export interface GetCollectionsReponse<T extends CollectionType = CollectionType
 }
 
 export interface TagRequest {
-  tag: string | number;
+  tag: string;
   item_ids: string[];
+  excluded_item_ids: string[];
+  select_all: boolean;
+  collection_id: CollectionId;
 }
 
 export interface DeleteCollectionsRequest {

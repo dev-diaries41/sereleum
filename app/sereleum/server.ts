@@ -120,12 +120,15 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
   }
 
 
-  async tagItems(tag: string | number, itemIds: string[]): Promise<void> {
+  async tagItems(tag: string, collectionId: CollectionId, itemIds: string[], excludedItemIds: string[], selectAll: boolean): Promise<void> {
     const url = `${this.baseUrl}${APIRoutes.TAGS_ITEMS_ENDPOINT}`
 
     const payload: TagRequest = { 
       tag,
-      item_ids: itemIds
+      item_ids: itemIds,
+      excluded_item_ids: excludedItemIds,
+      select_all: selectAll,
+      collection_id: collectionId
     };
 
     const res = await fetch(url, {

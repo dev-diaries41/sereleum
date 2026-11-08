@@ -58,7 +58,7 @@ export function CollectionManagerView<T extends CollectionType>({
   onTagItems,
   loadTags
 } = useCollectionItems<T>({collection, initialItems, pageSize});
-  const { isSelecting, selectedCount, selectedItems,  resetSelection, setSelectAll, toggleSelectedItem, toggleSelectionMode, clearSelection, isItemSelected, getSelectedItems } = useSelection<string>();
+  const { isSelecting, selectedCount, selectedItems, excludedItems, selectAll, resetSelection, setSelectAll, toggleSelectedItem, toggleSelectionMode, clearSelection, isItemSelected, getSelectedItems } = useSelection<string>();
 
   const isCluster = type === CollectionType.CLUSTER;
   const collectionLabel = isCluster ? 'cluster' : 'tag';
@@ -141,8 +141,7 @@ export function CollectionManagerView<T extends CollectionType>({
 
   const tagItems = async (tag: string) => {
     try {
-      // TODO: make api accept include and exclude ids
-      await onTagItems(tag, Array.from(selectedItems));
+      await onTagItems(tag, Array.from(selectedItems), Array.from(excludedItems), selectAll);
       setIsTagging(false);
       resetSelection()
     } catch(e){

@@ -38,8 +38,8 @@ export const useCollectionItems = <T extends CollectionType = CollectionType>({
     await pagination.invalidatePages();
   };
 
-  const onTagItems = async (tag: string, itemIds: string[]) => {
-    await sereleumApiClient.tagItems(tag, itemIds);
+  const onTagItems = async (tag: string, itemIds: string[], excludedItemIds: string[], selectAll: boolean) => {
+    await sereleumApiClient.tagItems(tag, collection.id, itemIds, excludedItemIds, selectAll);
   };
 
   const loadTags = async () => {
