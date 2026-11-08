@@ -21,26 +21,15 @@ export const useCollectionItems = <T extends CollectionType = CollectionType>(
 
   const pagination = usePagination({
     initialItems,
-    totalItems: collection.size,
+    initialTotalItems: collection.size,
     pageSize,
     fetchPage
   });
 
-  const onMoveItems = async (
-    itemIds: string[],
-    newCollectionId: CollectionId<T>
-  ) => {
+  const onMoveItems = async ( itemIds: string[], newCollectionId: CollectionId<T> ) => {
     await sereleumApiClient.moveItems(itemIds, newCollectionId, collection.type);
-
-    pagination.setPages(prev => {
-      const next = new Map<number, DocItem[]>();
-
-      for (const [key, items] of prev) {
-        next.set(key, items.filter(item => !itemIds.includes(item.id)));
-      }
-
-      return next;
-    });
+    pagination.setTotalItems(prev => Math.max(0, prev - itemIds.length));
+    await pagination.invalidatePages();
   };
 
   const onTagItems = async (tag: string, itemIds: string[]) => {

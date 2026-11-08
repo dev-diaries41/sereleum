@@ -12,6 +12,7 @@ export const useManageCollections = <T extends CollectionType = CollectionType>(
   totalCollections: number,
   pageSize: number = 25
 ) => {
+  
   const fetchPage = useCallback(
     (offset: number, limit: number) =>
       sereleumApiClient.getCollections(type, offset, limit),
@@ -20,7 +21,7 @@ export const useManageCollections = <T extends CollectionType = CollectionType>(
 
   const pagination = usePagination({
     initialItems: initialCollections,
-    totalItems: totalCollections,
+    initialTotalItems: totalCollections,
     pageSize,
     fetchPage
   });
@@ -42,44 +43,17 @@ export const useManageCollections = <T extends CollectionType = CollectionType>(
     });
   };
 
-  const onDeleteCollections = async ( collectionIds: CollectionId<T>[]) => {
+
+  const onDeleteCollections = async (collectionIds: CollectionId<T>[]) => {
     await sereleumApiClient.deleteCollection(type, collectionIds);
-
-    pagination.setPages(prev => {
-      const next = new Map(prev);
-
-      for (const [key, items] of next) {
-        next.set(
-          key,
-          items.filter(c => !collectionIds.includes(c.id))
-        );
-      }
-
-      return next;
-    });
+    pagination.setTotalItems(prev => Math.max(0, prev - collectionIds.length));
+    pagination.invalidatePages();
   };
 
-  const onMergeCollections = async ( primaryCollectionId: CollectionId<T>, secondaryCollectionIds: CollectionId<T>[] ) => {
-    const mergedCollection = await sereleumApiClient.mergeCollections(
-      type,
-      primaryCollectionId,
-      secondaryCollectionIds
-    );
-
-    pagination.setPages(prev => {
-      const next = new Map<number, Collection<T>[]>();
-
-      for (const [key, items] of prev) {
-        next.set(
-          key,
-          items
-            .map(c => c.id === mergedCollection.id ? mergedCollection : c)
-            .filter(c => !secondaryCollectionIds.includes(c.id))
-        );
-      }
-
-      return next;
-    });
+const onMergeCollections = async ( primaryCollectionId: CollectionId<T>, secondaryCollectionIds: CollectionId<T>[] ) => {
+    await sereleumApiClient.mergeCollections( type, primaryCollectionId, secondaryCollectionIds );
+    pagination.setTotalItems(prev => Math.max(0, prev - secondaryCollectionIds.length));
+    pagination.invalidatePages();
   };
 
   return {

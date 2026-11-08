@@ -1,23 +1,24 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface UsePaginationOptions<T> {
   initialItems?: T[];
-  totalItems: number;
+  initialTotalItems: number;
   pageSize?: number;
   fetchPage: (offset: number, limit: number) => Promise<T[]>;
 }
 
 export const usePagination = <T>({
   initialItems = [],
-  totalItems,
+  initialTotalItems,
   pageSize = 25,
   fetchPage
 }: UsePaginationOptions<T>) => {
   const [pages, setPages] = useState<Map<number, T[]>>(
     () => initialItems.length > 0 ? new Map([[0, initialItems]]) : new Map()
   );
+  const [totalItems, setTotalItems] = useState(initialTotalItems);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -33,13 +34,27 @@ export const usePagination = <T>({
     [pages]
   );
 
+
+  const invalidatePages = useCallback(async () => {
+    setPages(new Map());
+    setPage(0);
+    setLoading(true);
+
+    try {
+      const results = await fetchPage(0, pageSize);
+      setPages(new Map([[0, results]]));
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchPage, pageSize]);
+
+
   const onLoadMore = useCallback(async (targetPage: number) => {
     if (targetPage < 0 || targetPage >= totalPages || pages.has(targetPage)) return;
 
     setLoading(true);
     try {
       const results = await fetchPage(targetPage * pageSize, pageSize);
-
       setPages(prev => {
         if (prev.has(targetPage)) return prev;
         const next = new Map(prev);
@@ -77,9 +92,13 @@ export const usePagination = <T>({
   return {
     pages,
     setPages: updatePages,
+    invalidatePages,
     items,
     pageItems,
     page,
+    setPage,
+    totalItems,
+    setTotalItems,
     totalPages,
     loading,
     hasNextPage,
