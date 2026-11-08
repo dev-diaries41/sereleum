@@ -68,15 +68,6 @@ export function useSelection<T>() {
     setState((prev) => ({ ...prev, isSelecting: !prev.isSelecting }));
   }, []);
 
-  const getSelectedItems = useCallback(async (getAllItems: () => Promise<Set<T>>) => {
-    if (!state.selectAll) return state.selectedItems;
-
-    const allItems = await getAllItems();
-    state.excludedItems.forEach((item) => allItems.delete(item));
-    return allItems;
-  }, [state.selectAll, state.selectedItems, state.excludedItems]);
-
-
   const isItemSelected = (item: T) => state.selectedItems.has(item) || (state.selectAll && !state.excludedItems.has(item));
   
 
@@ -88,7 +79,6 @@ export function useSelection<T>() {
     toggleSelectedItem,
     setSelectAll,
     toggleSelectionMode,
-    getSelectedItems,
     isItemSelected
   };
 }

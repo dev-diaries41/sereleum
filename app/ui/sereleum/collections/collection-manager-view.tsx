@@ -61,7 +61,7 @@ export function CollectionManagerView<T extends CollectionType>({
   onUnTagItems,
   loadTags
 } = useCollectionItems<T>({collection, initialItems, pageSize});
-  const { isSelecting, selectedCount, selectedItems, excludedItems, selectAll, resetSelection, setSelectAll, toggleSelectedItem, toggleSelectionMode, clearSelection, isItemSelected, getSelectedItems } = useSelection<string>();
+  const { isSelecting, selectedCount, selectedItems, excludedItems, selectAll, resetSelection, setSelectAll, toggleSelectedItem, toggleSelectionMode, clearSelection, isItemSelected } = useSelection<string>();
 
   const isCluster = type === CollectionType.CLUSTER;
   const collectionLabel = isCluster ? 'cluster' : 'tag';
