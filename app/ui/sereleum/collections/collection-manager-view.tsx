@@ -168,7 +168,7 @@ export function CollectionManagerView<T extends CollectionType>({
 
   const moveClusterItems = async (destinationCollcetion: Collection<T>) => {
     try {
-      await onMoveClusterItems(destinationCollcetion.id as string, collection.id as string, Array.from(selectedItems), Array.from(excludedItems), selectAll );
+      await onMoveClusterItems(destinationCollcetion.id as string, collection.id as string, Array.from(selectedItems), Array.from(excludedItems), selectAll, selectedCount);
       setIsMoving(false);
       resetSelection()
     } catch(e){

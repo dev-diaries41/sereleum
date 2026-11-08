@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { Collection, CollectionId, DocItem } from "../types";
+import { Collection, DocItem } from "../types";
 import { sereleumApiClient } from "../sereleum";
 import { CollectionType } from "../enums/collections";
 import { usePagination } from "./usePagination";
@@ -32,9 +32,9 @@ export const useCollectionItems = <T extends CollectionType = CollectionType>({
     fetchPage
   });
 
-  const onMoveClusterItems = async ( destinationCollection: string, sourceCollection: string, itemIds: string[], excludedItemIds: string[], selectAll: boolean  ) => {
+  const onMoveClusterItems = async ( destinationCollection: string, sourceCollection: string, itemIds: string[], excludedItemIds: string[], selectAll: boolean, selectedCount: number ) => {
     await sereleumApiClient.moveClusterItems(destinationCollection, sourceCollection, itemIds, excludedItemIds, selectAll);
-    pagination.setTotalItems(prev => Math.max(0, prev - itemIds.length));
+    pagination.setTotalItems(prev => Math.max(0, prev - selectedCount));
     await pagination.invalidatePages();
   };
 
