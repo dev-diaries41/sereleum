@@ -122,3 +122,7 @@ export interface TagRequest {
   tag: string | number;
   item_ids: string[];
 }
+
+export interface DeleteCollectionsRequest {
+  collection_ids: CollectionId[];
+}

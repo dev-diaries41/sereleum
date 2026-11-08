@@ -19,6 +19,7 @@ import {
   GetCollectionsReponse,
   MoveItemsRequest,
   TagRequest,
+  DeleteCollectionsRequest,
 } from "@/app/types";
 import * as APIRoutes from "@/app/sereleum/routes";
 import { CollectionType } from "../enums/collections";
@@ -251,6 +252,28 @@ async mergeCollections<T extends CollectionType>(type: T, primaryCollectionId: C
 
     const data = await this.handleResponse<MergeCollectionsResponse<T>>(res);
     return data.merged_collection
+  }
+
+
+async deleteCollection<T extends CollectionType>(type: T, collectionIds: CollectionId<T>[]): Promise<void> {
+    const url = type === CollectionType.TAG? 
+    `${this.baseUrl}${APIRoutes.DELETE_TAGS_ENDPOINT}`:
+    `${this.baseUrl}${APIRoutes.DELETE_CLUSTERS_ENDPOINT}`
+
+    const payload: DeleteCollectionsRequest = { 
+      collection_ids: collectionIds
+    };
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text);
+    }
   }
 
 }

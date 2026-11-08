@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SelectorModal } from "../../common/selector-modal";
 import { viewCollection } from "@/app/lib/nav";
 import { useRouter } from "next/navigation";
+import { DeleteConfirmationModal } from "../../common/delete-modal";
 
 const SortKeyOptions = ["size"] as const;
 type SortKey = typeof SortKeyOptions[number];
@@ -50,6 +51,7 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
     onNextPage,
     onPrevPage,
     onMergeCollections,
+    onDeleteCollections
   } = useManageCollections<T>(type, initialCollections, totalCollections, pageSize);
 
   const {
@@ -65,6 +67,7 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
   } = useSelection<CollectionId<T>>();
 
   const [isMerging, setIsMerging] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [sortBy, setSortBy] = useState<SortKey>("size");
   const [sortDirection, setSortDirection] = useState<"desc" | "asc">("desc");
   const [actionsOpen, setActionsOpen] = useState(false);
@@ -74,7 +77,7 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
 
   const actions: ActionConfig[] = [
     {
-      enabled: selectedCollectionIds.size > 1,
+      enabled: selectedCount > 1,
       label: "Merge",
       icon: faCodeMerge,
       onClick: () => {
@@ -83,21 +86,12 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
       }
     },
     {
-      enabled: selectedCollectionIds.size === 1,
-      label: "Rename",
-      icon: faPencil,
-      onClick: () => {
-        setActionsOpen(false);
-        // TODO
-      }
-    },
-    {
-      enabled: selectedCollectionIds.size > 0,
+      enabled: selectedCount > 0,
       label: "Delete",
       icon: faTrash,
       onClick: () => {
         setActionsOpen(false);
-        // TODO
+        setIsDeleting(true)
       }
     }
   ];
@@ -115,8 +109,19 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
     try {
       await onMergeCollections(parentCollectionId, secondaryCollectionIds);
       setIsMerging(false);
+      resetSelection()
     } catch (err) {
       console.error("Merge failed", err);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await onDeleteCollections([...selectedCollectionIds]);
+      setIsDeleting(false);
+      resetSelection();
+    } catch (err) {
+      console.error("Delete failed", err);
     }
   };
 
@@ -226,6 +231,14 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
         title="Select primary collection"
         onClose={() => setIsMerging(false)}
         onConfirm={handleConfirmMerge}
+      />
+      <DeleteConfirmationModal
+        isOpen={isDeleting}
+        onClose={() => setIsDeleting(false)}
+        onConfirm={handleConfirmDelete}
+        itemCount={selectedCount}
+        itemLabel={isCluster ? "clusters" : "tags"}
+        loading={loading}
       />
     </div>
   );

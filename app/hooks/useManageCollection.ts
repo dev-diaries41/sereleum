@@ -9,7 +9,7 @@ import { usePagination } from "./usePagination";
 export const useManageCollections = <T extends CollectionType = CollectionType>(
   type: T,
   initialCollections: Collection<T>[] = [],
-  totalCollections: number = 0,
+  totalCollections: number,
   pageSize: number = 25
 ) => {
   const fetchPage = useCallback(
@@ -25,10 +25,7 @@ export const useManageCollections = <T extends CollectionType = CollectionType>(
     fetchPage
   });
 
-  const onRenameCollection = async (
-    collectionId: CollectionId<T>,
-    name: string
-  ) => {
+  const onRenameCollection = async ( collectionId: CollectionId<T>, name: string ) => {
     await sereleumApiClient.renameCollection(collectionId, name, type);
 
     pagination.setPages(prev => {
@@ -45,10 +42,24 @@ export const useManageCollections = <T extends CollectionType = CollectionType>(
     });
   };
 
-  const onMergeCollections = async (
-    primaryCollectionId: CollectionId<T>,
-    secondaryCollectionIds: CollectionId<T>[]
-  ) => {
+  const onDeleteCollections = async ( collectionIds: CollectionId<T>[]) => {
+    await sereleumApiClient.deleteCollection(type, collectionIds);
+
+    pagination.setPages(prev => {
+      const next = new Map(prev);
+
+      for (const [key, items] of next) {
+        next.set(
+          key,
+          items.filter(c => !collectionIds.includes(c.id))
+        );
+      }
+
+      return next;
+    });
+  };
+
+  const onMergeCollections = async ( primaryCollectionId: CollectionId<T>, secondaryCollectionIds: CollectionId<T>[] ) => {
     const mergedCollection = await sereleumApiClient.mergeCollections(
       type,
       primaryCollectionId,
@@ -77,6 +88,7 @@ export const useManageCollections = <T extends CollectionType = CollectionType>(
     pageCollections: pagination.pageItems,
     onLoadMoreCollections: pagination.onLoadMore,
     onRenameCollection,
-    onMergeCollections
+    onMergeCollections,
+    onDeleteCollections
   };
 };
