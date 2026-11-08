@@ -5,8 +5,6 @@ import { sideBarLinks } from '@/app/constants/navigation';
 import UserProfileWidget from '../../account/user-profile';
 import MobileNav from './mobile';
 import Logo from '../../logo';
-import ClusterListSideNavWrapper from '../../sereleum/clusters/clusters-sidenav';
-import { useManageClusters } from '@/app/providers/sereleum';
 import NavLinks from '../links';
 
 export const SidenavToggleIcon = ({ open = true }) => (
@@ -26,7 +24,6 @@ interface SideNavProps {
 }
 export default React.memo(function SideNav({ email }: SideNavProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const {overview} = useManageClusters()
  
   // Prevent background scrolling when the mobile menu is open
   useEffect(() => {
@@ -55,14 +52,11 @@ export default React.memo(function SideNav({ email }: SideNavProps) {
           </Link>
           <button>
             <SidenavToggleIcon/>
-          </button>
+          </button> 
         </div>
        
         <div className='flex h-full flex-col justify-between text-sm'>
           <NavLinks navItems={sideBarLinks} />
-          <div className="flex-1 max-h-[60vh] overflow-y-auto custom-scrollbar pb-24 mt-4">
-             <ClusterListSideNavWrapper clusters={overview.top_clusters}/>
-          </div>
           <div className="absolute bottom-0 right-0 left-0 p-3 flex flex-col">
             <UserProfileWidget username={email?.split("@")[0]} />
           </div>

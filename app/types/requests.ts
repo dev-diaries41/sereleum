@@ -1,4 +1,6 @@
 import { Cluster, DocItem, OverviewInfo, Prompt, PromptsOverviewInfo } from "@/app/types";
+import { Collection, CollectionId } from "./collections";
+import { CollectionType } from "../enums/collections";
 
 // WebSockets / SSE 
 
@@ -56,7 +58,8 @@ export interface JobReceipt {
 export interface IndexItemsResponse extends JobReceipt {}
 
 export interface GetItemsRequest {
-  cluster_ids?: string[];
+  tag_ids?: CollectionId[];
+  cluster_ids?: CollectionId[];
   limit?: number;
   offset?: number
 }
@@ -85,38 +88,53 @@ export interface GetLabelsResponse {
 
 export interface GetOverviewResponse extends OverviewInfo {}
 
-export interface RenameClusterRequest {
-  cluster_id: string
-  label: string;
+export interface RenameCollectionRequest {
+  collection_id: CollectionId
+  name: string;
 }
 
-export interface RenameClusterResponse {
-  updated_label: string
+export interface MoveItemsRequest {
+  destination_collection_id: CollectionId;
+  source_collection_id: CollectionId;
+  item_ids: string[];
+  excluded_item_ids:string[];
+  select_all: boolean;
 }
 
-export interface MoveItemRequest {
-  cluster_id: string
-  id: string;
+export interface MergeCollectionsRequest {
+  primary_collection_id: CollectionId;
+  secondary_collection_ids: CollectionId[];
 }
 
-export interface MoveItemResponse {
-  updated_cluster_id: string
+export interface MergeCollectionsResponse<T extends CollectionType = CollectionType>  {
+  merged_collection: Collection<T>;
 }
 
-export interface MergeClustersRequest {
-  merges: Record<string, string[]>;
-}
-
-export interface MergeClustersResponse {
-  updated_clusters: Cluster[];
-}
-
-export interface GetClustersRequest {
-  cluster_id?: string;
+export interface GetCollectionsRequest {
+  collection_id?: CollectionId
   limit?: number;
-  offset?: number
+  offset?: number;
 }
 
-export interface GetClustersReponse {
-  clusters: Cluster[];
+export interface GetCollectionsReponse<T extends CollectionType = CollectionType> {
+  collections: Collection<T>[];
+}
+
+export interface TagRequest {
+  tag: string;
+  item_ids: string[];
+  excluded_item_ids: string[];
+  select_all: boolean;
+  collection_id: CollectionId;
+}
+
+export interface DeleteCollectionsRequest {
+  collection_ids: CollectionId[];
+}
+
+export interface RemoveTagRequest {
+  tag_id: number;
+  item_ids: string[];
+  excluded_item_ids: string[];
+  select_all: boolean;
 }

@@ -1,22 +1,25 @@
+
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
 
-interface RadioDropDownProps<
-  T extends readonly string[] = readonly string[]
-> {
-  options: T;
-  value: T[number];
-  onSelect: (key: T[number]) => void;
-  labelFor: (key: T[number]) => string;
+interface RadioDropDownProps<T> {
+  options: readonly [string, T][];
+  value: T | null;
+  onSelect: (value: T) => void;
   open: boolean;
   onClose?: () => void;
   className?: string;
 }
 
-export function RadioDropDown<
-  T extends readonly string[] = readonly string[]
->({ options, value, onSelect, labelFor, open, onClose, className = "" }: RadioDropDownProps<T>) {
+export function RadioDropDown<T>({
+  options,
+  value,
+  onSelect,
+  open,
+  onClose,
+  className = "",
+}: RadioDropDownProps<T>) {
   return (
     <AnimatePresence>
       {open && (
@@ -24,28 +27,27 @@ export function RadioDropDown<
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
-          className={`absolute top-8 left-0 mt-2 w-56 bg-white rounded-md border z-20 shadow-sm ${className}`}
+          className={`absolute top-8 left-0 mt-2 bg-white rounded-md border z-20 shadow-sm ${className}`}
         >
           <div className="p-3 flex flex-col gap-2">
-            {options.map((k) => (
+            {options.map(([label, option]) => (
               <label
-                key={k}
-                className={`flex items-center justify-start gap-2 px-3 py-2 rounded cursor-pointer hover:bg-gray-50 ${value === k ? 'bg-indigo-50' : ''}`}
+                key={label}
+                className={`flex items-center justify-start gap-2 px-3 py-2 rounded cursor-pointer hover:bg-gray-50 ${
+                  Object.is(value, option) ? "bg-indigo-50" : ""
+                }`}
               >
-                 <input
+                <input
                   type="radio"
-                  name="sort"
-                  checked={value === k}
+                  name="selector"
+                  checked={Object.is(value, option)}
                   onChange={() => {
-                    onSelect(k);
+                    onSelect(option);
                     onClose?.();
                   }}
                   className="ml-2"
                 />
-                <div>
-                  <div className="text-sm font-medium">{labelFor(k)}</div>
-                </div>
-               
+                <div className="text-sm font-medium">{label}</div>
               </label>
             ))}
           </div>

@@ -1,4 +1,4 @@
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { IconDefinition, IconProp } from "@fortawesome/fontawesome-svg-core";
 import { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode, SelectHTMLAttributes } from "react";
 import { Status } from "./requests";
 
@@ -229,4 +229,11 @@ export interface MetricType {
     isTextInput?: boolean;
   }
   
-  
+
+  export interface ActionConfig {
+  label: string;
+  onClick: () => void;
+  enabled?: boolean;
+  hideIfDisabled?: boolean;
+  icon?: IconDefinition;
+}
