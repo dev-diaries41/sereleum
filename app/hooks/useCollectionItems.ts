@@ -42,6 +42,12 @@ export const useCollectionItems = <T extends CollectionType = CollectionType>({
     await sereleumApiClient.tagItems(tag, collection.id, itemIds, excludedItemIds, selectAll);
   };
 
+   const onUnTagItems = async (tagId: number, itemIds: string[], excludedItemIds: string[], selectAll: boolean, selectedCount: number) => {
+    await sereleumApiClient.unTagItems(tagId, itemIds, excludedItemIds, selectAll);
+    pagination.setTotalItems(prev => Math.max(0, prev - selectedCount));
+    await pagination.invalidatePages();
+  };
+
   const loadTags = async () => {
     if (tags.length > 0) return;
 
@@ -57,7 +63,8 @@ export const useCollectionItems = <T extends CollectionType = CollectionType>({
     onLoadMoreItems: pagination.onLoadMore,
     onMoveClusterItems,
     onTagItems,
+    onUnTagItems,
     tags,
-    loadTags
+    loadTags,
   };
 };

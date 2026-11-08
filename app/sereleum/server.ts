@@ -20,6 +20,7 @@ import {
   MoveItemsRequest,
   TagRequest,
   DeleteCollectionsRequest,
+  RemoveTagRequest,
 } from "@/app/types";
 import * as APIRoutes from "@/app/sereleum/routes";
 import { CollectionType } from "../enums/collections";
@@ -144,6 +145,28 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
 
   }
 
+    async unTagItems(tagId: number, itemIds: string[], excludedItemIds: string[], selectAll: boolean): Promise<void> {
+      const url = `${this.baseUrl}${APIRoutes.REMOVE_TAG_ENDPOINT}`
+
+      const payload: RemoveTagRequest = { 
+        tag_id: tagId,
+        item_ids: itemIds,
+        excluded_item_ids: excludedItemIds,
+        select_all: selectAll,
+      };
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text);
+      }
+  }
+
   async moveClusterItems(destinationCollection: string, sourceCollection: string, itemIds: string[], excludedItemIds: string[], selectAll: boolean  ): Promise<void> {
     const payload: MoveItemsRequest = {
       destination_collection_id: destinationCollection,
@@ -167,7 +190,7 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
       throw new Error(await res.text());
     }
   }
-  
+
   // async getCollections(type: CollectionType, offset?: number, limit?: number, collectionId?: CollectionId): Promise<Collection[]>;
   async getCollections<TCollectionType extends CollectionType>(type: TCollectionType, offset: number = 0, limit?: number, collectionId?: CollectionId<TCollectionType>): Promise<Collection<TCollectionType>[]> {
       const query: GetCollectionsRequest = { 

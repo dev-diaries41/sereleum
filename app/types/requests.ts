@@ -131,3 +131,10 @@ export interface TagRequest {
 export interface DeleteCollectionsRequest {
   collection_ids: CollectionId[];
 }
+
+export interface RemoveTagRequest {
+  tag_id: number;
+  item_ids: string[];
+  excluded_item_ids: string[];
+  select_all: boolean;
+}

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import ItemsTable from "../items-table";
 import { ActionConfig, Collection, DocItem } from "@/app/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faCheck, faFolder, faPen, faTag, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faCheck, faFolder, faLinkSlash, faPen, faTag, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useManageCollections } from "@/app/hooks/useManageCollection";
 import { useSelection } from "@/app/hooks/useSelection";
 import { CollectionType } from "@/app/enums/collections";
@@ -16,6 +16,7 @@ import { useCollectionItems } from "@/app/hooks/useCollectionItems";
 import { TagAdder } from "../tags/tag-adder";
 import { Modal } from "../../common/modal";
 import { CollectionPicker } from "./collection-picker";
+import { ConfirmationModal } from "../../common/confirm-modal";
 
 interface CollectionManagerProps<T extends CollectionType> {
   initialItems?: DocItem[];
@@ -39,6 +40,7 @@ export function CollectionManagerView<T extends CollectionType>({
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
   const [actionsOpen, setActionsOpen] = useState(false);
+  const [isUnTagging, setIsUnTagging] = useState(false);
   const [isTagging, setIsTagging] = useState(false);
   const [isMoving, setIsMoving] = useState(false);
 
@@ -51,11 +53,12 @@ export function CollectionManagerView<T extends CollectionType>({
   loading,
   hasNextPage,
   hasPrevPage,
+  tags,
   onNextPage,
   onPrevPage,
-  tags,
   onMoveClusterItems,
   onTagItems,
+  onUnTagItems,
   loadTags
 } = useCollectionItems<T>({collection, initialItems, pageSize});
   const { isSelecting, selectedCount, selectedItems, excludedItems, selectAll, resetSelection, setSelectAll, toggleSelectedItem, toggleSelectionMode, clearSelection, isItemSelected, getSelectedItems } = useSelection<string>();
@@ -89,6 +92,16 @@ export function CollectionManagerView<T extends CollectionType>({
     },
     {
       hideIfDisabled: true,
+      enabled: selectedCount > 0 && collection.type === CollectionType.TAG,
+      label: "Remove tag",
+      icon: faLinkSlash,
+      onClick: () => {
+        setActionsOpen(false);
+        setIsUnTagging(true);
+      }
+    },
+    {
+      hideIfDisabled: true,
       enabled: selectedCount > 0 && collection.type === CollectionType.CLUSTER,
       label: "Move",
       icon: faFolder,
@@ -97,20 +110,11 @@ export function CollectionManagerView<T extends CollectionType>({
         setIsMoving(true);
       }
     },
-    {
-      enabled: selectedCount > 0,
-      label: "Delete",
-      icon: faTrash,
-      onClick: () => {
-        setActionsOpen(false);
-        // TODO: Implement Delete
-      }
-    }
   ];
 
   const handleRowClick = (item: DocItem) => {
     if (!isSelecting) return;
-    toggleSelectedItem(item.id, collection.size);
+    toggleSelectedItem(item.id, totalItems);
   };
 
   const handleDone = () => {
@@ -144,6 +148,17 @@ export function CollectionManagerView<T extends CollectionType>({
     try {
       await onTagItems(tag, Array.from(selectedItems), Array.from(excludedItems), selectAll);
       setIsTagging(false);
+      resetSelection()
+    } catch(e){
+      console.error(e)
+    }
+  };
+
+
+  const unTagItems = async () => {
+    try {
+      await onUnTagItems(collection.id as number, Array.from(selectedItems), Array.from(excludedItems), selectAll, selectedCount);
+      setIsUnTagging(false);
       resetSelection()
     } catch(e){
       console.error(e)
@@ -228,9 +243,9 @@ export function CollectionManagerView<T extends CollectionType>({
           label="Manage items"
           isSelecting={isSelecting}
           selectedCount={selectedCount}
-          totalCount={collection.size}
+          totalCount={totalItems}
           onSelect={toggleSelectionMode}
-          onSelectAllChange={checked => setSelectAll(checked, collection.size)}
+          onSelectAllChange={checked => setSelectAll(checked, totalItems)}
           onClearSelection={clearSelection}
           onDone={handleDone}
         />
@@ -272,6 +287,14 @@ export function CollectionManagerView<T extends CollectionType>({
         onPick={moveClusterItems}
         />
       </Modal>
+
+      <ConfirmationModal
+        isOpen={isUnTagging}
+        onClose={() => setIsUnTagging(false)}
+        onConfirm={unTagItems}
+        title="Remove tag"
+        message={`Are you sure you want to remove '${collection.name}' tag from ${selectedCount} items?`}
+        />
     </div>
   );
 }

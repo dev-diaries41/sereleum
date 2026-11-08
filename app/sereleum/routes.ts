@@ -24,4 +24,5 @@ export const MOVE_TAG_ITEMS_ENDPOINT = `${BASE_TAG_ENDPOINT}/move`;
 export const MERGE_TAGS_ENDPOINT = `${BASE_TAG_ENDPOINT}/merge`;
 export const COUNT_TAGS_ENDPOINT = `${BASE_TAG_ENDPOINT}/count`;
 export const TAGS_ITEMS_ENDPOINT = `${BASE_TAG_ENDPOINT}/tag`;
+export const REMOVE_TAG_ENDPOINT = `${BASE_TAG_ENDPOINT}/tag/remove`;
 export const DELETE_TAGS_ENDPOINT = `${BASE_TAG_ENDPOINT}/delete`;
