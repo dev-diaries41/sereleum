@@ -2,19 +2,19 @@ import { Suspense } from 'react';
 import Loading from './loading';
 import ErrorComponent from './error';
 import { ErrorBoundary } from 'next/dist/client/components/error-boundary';
-import { Cluster } from '@/app/types';
-import { ClusterRow } from '@/app/ui/sereleum/cluster-row';
-import { ClustersWrapper } from '@/app/ui/sereleum/clusters-lists';
+import { CollectionsWrapper } from '@/app/ui/sereleum/collections/collections-lists';
+import { sereleumApiClient } from '@/app/sereleum';
+import { CollectionType } from '@/app/enums/collections';
 
-interface ClustersPageProps {
-  clusters: Cluster[];
-}
+export default async function Page() {
+  
+  const collections = await sereleumApiClient.getCollections(CollectionType.CLUSTER, 0, 25)
+  const totalClusters = await sereleumApiClient.countCollections(CollectionType.CLUSTER)
 
-export default function Page() {
   return (
     <ErrorBoundary errorComponent={ErrorComponent}>
       <Suspense fallback={<Loading />}>
-        <ClustersWrapper pageSize={25}/>
+        <CollectionsWrapper pageSize={25} initialCollections={collections} type={CollectionType.CLUSTER} initialTotalCollections={totalClusters}/>
       </Suspense>
     </ErrorBoundary>
   );

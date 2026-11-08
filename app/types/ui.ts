@@ -1,4 +1,4 @@
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { IconDefinition, IconProp } from "@fortawesome/fontawesome-svg-core";
 import { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode, SelectHTMLAttributes } from "react";
 import { Status } from "./requests";
 
@@ -20,7 +20,7 @@ export interface NavItem  {
   name: string;
   link: string;
   newPage?: boolean;
-  icon?: any
+  icon?: IconProp
 } 
 
 
@@ -153,6 +153,8 @@ export interface FeatureProps extends SectionItem {
 
 export interface HeaderProps {
   email: string | null | undefined;
+  navBarItems: NavItem[];
+  className?: string
 }
 
 export interface DashboardHeaderProps extends HeaderProps {
@@ -227,4 +229,11 @@ export interface MetricType {
     isTextInput?: boolean;
   }
   
-  
+
+  export interface ActionConfig {
+  label: string;
+  onClick: () => void;
+  enabled?: boolean;
+  hideIfDisabled?: boolean;
+  icon?: IconDefinition;
+}

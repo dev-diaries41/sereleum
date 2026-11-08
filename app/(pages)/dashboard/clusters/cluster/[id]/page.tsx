@@ -1,19 +1,22 @@
-'use client'
-import  { Suspense } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { Suspense } from 'react';
 import { ErrorBoundary } from 'next/dist/client/components/error-boundary';
-import ErrorComponent from "./error"
-import Loading from "./loading"
-import { ClusterDetail } from '@/app/ui/sereleum/cluster-details';
+import ErrorComponent from './error';
+import Loading from './loading';
+import { CollectionType } from '@/app/enums/collections';
+import { CollectionManagerView } from '@/app/ui/sereleum/collections/collection-manager-view';
+import { sereleumApiClient } from '@/app/sereleum';
 
-export default function Page(props:  { params: Promise<{ id: string }> }) {
-  const params = useParams();
-  const id = params?.id as string | undefined;
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const type = CollectionType.CLUSTER
+  const collection = ( await sereleumApiClient.getCollections(type, 0, 1, id))[0]
+  const items = await sereleumApiClient.getItems(type, [collection.id], 25)
+  const totalClusters = await sereleumApiClient.countCollections(CollectionType.CLUSTER)
 
   return (
     <ErrorBoundary errorComponent={ErrorComponent}>
       <Suspense fallback={<Loading />}>
-        <ClusterDetail id={id} />
+        <CollectionManagerView collectionToView={collection} type={type}  initialItems={items} initialTotalCollections={totalClusters}/>
       </Suspense>
     </ErrorBoundary>
   );

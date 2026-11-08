@@ -7,6 +7,7 @@ import AuthProvider from './providers/auth';
 
 import { IBM_Plex_Sans } from 'next/font/google'
 import { Analytics } from "@vercel/analytics/next"
+import { navLinks } from './constants/navigation';
 
 const ibmPlex = IBM_Plex_Sans({
   subsets: ['latin'],
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://sereleum.vercel.app/'),
   title: appName,
   description: description,
-  keywords: ['ai', 'llm', 'prompts', 'clusters', 'analysis', 'optimise'],
+  keywords: ['ai', 'llm', 'labelling', 'clusters', 'analysis', 'indexing', 'data'],
   applicationName: appName,
   openGraph: {
     type: 'website',
@@ -44,7 +45,7 @@ export default async function RootLayout({
       <AuthProvider>
       <body className={`${ibmPlex.className}`}>
         <main className='bg-white relative flex flex-col  min-h-[100dvh] '>
-          <Header email={email}/>
+          <Header email={email} navBarItems={navLinks}/>
           {children}
           <Footer/>
         </main>

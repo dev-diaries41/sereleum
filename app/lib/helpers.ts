@@ -12,7 +12,8 @@ export function copyTextToClipboard(text: string | null) {
   }
 
 
-  export const shouldHide = (pathname: string, pathsToHide: string[]) => pathsToHide.some(pathToHide => pathname.includes(pathToHide))
+  export const shouldHide = (pathname: string, hidePaths: string[]) => hidePaths.some(pathToHide => pathname.includes(pathToHide))
+  export const shouldShow = (pathname: string, showPaths: string[]) => showPaths.some(path => pathname.includes(path))
 
   export function capitalizeFirstLetter(string: string) {
     if (!string) return '';
@@ -31,6 +32,10 @@ export function convertToNumber(value: string | number, defaultValue: number): n
   }
 
   return parsedValue;
+}
+export function parseNumber(value: string): number | undefined {
+  const parsed = Number(value)
+  return isNaN(parsed)? undefined : parsed
 }
 
 
@@ -90,4 +95,31 @@ export function convertSnakeToCamel<T>(
   }
 
   return camelCased as T;
+}
+
+
+
+export function checkAutoCompletion(
+  query: string,
+  substringEnd: number,
+  tags: string[],
+  startWithHashtag: boolean = true
+): string[] {
+  const safeEnd = Math.max(0, Math.min(substringEnd, query.length));
+  const prefix = query.substring(0, safeEnd);
+
+  const pattern = startWithHashtag
+    ? /^#([a-zA-Z0-9]*)$/
+    : /^([a-zA-Z0-9]*)$/;
+
+  const match = prefix.match(pattern);
+
+  if (match) {
+    const partialTag = match[1];
+    return tags.filter(tag =>
+      tag.toLowerCase().startsWith(partialTag.toLowerCase())
+    );
+  }
+
+  return [];
 }

@@ -6,12 +6,13 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import NavBar from './navbar';
 import { shouldHide } from '@/app/lib/helpers';
 import { HeaderProps } from '@/app/types';
+import { navLinks } from '@/app/constants/navigation';
 
 
 
 export default function Header({email}: HeaderProps) {
   const pathname = usePathname();
-  const pathsToHide = ['/login', '/register', 'reset-password', 'forgot-password'];
+  const pathsToHide = ['/login', '/register', 'reset-password', 'forgot-password', '/dashboard'];
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
   const hide = shouldHide(pathname, pathsToHide) || (callbackUrl && new URL(callbackUrl).pathname === '/dashboard')
@@ -26,7 +27,7 @@ export default function Header({email}: HeaderProps) {
         <Link href={'/'} className='z-50'>
           <Logo name="Sereleum" width={24} height={32} src={'/sereleum-infinity-logo.png'}/>
         </Link>
-        <NavBar email={email}/>
+        <NavBar email={email} navBarItems={navLinks}/>
       </div>
     </div>
   );

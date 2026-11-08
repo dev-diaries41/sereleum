@@ -16,7 +16,7 @@ export default function NavLinks({navItems, classname}: NavItemsProps ) {
             key={navItem.name}
             href={navItem.link}
             className={clsx(
-              'flex h-10 grow items-center justify-center gap-2 rounded-md bg-transparent lg:hover:bg-gray-200 justify-start p-2',
+              'flex grow items-center justify-center gap-2 py-1 px-2 rounded-md bg-transparent lg:hover:bg-gray-200 justify-start',
               {
                 'text-indigo-500': pathname === navItem.link,
               },

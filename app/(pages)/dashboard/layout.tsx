@@ -1,6 +1,6 @@
-import { PromptsProvider } from "@/app/providers/prompts";
-import { sereleumClient } from "@/app/client";
-import Sidenav from "@/app/ui/nav/side_navbar/sidenav";
+import { dashboardLinks } from "@/app/constants/navigation";
+import { sereleumApiClient } from "@/app/sereleum";
+import DashboardHeader from "@/app/ui/dashboard/header";
 import { auth } from "@/auth";
 
 
@@ -12,16 +12,13 @@ export default async function Layout({
     const session = await auth();
     const email = session?.user?.email; 
     
-    const clusters = await sereleumClient.getClusters()
-    const prompts = await sereleumClient.getPrompts(undefined, 25)
-    const promptOverview = await sereleumClient.getPromptsOverview();
+    const overview = await sereleumApiClient.getOverview();
 
   return (
-    <PromptsProvider initialClusters={clusters} initialPrompts={prompts} overview={promptOverview}>
       <div className={``}>
-        <Sidenav email={email}/>
-        <div className="flex flex-col max-w-7xl mx-auto lg:pl-[240px] pt-16 lg:pt-0">{children}</div>
+        <DashboardHeader email={email} navBarItems={dashboardLinks} className="w-full z-50 bg-gray-100 py-4 border border-gray-300 "/>
+        {/* <Sidenav email={email}/> */}
+        <div className="flex flex-col max-w-5xl mx-auto pt-16 lg:pt-16">{children}</div>
       </div>
-    </PromptsProvider>
   )
 }

@@ -1,8 +1,9 @@
 "use client";
 import { useMemo } from "react";
 import { Data, Layout } from "plotly.js-dist-min";
-import { PromptsOverviewInfo, UNLABELLED_CLUSTER } from "@/app/types";
+import { PromptsOverviewInfo } from "@/app/types";
 import dynamic from "next/dynamic";
+import { UNLABELLED_CLUSTER } from "@/app/constants/clusters";
 
 const MAX_LABEL_LENGTH= 24
 
@@ -26,8 +27,8 @@ export function TokenUsageByClusterChart({
 
   const { data, layout } = useMemo(() => {
     const clustersWithValues = overview.top_clusters.map((c) => {
-      const label = c.label === UNLABELLED_CLUSTER ? c.prototype_id : c.label;
-      const value = overview.top_cluster_token_counts[c.prototype_id] * c.metadata.prototype_size;
+      const label = c.label === UNLABELLED_CLUSTER ? c.id : c.label;
+      const value = overview.top_cluster_token_counts[c.id] * c.prototype_size;
       return { label, value };
     }).sort((a, b) => a.value - b.value);
 

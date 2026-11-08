@@ -1,4 +1,6 @@
-import { Prompt, PromptsOverviewInfo , ClusterMetadata } from "@/app/types";
+import { Cluster, DocItem, OverviewInfo, Prompt, PromptsOverviewInfo } from "@/app/types";
+import { Collection, CollectionId } from "./collections";
+import { CollectionType } from "../enums/collections";
 
 // WebSockets / SSE 
 
@@ -52,31 +54,29 @@ export interface JobReceipt {
   status: Status;
 }
 
-// HTTP 
 
-export interface PromptsPayload {
-  prompts: Prompt[];
-}
+export interface IndexItemsResponse extends JobReceipt {}
 
-
-export interface AddPromptsRequest extends PromptsPayload {}
-
-export interface AddPromptsResponse extends JobReceipt {}
-
-export interface GetPromptsRequest {
-  prompt_ids?: string[];
-  cluster_ids?: string[];
+export interface GetItemsRequest {
+  tag_ids?: CollectionId[];
+  cluster_ids?: CollectionId[];
   limit?: number;
   offset?: number
 }
 
-export interface QueryPromptsRequest {
+export interface GetItemsByIdsRequest {
+  item_ids?: string[];
+}
+
+export interface QueryItemsRequest {
   query: string;
   cluster_ids?: string[];
   limit?: number;
 }
 
-export interface GetPromptsResponse extends PromptsPayload {}
+export interface GetItemsResponse<T extends DocItem> {
+    items: T[];
+}
 
 export interface GetCountResponse {
   count: number;
@@ -86,27 +86,55 @@ export interface GetLabelsResponse {
   labels: string[];
 }
 
-export interface GetClusterMetadataResponse {
-  metadata?: ClusterMetadata | null;
+export interface GetOverviewResponse extends OverviewInfo {}
+
+export interface RenameCollectionRequest {
+  collection_id: CollectionId
+  name: string;
 }
 
-export interface GetClusterMetadataBatchResponse {
-  metadatas?: ClusterMetadata[] | null;
+export interface MoveItemsRequest {
+  destination_collection_id: CollectionId;
+  source_collection_id: CollectionId;
+  item_ids: string[];
+  excluded_item_ids:string[];
+  select_all: boolean;
 }
 
-export interface GetPromptsOverviewResponse extends PromptsOverviewInfo {}
-
-export interface UpdateLabelParams {
-  cluster_id: string
-  label: string;
+export interface MergeCollectionsRequest {
+  primary_collection_id: CollectionId;
+  secondary_collection_ids: CollectionId[];
 }
 
-export interface UpdatePromptClusterIdParams {
-  cluster_id: string
-  id: string;
+export interface MergeCollectionsResponse<T extends CollectionType = CollectionType>  {
+  merged_collection: Collection<T>;
 }
 
+export interface GetCollectionsRequest {
+  collection_id?: CollectionId
+  limit?: number;
+  offset?: number;
+}
 
-export interface MergeClustersRequest {
-  merges: Record<string, string[]>;
+export interface GetCollectionsReponse<T extends CollectionType = CollectionType> {
+  collections: Collection<T>[];
+}
+
+export interface TagRequest {
+  tag: string;
+  item_ids: string[];
+  excluded_item_ids: string[];
+  select_all: boolean;
+  collection_id: CollectionId;
+}
+
+export interface DeleteCollectionsRequest {
+  collection_ids: CollectionId[];
+}
+
+export interface RemoveTagRequest {
+  tag_id: number;
+  item_ids: string[];
+  excluded_item_ids: string[];
+  select_all: boolean;
 }
