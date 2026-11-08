@@ -6,13 +6,20 @@ import { sereleumApiClient } from "../sereleum";
 import { CollectionType } from "../enums/collections";
 import { usePagination } from "./usePagination";
 
-export const useManageCollections = <T extends CollectionType = CollectionType>(
-  type: T,
-  initialCollections: Collection<T>[] = [],
-  totalCollections: number,
-  pageSize: number = 25
-) => {
-  
+interface UseManageCollectionsOptions<T extends CollectionType = CollectionType> {
+  type: T;
+  initialCollections?: Collection<T>[];
+  initialTotalCollections: number;
+  pageSize?: number;
+}
+
+export const useManageCollections = <T extends CollectionType = CollectionType>({
+  type,
+  initialCollections = [],
+  initialTotalCollections,
+  pageSize = 25,
+}: UseManageCollectionsOptions<T>) => {
+
   const fetchPage = useCallback(
     (offset: number, limit: number) =>
       sereleumApiClient.getCollections(type, offset, limit),
@@ -21,7 +28,7 @@ export const useManageCollections = <T extends CollectionType = CollectionType>(
 
   const pagination = usePagination({
     initialItems: initialCollections,
-    initialTotalItems: totalCollections,
+    initialTotalItems: initialTotalCollections,
     pageSize,
     fetchPage
   });

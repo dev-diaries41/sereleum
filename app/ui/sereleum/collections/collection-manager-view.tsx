@@ -42,7 +42,7 @@ export function CollectionManagerView<T extends CollectionType>({
   const [isTagging, setIsTagging] = useState(false);
   const [isMoving, setIsMoving] = useState(false);
 
-  const { onRenameCollection } = useManageCollections<T>(type, [], initialTotalCollections);
+  const { onRenameCollection } = useManageCollections<T>({type, initialTotalCollections});
   const {
   totalItems: totalCollections,
   pageItems,
@@ -57,7 +57,7 @@ export function CollectionManagerView<T extends CollectionType>({
   onMoveItems,
   onTagItems,
   loadTags
-} = useCollectionItems<T>(collection, initialItems, pageSize);
+} = useCollectionItems<T>({collection, initialItems, pageSize});
   const { isSelecting, selectedCount, selectedItems,  resetSelection, setSelectAll, toggleSelectedItem, toggleSelectionMode, clearSelection, isItemSelected, getSelectedItems } = useSelection<string>();
 
   const isCluster = type === CollectionType.CLUSTER;

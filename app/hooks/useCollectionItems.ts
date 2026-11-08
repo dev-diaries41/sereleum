@@ -6,11 +6,17 @@ import { sereleumApiClient } from "../sereleum";
 import { CollectionType } from "../enums/collections";
 import { usePagination } from "./usePagination";
 
-export const useCollectionItems = <T extends CollectionType = CollectionType>(
-  collection: Collection<T>,
-  initialItems: DocItem[] = [],
-  pageSize: number = 25
-) => {
+interface UseCollectionItemsOptions<T extends CollectionType = CollectionType> {
+  collection: Collection<T>;
+  initialItems?: DocItem[];
+  pageSize?: number;
+}
+
+export const useCollectionItems = <T extends CollectionType = CollectionType>({
+  collection,
+  initialItems = [],
+  pageSize = 25,
+}: UseCollectionItemsOptions<T>) => {
   const [tags, setTags] = useState<string[]>([]);
 
   const fetchPage = useCallback(

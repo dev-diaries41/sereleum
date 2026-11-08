@@ -23,6 +23,7 @@ export function CollectionPicker<T extends CollectionType = CollectionType>({
   onPick
 }: CollectionPickerProps<T>) {
   const {
+    totalItems,
     page,
     totalPages,
     pageCollections,
@@ -32,21 +33,16 @@ export function CollectionPicker<T extends CollectionType = CollectionType>({
     onNextPage,
     onPrevPage,
     onLoadMoreCollections
-  } = useManageCollections<T>(
-    type,
-    initialCollections,
-    totalCollections,
-    pageSize
-  );
+  } = useManageCollections<T>({ type, initialCollections, initialTotalCollections: totalCollections, pageSize });
 
   const isCluster = type === CollectionType.CLUSTER;
   const collectionLabel = isCluster ? "Cluster" : "Tag";
 
     useEffect(() => {
-    if (initialCollections.length === 0 && totalCollections > 0) {
+    if (initialCollections.length === 0 && totalItems > 0) {
       onLoadMoreCollections(0);
     }
-  }, [initialCollections.length, totalCollections, onLoadMoreCollections]);
+  }, [initialCollections.length, totalItems, onLoadMoreCollections]);
 
 
   return (

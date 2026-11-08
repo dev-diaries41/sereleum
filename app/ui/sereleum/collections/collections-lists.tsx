@@ -53,7 +53,7 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
     onPrevPage,
     onMergeCollections,
     onDeleteCollections
-  } = useManageCollections<T>(type, initialCollections, initialTotalCollections, pageSize);
+  } = useManageCollections<T>({type, initialCollections, initialTotalCollections, pageSize});
 
   const {
     selectedCount,
