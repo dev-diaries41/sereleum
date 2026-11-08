@@ -225,6 +225,7 @@ export function CollectionManagerView<T extends CollectionType>({
         </div>
 
         <SelectionControls
+          label="Manage items"
           isSelecting={isSelecting}
           selectedCount={selectedCount}
           totalCount={collection.size}
