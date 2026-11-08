@@ -32,8 +32,8 @@ export const useCollectionItems = <T extends CollectionType = CollectionType>({
     fetchPage
   });
 
-  const onMoveItems = async ( itemIds: string[], newCollectionId: CollectionId<T> ) => {
-    await sereleumApiClient.moveItems(itemIds, newCollectionId, collection.type);
+  const onMoveClusterItems = async ( destinationCollection: string, sourceCollection: string, itemIds: string[], excludedItemIds: string[], selectAll: boolean  ) => {
+    await sereleumApiClient.moveClusterItems(destinationCollection, sourceCollection, itemIds, excludedItemIds, selectAll);
     pagination.setTotalItems(prev => Math.max(0, prev - itemIds.length));
     await pagination.invalidatePages();
   };
@@ -55,7 +55,7 @@ export const useCollectionItems = <T extends CollectionType = CollectionType>({
   return {
     ...pagination,
     onLoadMoreItems: pagination.onLoadMore,
-    onMoveItems,
+    onMoveClusterItems,
     onTagItems,
     tags,
     loadTags

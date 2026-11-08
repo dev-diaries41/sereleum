@@ -94,9 +94,11 @@ export interface RenameCollectionRequest {
 }
 
 export interface MoveItemsRequest {
+  destination_collection_id: CollectionId;
+  source_collection_id: CollectionId;
   item_ids: string[];
-  new_collection_id: CollectionId;
-  current_collection_id?: CollectionId;
+  excluded_item_ids:string[];
+  select_all: boolean;
 }
 
 export interface MergeCollectionsRequest {

@@ -54,7 +54,7 @@ export function CollectionManagerView<T extends CollectionType>({
   onNextPage,
   onPrevPage,
   tags,
-  onMoveItems,
+  onMoveClusterItems,
   onTagItems,
   loadTags
 } = useCollectionItems<T>({collection, initialItems, pageSize});
@@ -88,7 +88,8 @@ export function CollectionManagerView<T extends CollectionType>({
       }
     },
     {
-      enabled: selectedCount > 0,
+      hideIfDisabled: true,
+      enabled: selectedCount > 0 && collection.type === CollectionType.CLUSTER,
       label: "Move",
       icon: faFolder,
       onClick: () => {
@@ -149,10 +150,10 @@ export function CollectionManagerView<T extends CollectionType>({
     }
   };
 
-  const moveItems = async (collection: Collection<T>) => {
+
+  const moveClusterItems = async (destinationCollcetion: Collection<T>) => {
     try {
-      // TODO: make api accept include and exclude ids
-      await onMoveItems(Array.from(selectedItems), collection.id);
+      await onMoveClusterItems(destinationCollcetion.id as string, collection.id as string, Array.from(selectedItems), Array.from(excludedItems), selectAll );
       setIsMoving(false);
       resetSelection()
     } catch(e){
@@ -268,7 +269,7 @@ export function CollectionManagerView<T extends CollectionType>({
         <CollectionPicker
         type={type}
         totalCollections={totalCollections}
-        onPick={moveItems}
+        onPick={moveClusterItems}
         />
       </Modal>
     </div>

@@ -144,18 +144,16 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
 
   }
 
-  async moveItems<TCollectionType extends CollectionType>( itemIds: string[], newCollectionId: CollectionId<TCollectionType>, type: TCollectionType, currentCollectionId?: CollectionId<TCollectionType> ): Promise<void> {
+  async moveClusterItems(destinationCollection: string, sourceCollection: string, itemIds: string[], excludedItemIds: string[], selectAll: boolean  ): Promise<void> {
     const payload: MoveItemsRequest = {
-      new_collection_id: newCollectionId,
+      destination_collection_id: destinationCollection,
+      source_collection_id: sourceCollection,
       item_ids: itemIds,
-      ...(currentCollectionId && {
-        current_collection_id: currentCollectionId,
-      }),
-    };
+      excluded_item_ids: excludedItemIds,
+      select_all: selectAll
+    }
 
-    const url = type === CollectionType.TAG
-      ? `${this.baseUrl}${APIRoutes.MOVE_TAG_ITEMS_ENDPOINT}`
-      : `${this.baseUrl}${APIRoutes.MOVE_CLUSTER_ITEMS_ENDPOINT}`;
+    const url = `${this.baseUrl}${APIRoutes.MOVE_CLUSTER_ITEMS_ENDPOINT}`;
 
     const res = await fetch(url, {
       method: "PATCH",
@@ -169,6 +167,7 @@ export class SereleumApiClient<T extends DocItem = DocItem> {
       throw new Error(await res.text());
     }
   }
+  
   // async getCollections(type: CollectionType, offset?: number, limit?: number, collectionId?: CollectionId): Promise<Collection[]>;
   async getCollections<TCollectionType extends CollectionType>(type: TCollectionType, offset: number = 0, limit?: number, collectionId?: CollectionId<TCollectionType>): Promise<Collection<TCollectionType>[]> {
       const query: GetCollectionsRequest = { 
