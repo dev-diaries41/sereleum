@@ -152,7 +152,7 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
   return (
     <div className="flex flex-col mx-auto w-full items-center justify-center py-8 px-2 gap-4">
       <div className="w-full flex flex-col gap-4 md:flex-row justify-between mb-2 items-center">
-        <h1 className="text-xl md:text-2xl">{collectionLabel}</h1>
+        <h1 className="text-xl md:text-2xl">{totalCollections} {collectionLabel}</h1>
         <SelectionControls
           label={`Manage ${collectionLabel}`}
           isSelecting={isSelecting}
