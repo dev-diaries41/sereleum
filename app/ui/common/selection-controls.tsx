@@ -1,10 +1,9 @@
-
-
 interface SelectionControlsProps {
-  label?: string
+  label?: string;
   isSelecting: boolean;
   selectedCount: number;
   totalCount: number;
+  allowSelectAll?: boolean;
   onSelect: () => void;
   onSelectAllChange: (checked: boolean) => void;
   onClearSelection: () => void;
@@ -16,6 +15,7 @@ export function SelectionControls({
   isSelecting,
   selectedCount,
   totalCount,
+  allowSelectAll = true,
   onSelect,
   onSelectAllChange,
   onClearSelection,
@@ -36,15 +36,17 @@ export function SelectionControls({
   return (
     <div className="flex flex-wrap justify-between items-center gap-4 mb-4">
       <div className="flex items-center gap-4">
-        <label className="flex flex-col items-center gap-1 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={allSelected}
-            onChange={e => onSelectAllChange(e.target.checked)}
-            className="h-5 w-5 accent-indigo-600 cursor-pointer"
-          />
-          <span className="text-sm text-indigo-600">All</span>
-        </label>
+        {allowSelectAll && (
+          <label className="flex flex-col items-center gap-1 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={allSelected}
+              onChange={e => onSelectAllChange(e.target.checked)}
+              className="h-5 w-5 accent-indigo-600 cursor-pointer"
+            />
+            <span className="text-sm text-indigo-600">All</span>
+          </label>
+        )}
 
         <span className="text-xl font-medium text-indigo-600">
           {selectedCount > 0 ? `${selectedCount} Selected` : "Select items"}

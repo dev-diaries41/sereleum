@@ -155,6 +155,7 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
       <div className="w-full flex flex-col gap-4 md:flex-row justify-between mb-2 items-center">
         <h1 className="text-xl md:text-2xl">{totalCollections} {collectionLabel}</h1>
         <SelectionControls
+          allowSelectAll={false}
           label={`Manage ${collectionLabel}`}
           isSelecting={isSelecting}
           selectedCount={selectedCount}
