@@ -19,7 +19,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   return (
     <ErrorBoundary errorComponent={ErrorComponent}>
       <Suspense fallback={<Loading />}>
-        <CollectionManagerView collectionToView={collection} type={CollectionType.TAG} initialItems={items} totalCollections={totalTags}/>
+        <CollectionManagerView collectionToView={collection} type={CollectionType.TAG} initialItems={items} initialTotalCollections={totalTags}/>
       </Suspense>
     </ErrorBoundary>
   );

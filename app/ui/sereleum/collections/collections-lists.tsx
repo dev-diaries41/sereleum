@@ -27,7 +27,7 @@ const sortOptions: [string, SortKey][] = [
 
 interface CollectionsWrapperProps<T extends CollectionType> {
   type: T;
-  totalCollections: number;
+  initialTotalCollections: number;
   pageSize?: number;
   initialCollections?: Collection<T>[];
 }
@@ -36,11 +36,12 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
   pageSize = 25,
   initialCollections = [],
   type,
-  totalCollections,
+  initialTotalCollections,
 }: CollectionsWrapperProps<T>) {
   const router = useRouter();
 
   const {
+    totalItems: totalCollections,
     collections,
     page,
     totalPages,
@@ -52,7 +53,7 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
     onPrevPage,
     onMergeCollections,
     onDeleteCollections
-  } = useManageCollections<T>(type, initialCollections, totalCollections, pageSize);
+  } = useManageCollections<T>(type, initialCollections, initialTotalCollections, pageSize);
 
   const {
     selectedCount,

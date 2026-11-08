@@ -19,14 +19,14 @@ import { CollectionPicker } from "./collection-picker";
 
 interface CollectionManagerProps<T extends CollectionType> {
   initialItems?: DocItem[];
-  totalCollections: number;
+  initialTotalCollections: number;
   collectionToView: Collection<T>;
   type: T;
   pageSize?: number;
 }
 
 export function CollectionManagerView<T extends CollectionType>({
-  totalCollections,
+  initialTotalCollections,
   collectionToView,
   type,
   initialItems = [],
@@ -42,9 +42,9 @@ export function CollectionManagerView<T extends CollectionType>({
   const [isTagging, setIsTagging] = useState(false);
   const [isMoving, setIsMoving] = useState(false);
 
-  const { onRenameCollection } = useManageCollections<T>(type, [], totalCollections);
+  const { onRenameCollection } = useManageCollections<T>(type, [], initialTotalCollections);
   const {
-  items,
+  totalItems: totalCollections,
   pageItems,
   page,
   totalPages,

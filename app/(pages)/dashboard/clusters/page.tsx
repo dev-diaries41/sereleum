@@ -14,7 +14,7 @@ export default async function Page() {
   return (
     <ErrorBoundary errorComponent={ErrorComponent}>
       <Suspense fallback={<Loading />}>
-        <CollectionsWrapper pageSize={25} initialCollections={collections} type={CollectionType.CLUSTER} totalCollections={totalClusters}/>
+        <CollectionsWrapper pageSize={25} initialCollections={collections} type={CollectionType.CLUSTER} initialTotalCollections={totalClusters}/>
       </Suspense>
     </ErrorBoundary>
   );
