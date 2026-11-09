@@ -13,15 +13,20 @@ export function OverviewSummary({ overview }: OverviewSummaryProps) {
   ];
 
   return (
-    <div className="border border-gray-300 rounded-2xl shadow-sm p-6 w-full">
-      <div className="flex items-center gap-12">
-        {stats.map(({ label, value }) => (
-          <div key={label}>
-            <p className="text-sm text-gray-500 font-semibold">{label}</p>
-            <p className="text-3xl font-extrabold">{value}</p>
-          </div>
-        ))}
-      </div>
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 w-full">
+      {stats.map(({ label, value }) => (
+        <div
+          key={label}
+          className="border border-gray-200 bg-gray-50 rounded-2xl shadow-sm p-8"
+        >
+          <p className="text-base text-gray-500 font-semibold mb-2">
+            {label}
+          </p>
+          <p className="text-4xl font-extrabold text-gray-900">
+            {value.toLocaleString()}
+          </p>
+        </div>
+      ))}
     </div>
   );
 }
