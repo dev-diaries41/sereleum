@@ -32,7 +32,7 @@ export function TopCollectionsContainer({
     <div className="lg:col-span-3 border border-gray-300 rounded-2xl shadow-sm p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm text-gray-500 font-semibold">
-          Top {topN} {label}
+          Top {label}
         </h3>
 
         <div className="flex items-center gap-4">
