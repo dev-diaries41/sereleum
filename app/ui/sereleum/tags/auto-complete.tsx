@@ -25,9 +25,7 @@ export function AutoCompleter({
   return (
     <div className="w-full max-h-[300px] overflow-y-auto rounded-lg bg-white p-4">
       {label && (
-        <p className="mb-3 text-sm font-semibold text-gray-700">
-          {label}
-        </p>
+        <p className="mb-3 text-sm font-semibold text-gray-700">{label}</p>
       )}
 
       <div className="flex flex-col gap-2">
@@ -41,11 +39,11 @@ export function AutoCompleter({
             <button
               key={`${result}-${index}`}
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => onSelect(result)}
               className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left hover:bg-gray-100"
             >
               <FontAwesomeIcon icon={faTag} className="text-gray-700" />
-
               <span className="text-base text-gray-900">
                 {matchLength > 0 ? (
                   <>
@@ -54,9 +52,7 @@ export function AutoCompleter({
                     </span>
                     {result.substring(matchLength)}
                   </>
-                ) : (
-                  result
-                )}
+                ) : result}
               </span>
             </button>
           );

@@ -56,6 +56,11 @@ export function TagAdder({
     onAddTag(newTag);
   };
 
+    const handleSelectTag = (value: string) => {
+    setNewTag(value);
+  alert('SELECTED VALUE: ' + value)
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div
@@ -112,6 +117,7 @@ export function TagAdder({
           <button
             type="button"
             disabled={!newTag.trim()}
+            onMouseDown={(e) => e.preventDefault()}
             onClick={handleAddTag}
             className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
