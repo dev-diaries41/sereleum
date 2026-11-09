@@ -80,7 +80,7 @@ export function DashboardOverview({user, hasCompletedOnboarding, initialOverview
                       onClick={handleFileUpload}
                       className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow-md"
                     >
-                      Upload Prompts
+                      Upload items
                     </button>
                   ) : (
                     <FileUploader
@@ -88,7 +88,7 @@ export function DashboardOverview({user, hasCompletedOnboarding, initialOverview
                       acceptedMimes={AcceptedMimes}
                     >
                       <span className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm shadow-md">
-                        Add Prompts
+                        Add items
                       </span>
                     </FileUploader>
                   )}
@@ -131,7 +131,7 @@ export function DashboardOverview({user, hasCompletedOnboarding, initialOverview
         {indexingStatus  && <ProgressTrackerPopUp
           progress={progress} 
           status={indexingStatus} 
-          title={"Indexing prompts"}
+          title={"Indexing items"}
           minimized = {trackerMinimized}
           onMinimize={() => updateTrackerVisibility(true)}
           />
@@ -139,9 +139,9 @@ export function DashboardOverview({user, hasCompletedOnboarding, initialOverview
 
         {clusteringStatus && <ProgressTrackerPopUp
           status={clusteringStatus} 
-          title={"Clustering prompts"}
+          title={"Clustering items"}
           minimized = {trackerMinimized}
-          description="Clustering is in progress. This may take a while depending on the number of prompts."
+          description="Clustering is in progress. This may take a while depending on the number of items."
           onMinimize={() => updateTrackerVisibility(true)}
           />
         }
