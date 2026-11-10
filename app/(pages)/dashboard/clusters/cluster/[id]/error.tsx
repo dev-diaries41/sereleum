@@ -16,7 +16,7 @@ export default function Error({
  
   return (
     <div>
-        <DefaultError title={`Error loading cluster details.`}  reset={reset}/>
+        <DefaultError title={`Error loading cluster page.`}  reset={reset}/>
     </div>
   )
 }
