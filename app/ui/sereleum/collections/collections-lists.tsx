@@ -10,13 +10,14 @@ import { CollectionRow } from "./collection-row";
 import { SelectionControls } from "../../common/selection-controls";
 import { FloatingActionButton } from "../../common/fab";
 import { ActionsMenu } from "../../common/action-menu";
-import { faChevronDown, faChevronUp, faCodeMerge, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faChevronUp, faCodeMerge, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Selector } from "../../common/selector";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SelectorModal } from "@/app/ui/modals/selector-modal";
 import { viewCollection } from "@/app/lib/nav";
 import { useRouter } from "next/navigation";
 import { DeleteConfirmationModal } from "@/app/ui/modals/delete-modal";
+import { CreateClusterModal } from "./create-cluster-modal";
 
 const SortKeyOptions = ["size"] as const;
 type SortKey = typeof SortKeyOptions[number];
@@ -52,7 +53,8 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
     onNextPage,
     onPrevPage,
     onMergeCollections,
-    onDeleteCollections
+    onDeleteCollections,
+    onCreateCluster
   } = useManageCollections<T>({type, initialCollections, initialTotalCollections, pageSize});
 
   const {
@@ -67,6 +69,7 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
     isItemSelected
   } = useSelection<CollectionId<T>>();
 
+  const [isCreatingCluster, setIsCreatingCluster] = useState(false);
   const [isMerging, setIsMerging] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [sortBy, setSortBy] = useState<SortKey>("size");
@@ -126,6 +129,15 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
     }
   };
 
+   const handleCreateCluster = async (name: string, seed: string) => {
+    try {
+      await onCreateCluster(name, seed);
+      setIsCreatingCluster(false);
+    } catch (err) {
+      console.error("Creating cluster failed", err);
+    }
+  };
+
   const handleCollectionClick = (collection: Collection<T>) => {
     if (isSelecting) {
       toggleSelectedItem(collection.id, totalCollections);
@@ -143,28 +155,61 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
     selectedCollections.map(c => [c.name, c.id]);
 
   if (collections.length === 0) {
-    return (
+  return (
+    <div className="flex flex-col items-center justify-center py-8 px-2 gap-4">
+      <h1 className="text-xl md:text-2xl">
+        {totalCollections} {collectionLabel}
+      </h1>
+
+      {!isSelecting && isCluster && (
+        <button
+          onClick={() => setIsCreatingCluster(true)}
+          className="px-4 py-2 border rounded"
+        >
+          Create Cluster
+        </button>
+      )}
+
       <div className="text-sm text-gray-500 py-8 text-center">
         No {collectionLabel.toLocaleLowerCase()} available
       </div>
-    );
-  }
+
+      <CreateClusterModal
+        isVisible={isCreatingCluster}
+        onClose={() => setIsCreatingCluster(false)}
+        onCreateCluster={handleCreateCluster}
+      />
+    </div>
+  );
+}
 
   return (
     <div className="flex flex-col mx-auto w-full items-center justify-center py-8 px-2 gap-4">
       <div className="w-full flex flex-col gap-4 md:flex-row justify-between mb-2 items-center">
         <h1 className="text-xl md:text-2xl">{totalCollections} {collectionLabel}</h1>
-        <SelectionControls
-          allowSelectAll={false}
-          label={`Manage ${collectionLabel}`}
-          isSelecting={isSelecting}
-          selectedCount={selectedCount}
-          totalCount={totalCollections}
-          onSelect={toggleSelectionMode}
-          onSelectAllChange={checked => setSelectAll(checked, totalCollections)}
-          onClearSelection={clearSelection}
-          onDone={() => resetSelection()}
-        />
+          <div className="flex items-center gap-3">
+            <SelectionControls
+                allowSelectAll={false}
+                label={`Manage ${collectionLabel}`}
+                isSelecting={isSelecting}
+                selectedCount={selectedCount}
+                totalCount={totalCollections}
+                onSelect={toggleSelectionMode}
+                onSelectAllChange={checked => setSelectAll(checked, totalCollections)}
+                onClearSelection={clearSelection}
+                onDone={() => resetSelection()}
+              />
+              {!isSelecting && isCluster && (
+                <button
+                  onClick={() => setIsCreatingCluster(true)}
+                  className="px-4 py-2 border rounded"
+                >
+                  Create Cluster
+                </button>
+              )}
+          </div>
+
+  
       </div>
 
       <Selector
@@ -241,6 +286,11 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
         itemCount={selectedCount}
         itemLabel={isCluster ? "clusters" : "tags"}
         loading={loading}
+      />
+      <CreateClusterModal
+        isVisible={isCreatingCluster}
+        onClose={()=> setIsCreatingCluster(false)}
+        onCreateCluster={handleCreateCluster}
       />
     </div>
   );

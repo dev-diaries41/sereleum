@@ -57,9 +57,15 @@ export const useManageCollections = <T extends CollectionType = CollectionType>(
     pagination.invalidatePages();
   };
 
-const onMergeCollections = async ( primaryCollectionId: CollectionId<T>, secondaryCollectionIds: CollectionId<T>[] ) => {
-    await sereleumApiClient.mergeCollections( type, primaryCollectionId, secondaryCollectionIds );
-    pagination.setTotalItems(prev => Math.max(0, prev - secondaryCollectionIds.length));
+  const onMergeCollections = async ( primaryCollectionId: CollectionId<T>, secondaryCollectionIds: CollectionId<T>[] ) => {
+      await sereleumApiClient.mergeCollections( type, primaryCollectionId, secondaryCollectionIds );
+      pagination.setTotalItems(prev => Math.max(0, prev - secondaryCollectionIds.length));
+      pagination.invalidatePages();
+    };
+
+  const onCreateCluster = async ( name: string, seed: string) => {
+    const clusterId = await sereleumApiClient.createCluster( name, seed );
+    pagination.setTotalItems(prev => Math.max(0, prev + 1));
     pagination.invalidatePages();
   };
 
@@ -70,6 +76,7 @@ const onMergeCollections = async ( primaryCollectionId: CollectionId<T>, seconda
     onLoadMoreCollections: pagination.onLoadMore,
     onRenameCollection,
     onMergeCollections,
-    onDeleteCollections
+    onDeleteCollections,
+    onCreateCluster
   };
 };
