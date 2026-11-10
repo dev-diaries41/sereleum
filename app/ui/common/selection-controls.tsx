@@ -25,7 +25,7 @@ export function SelectionControls({
 
   if (!isSelecting) {
     return (
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end">
         <button onClick={onSelect} className="px-4 py-2 border rounded">
           {label}
         </button>
