@@ -21,6 +21,8 @@ import {
   TagRequest,
   DeleteCollectionsRequest,
   RemoveTagRequest,
+  CreateClusterRequest,
+  CreateClusterResponse,
 } from "@/app/types";
 import * as APIRoutes from "@/app/sereleum/routes";
 import { CollectionType } from "../enums/collections";
@@ -299,6 +301,20 @@ async deleteCollection<T extends CollectionType>(type: T, collectionIds: Collect
       const text = await res.text();
       throw new Error(text);
     }
+  }
+
+  async createCluster(name: string, seed: string): Promise<string> {
+    const url = `${this.baseUrl}${APIRoutes.CREATE_CLUSTER_ENDPOINT}`
+    const payload: CreateClusterRequest = { name, seed };
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await this.handleResponse<CreateClusterResponse>(res);
+    return data.cluster_id
   }
 
 }

@@ -138,3 +138,12 @@ export interface RemoveTagRequest {
   excluded_item_ids: string[];
   select_all: boolean;
 }
+
+export interface CreateClusterRequest {
+  name: string;
+  seed: string;
+}
+
+export interface CreateClusterResponse {
+  cluster_id: string;
+}
