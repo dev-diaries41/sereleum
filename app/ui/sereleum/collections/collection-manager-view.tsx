@@ -9,14 +9,14 @@ import { faArrowLeft, faCheck, faFolder, faLinkSlash, faPen, faTag, faTrash, faX
 import { useManageCollections } from "@/app/hooks/useManageCollection";
 import { useSelection } from "@/app/hooks/useSelection";
 import { CollectionType } from "@/app/enums/collections";
-import { SelectionControls } from "../../common/selection-controls";
-import { ActionsMenu } from "../../common/action-menu";
-import { FloatingActionButton } from "../../common/fab";
+import { SelectionControls } from "@/app/ui/common/selection-controls";
+import { ActionsMenu } from "@/app/ui/common/action-menu";
+import { FloatingActionButton } from "@/app/ui/common/fab";
 import { useCollectionItems } from "@/app/hooks/useCollectionItems";
-import { TagAdder } from "../tags/tag-adder";
-import { Modal } from "../../common/modal";
+import { TagAdder } from "@/app/ui/sereleum/tags/tag-adder";
+import { Modal } from "@/app/ui/modals/modal";
 import { CollectionPicker } from "./collection-picker";
-import { ConfirmationModal } from "../../common/confirm-modal";
+import { ConfirmationModal } from "@/app/ui/modals/confirm-modal";
 
 interface CollectionManagerProps<T extends CollectionType> {
   initialItems?: DocItem[];

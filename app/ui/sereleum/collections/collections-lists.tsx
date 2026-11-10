@@ -13,10 +13,10 @@ import { ActionsMenu } from "../../common/action-menu";
 import { faChevronDown, faChevronUp, faCodeMerge, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Selector } from "../../common/selector";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { SelectorModal } from "../../common/selector-modal";
+import { SelectorModal } from "@/app/ui/modals/selector-modal";
 import { viewCollection } from "@/app/lib/nav";
 import { useRouter } from "next/navigation";
-import { DeleteConfirmationModal } from "../../common/delete-modal";
+import { DeleteConfirmationModal } from "@/app/ui/modals/delete-modal";
 
 const SortKeyOptions = ["size"] as const;
 type SortKey = typeof SortKeyOptions[number];

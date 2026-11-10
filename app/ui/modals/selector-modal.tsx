@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Selector } from "./selector";
+import { Selector } from "@/app/ui/common/selector";
 
 interface SelectorModalProps<T> {
   isVisible: boolean;

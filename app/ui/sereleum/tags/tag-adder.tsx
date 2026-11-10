@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { AutoCompleter } from "./auto-complete";
 import { checkAutoCompletion } from "@/app/lib/helpers";
-import { TextInputModal } from "../../common/text-input-modal";
+import { TextInputModal } from "@/app/ui/modals/text-input-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTag } from "@fortawesome/free-solid-svg-icons";
 
