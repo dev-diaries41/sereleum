@@ -17,6 +17,7 @@ import { TagAdder } from "@/app/ui/sereleum/tags/tag-adder";
 import { Modal } from "@/app/ui/modals/modal";
 import { CollectionPicker } from "./collection-picker";
 import { ConfirmationModal } from "@/app/ui/modals/confirm-modal";
+import { SereleumErrorCode } from "@/app/sereleum/errors";
 
 interface CollectionManagerProps<T extends CollectionType> {
   initialItems?: DocItem[];
@@ -133,7 +134,20 @@ export function CollectionManagerView<T extends CollectionType>({
       await onRenameCollection(collection.id, name.trim());
       setCollection(prev => prev ? { ...prev, name: name.trim() } : prev);
       setEditing(false);
-    } finally {
+    }catch(error){
+      if (error instanceof Error) {
+        try {
+          const detail = JSON.parse(error.message);
+          if (detail.detail?.code === SereleumErrorCode.DUPLICATE_NAME) {
+            alert(detail.detail.message);
+          }
+        } catch {
+            console.error("Renaming collcetion failed", error);
+            alert('Unknown error renaming collection');
+        }
+      }
+    }
+    finally {
       setSaving(false);
     }
   };
