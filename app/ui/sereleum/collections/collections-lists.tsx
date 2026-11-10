@@ -18,6 +18,7 @@ import { viewCollection } from "@/app/lib/nav";
 import { useRouter } from "next/navigation";
 import { DeleteConfirmationModal } from "@/app/ui/modals/delete-modal";
 import { CreateClusterModal } from "./create-cluster-modal";
+import { SereleumErrorCode } from "@/app/sereleum/errors";
 
 const SortKeyOptions = ["size"] as const;
 type SortKey = typeof SortKeyOptions[number];
@@ -116,6 +117,7 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
       resetSelection()
     } catch (err) {
       console.error("Merge failed", err);
+      alert('Unknown error merging collections');
     }
   };
 
@@ -126,15 +128,27 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
       resetSelection();
     } catch (err) {
       console.error("Delete failed", err);
+      alert('Unknown error deleting collections');
     }
   };
 
-   const handleCreateCluster = async (name: string, seed: string) => {
+  const handleCreateCluster = async (name: string, seed: string) => {
     try {
       await onCreateCluster(name, seed);
       setIsCreatingCluster(false);
-    } catch (err) {
-      console.error("Creating cluster failed", err);
+    } catch (error) {
+
+      if (error instanceof Error) {
+        try {
+          const detail = JSON.parse(error.message);
+          if (detail.detail?.code === SereleumErrorCode.DUPLICATE_NAME) {
+            alert(detail.detail.message);
+          }
+        } catch {
+            console.error("Creating cluster failed", error);
+            alert('Unknown error creating cluster');
+        }
+      }
     }
   };
 
