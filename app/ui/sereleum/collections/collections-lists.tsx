@@ -115,6 +115,7 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
       await onMergeCollections(parentCollectionId, secondaryCollectionIds);
       setIsMerging(false);
       resetSelection()
+      router.refresh();
     } catch (err) {
       console.error("Merge failed", err);
       alert('Unknown error merging collections');
@@ -126,6 +127,7 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
       await onDeleteCollections([...selectedCollectionIds]);
       setIsDeleting(false);
       resetSelection();
+      router.refresh();
     } catch (err) {
       console.error("Delete failed", err);
       alert('Unknown error deleting collections');
