@@ -15,13 +15,13 @@ const ibmPlex = IBM_Plex_Sans({
 })
 
 const appName = 'Sereleum'
-const description = 'Prompt analytics platform that turns user prompts into actionable insights'
+const description = 'Turn unstructured documents into organised knowledge'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://sereleum.vercel.app/'),
   title: appName,
   description: description,
-  keywords: ['ai', 'llm', 'labelling', 'clusters', 'analysis', 'indexing', 'data'],
+  keywords: ['ai', 'llm', 'labelling', 'clustering', 'analysis', 'indexing', 'data', 'tagging'],
   applicationName: appName,
   openGraph: {
     type: 'website',
