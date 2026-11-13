@@ -1,12 +1,12 @@
 # Sereleum
 
 <div align="center">
-  <img src="public/screenshots/dashboard-page.png" alt="sereleum-dashboard" style="border-radius: 20px;">
+  <img src="public/screenshots/overview.png" alt="sereleum-dashboard" style="border-radius: 20px;">
 </div>
 
-| <img src="public/screenshots/clusters-page.png" alt="collections-page" width="400px"> | <img src="public/screenshots/cluster-details-page.png" alt="collection-details-page" width="400px"> |
+| <img src="public/screenshots/clusters.png" alt="clusters-page" width="400px"> | <img src="public/screenshots/tags.png" alt="tags-page" width="400px"> |
 |:---:|:---:|
-| <img src="public/screenshots/prompts-page.png" alt="documents-page" width="400px"> | <img src="public/screenshots/graphs.png" alt="dashboard-graphs" width="400px"> |
+| <img src="public/screenshots/tag-collection.png" alt="tag-collection-page" width="400px"> | <img src="public/screenshots/cluster-collection.png" alt="cluster-collection-page" width="400px"> |
 
 Sereleum is a web client for document analysis and organisation, providing an interface for exploring documents and managing collections. It is built on top of [sereleum-core](https://github.com/dev-diaries41/sereleum-core), which provides the API and core functionality for document indexing, semantic clustering, automatic cluster labelling, and tagging.
 
