@@ -62,6 +62,7 @@ export default function ItemsTable<T extends CollectionType = CollectionType>({
     });
   };
 
+  // TODO: replace with api search
   const filteredItems = items.filter(
     item =>
       item.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -69,7 +70,7 @@ export default function ItemsTable<T extends CollectionType = CollectionType>({
   );
 
   return (
-    <div className="flex flex-col mx-auto w-full items-center justify-center py-8 px-4">
+    <div className="flex flex-col mx-auto w-full items-center justify-center py-8">
       <div className="w-full flex flex-col gap-8 md:flex-row justify-between mb-12">
         <h1 className="text-xl md:text-2xl">{title}</h1>
 
@@ -79,24 +80,26 @@ export default function ItemsTable<T extends CollectionType = CollectionType>({
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Search by item ID or content..."
-            className="border border-gray-300 rounded px-4 py-2 w-full"
+            className="border border-gray-300 rounded-md px-4 py-2 w-full"
           />
         </div>
       </div>
 
       <div className="w-full overflow-x-auto rounded-xl border border-gray-300">
-        <table className="w-full min-w-full table-auto border-collapse text-sm">
+        <table className="w-full table-auto border-collapse text-sm">
           <colgroup>
-            <col style={{ width: "18%" }} />
-            <col style={{ width: "18%" }} />
-            <col style={{ width: "64%" }} />
+            <col style={{ width: "25%" }} />
+            <col style={{ width: "75%" }} />
           </colgroup>
 
           <thead>
             <tr className="bg-gray-100 text-sm text-gray-500">
-              <th className="border border-gray-300 px-4 py-2 text-left">Item Id</th>
-              <th className="border border-gray-300 px-4 py-2 text-left">{collectionLabel}</th>
-              <th className="border border-gray-300 px-4 py-2 text-left">Content</th>
+              <th className="border border-gray-300 px-4 py-2 text-left whitespace-nowrap">
+                Id
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left w-full">
+                Content
+              </th>
             </tr>
           </thead>
 
@@ -138,16 +141,6 @@ export default function ItemsTable<T extends CollectionType = CollectionType>({
                         )}
                         {item.id}
                       </div>
-                    </td>
-
-                    <td className="border border-gray-300 px-4 py-2 break-words">
-                      <Link
-                        href={collectionUrl}
-                        className="text-blue-600 hover:underline"
-                        onClick={e => e.stopPropagation()}
-                      >
-                        {collection.name}
-                      </Link>
                     </td>
 
                     <td
