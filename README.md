@@ -4,44 +4,67 @@
   <img src="public/screenshots/dashboard-page.png" alt="sereleum-dashboard" style="border-radius: 20px;">
 </div>
 
-| <img src="public/screenshots/clusters-page.png" alt="clusters-page" width="400px"> | <img src="public/screenshots/cluster-details-page.png" alt="cluster-details-page" width="400px"> |
-|-----------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
-| <img src="public/screenshots/prompts-page.png" alt="prompts-page" width="400px">  | <img src="public/screenshots/graphs.png" alt="dashboard-graphs" width="400px">            |
+| <img src="public/screenshots/clusters-page.png" alt="collections-page" width="400px"> | <img src="public/screenshots/cluster-details-page.png" alt="collection-details-page" width="400px"> |
+|:---:|:---:|
+| <img src="public/screenshots/prompts-page.png" alt="documents-page" width="400px"> | <img src="public/screenshots/graphs.png" alt="dashboard-graphs" width="400px"> |
 
-Sereleum is a client web application for prompts analytics that allows businesses to turn user prompts into actionable insights. It enables uncovering semantic patterns and optimizing LLM-powered products. It depends on [sereleum-core](https://github.com/dev-diaries41/sereleum-core)
+Sereleum is a web client for document analysis and organisation, providing an interface for exploring documents and managing collections. It is built on top of [sereleum-core](https://github.com/dev-diaries41/sereleum-core), which provides the API and core functionality for document indexing, semantic clustering, automatic cluster labelling, and tagging.
 
 ## Core Features
 
-Sereleum focuses on analytics-driven controls that turn raw user prompts into standardized, high-quality, and cost-efficient interactions.
+Sereleum provides a unified interface for exploring and organising documents processed by sereleum-core.
 
-### 1. Prompt Clustering & Intent Discovery
+### 1. Document Indexing
 
-Automatically groups semantically similar prompts and labels clusters to surface **dominant user intents and workflows**.
-
-**What this enables:**
-
-* Clear visibility into how users actually use your LLM-powered product
-* Identification of repeatable, high-value use cases suitable for standardization
-* Identify core product workflows
-
----
-
-### 2. Token Usage & Cost by Cluster (Top 6)
-
-Tracks token consumption and cost at the **use-case level**, focusing on the top 5 clusters that drive the majority of spend and traffic.
-
-**Why top 6 only:**
-
-* Captures the highest-impact intents
-* Reduces noise and computational overhead
-* Directs optimization efforts where ROI is highest
+Index documents to make their content available for semantic analysis and organisation.
 
 **What this enables:**
 
-* Immediate visibility into which user intents are most expensive
-* Prioritization of clusters for prompt optimization and templating
+- Processing and indexing document content
+- Semantic representation of documents
+- Preparing documents for clustering and retrieval
 
-Both features can be used to guide decisions in product optimisations
+### 2. Semantic Clustering
 
----
+Automatically groups semantically similar documents into clusters, uncovering relationships and recurring themes across a document collection.
 
+**What this enables:**
+
+- Discovering groups of related documents
+- Identifying recurring topics and themes
+- Exploring relationships across documents
+
+### 3. Automatic Cluster Labelling
+
+Automatically generates descriptive labels for clusters, making groups of related documents easier to identify and navigate.
+
+**What this enables:**
+
+- Quickly understanding cluster contents
+- Reducing manual organisation effort
+- Providing meaningful descriptions for document groups
+
+### 4. Tagging & Collections
+
+Clusters and tags are abstracted into a unified concept: **Collections**.
+
+Collections provide a consistent way to organise and manage documents, whether they are automatically grouped through clustering or manually organised through tagging.
+
+**What this enables:**
+
+- Organising documents into collections
+- Managing and editing collections
+- Grouping documents by semantic similarity or user-defined categories
+- Combining automated organisation with manual curation
+
+## Roadmap
+
+- [ ] **Individual Item Labelling** – Use LLMs to automatically generate descriptive labels for individual documents, building on the existing tagging infrastructure.
+- [ ] **Image Support** – Extend indexing and analysis capabilities beyond text documents to support images.
+
+## Architecture
+
+Sereleum consists of two components:
+
+- **Sereleum** – Web client providing document exploration, collection management, and visualisation.
+- **[Sereleum-Core](https://github.com/dev-diaries41/sereleum-core)** – Backend providing the API and core functionality for indexing, clustering, automatic cluster labelling, and tagging.
