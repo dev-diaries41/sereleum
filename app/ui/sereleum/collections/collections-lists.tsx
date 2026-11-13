@@ -281,10 +281,10 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
 
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
         {actionsOpen && <ActionsMenu actions={actions} />}
-        <FloatingActionButton
-          isOpen={actionsOpen}
-          onClick={() => setActionsOpen(open => !open)}
-        />
+         {isSelecting &&  <FloatingActionButton
+            isOpen={actionsOpen}
+            onClick={() => setActionsOpen(open => !open)}
+          />}
       </div>
 
       <SelectorModal
