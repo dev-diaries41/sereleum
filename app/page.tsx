@@ -1,10 +1,11 @@
+
 import { Suspense } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Features, HowItWorksSteps } from './constants/content/hero';
 import { FeatureCard } from './ui/landing/features';
 import { Card } from './ui/cards/card';
 import { SectionItem } from './types';
-import Image from "next/image";
 
 export const revalidate = 3600;
 
@@ -20,32 +21,28 @@ function Home() {
   return (
     <div className="w-full overflow-hidden font-sans">
       <HeroSection />
-      <FeaturesSection />
-      <HowItWorksSection steps={HowItWorksSteps}/>
+      {/* <FeaturesSection /> */}
+      <HowItWorksSection steps={HowItWorksSteps} />
     </div>
   );
 }
 
-
 const HeroSection = () => {
-  const mainCTA = "Analyse Prompts";
-
   return (
     <section className="relative w-full min-h-[100dvh] pt-24 lg:pt-0 flex flex-col items-center justify-center px-4 overflow-x-hidden bg-gradient-to-b from-indigo-50 via-white to-white">
       <div className="relative z-10 w-full max-w-7xl px-4">
         <div className="flex flex-col lg:flex-row items-center lg:items-start gap-12">
-
           <div className="w-full lg:w-2/5 text-center lg:text-left">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-6 tracking-tight leading-snug sm:leading-tight">
-              Turn LLM prompts into{" "}
+              Turn unstructured documents into{' '}
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-500 to-indigo-400">
-                actionable insights
+                organised knowledge
               </span>
             </h1>
 
             <p className="text-base sm:text-lg md:text-xl font-medium text-gray-700 mb-8 max-w-xl mx-auto lg:mx-0">
-              Analyse user prompts, uncover semantic patterns, and optimize your
-              LLM-powered products.
+              Index, analyse, and organise documents using semantic clustering,
+              automatic labelling, and flexible collection management.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-6">
@@ -53,17 +50,18 @@ const HeroSection = () => {
                 href="/dashboard"
                 className="relative inline-flex items-center justify-center px-6 sm:px-8 py-4 font-semibold rounded-xl bg-indigo-600 text-white shadow-2xl hover:bg-indigo-500 transform hover:-translate-y-1 transition-all duration-300"
               >
-                {mainCTA}
+                Explore Sereleum
               </Link>
             </div>
           </div>
 
           <div className="relative w-full lg:w-3/5 flex justify-center lg:justify-end">
             <div className="absolute -inset-6 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-400 opacity-20 blur-3xl rounded-3xl" />
+
             <div className="relative bg-white/80 backdrop-blur rounded-2xl shadow-2xl ring-1 ring-gray-200 p-2 w-full border-2 border-indigo-500/30">
               <Image
-                src="/screenshots/dashboard-page.png"
-                alt="Sereleum dashboard preview"
+                src="/screenshots/overview.png"
+                alt="Sereleum document organisation dashboard"
                 width={1600}
                 height={1000}
                 priority
@@ -73,11 +71,6 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
-
-      {/* <div className="absolute inset-0 overflow-hidden z-0">
-        <GradientWave opacity={0.06} />
-        <GradientWave flip opacity={0.02} />
-      </div> */}
     </section>
   );
 };
@@ -86,10 +79,12 @@ const FeaturesSection = () => (
   <section className="w-full flex flex-col py-24 bg-gray-50 relative">
     <div className="max-w-4xl mx-auto px-6 text-center mb-20">
       <h2 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight text-gray-900">
-        Built for Prompt Intelligence
+        Document Analysis & Organisation
       </h2>
+
       <p className="text-lg md:text-xl text-gray-500 leading-relaxed max-w-2xl mx-auto">
-        Learn how Sereleum can help you enhance your LLM products.
+        Discover meaningful patterns in your documents and turn them into
+        organised, manageable collections.
       </p>
     </div>
 
@@ -107,27 +102,37 @@ const FeaturesSection = () => (
   </section>
 );
 
-
-
-export const HowItWorksSection = ({ steps }: { steps: SectionItem[] }) => {
+export const HowItWorksSection = ({
+  steps,
+}: {
+  steps: SectionItem[];
+}) => {
   return (
-    <section className="flex flex-col w-full py-24 items-center justify-center">
+    <section className="flex flex-col w-full py-24 items-center justify-center bg-white">
       <div className="max-w-6xl mx-auto px-6 text-center mb-12">
         <h2 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight text-gray-900">
           How Sereleum works
         </h2>
+
         <p className="text-lg md:text-xl text-gray-500">
-          Index. Cluster. Label.
+          Index. Cluster. Label. Organise.
         </p>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+      <div className="max-w-7xl w-full mx-auto px-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 relative">
           {steps.map((step, idx) => (
-            <Card key={idx} title={step.title} description={step.description} index={idx} icon={step.icon}/>
+            <Card
+              key={idx}
+              title={step.title}
+              description={step.description}
+              index={idx}
+              icon={step.icon}
+            />
           ))}
         </div>
       </div>
     </section>
   );
 };
+

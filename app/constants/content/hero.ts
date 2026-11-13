@@ -1,55 +1,71 @@
-import {  SectionItem } from '@/app/types';
-import { faChartLine, faCoins, faDatabase, faLayerGroup, faShieldHalved, faTag } from '@fortawesome/free-solid-svg-icons';
+
+import { SectionItem } from '@/app/types';
+import {
+  faDatabase,
+  faLayerGroup,
+  faTag,
+  faFolderOpen,
+  faFileLines,
+  faMagnifyingGlass,
+} from '@fortawesome/free-solid-svg-icons';
 
 export const Features: SectionItem[] = [
   {
-    title: "Prompt Clustering & Intent Discovery",
+    title: "Document Indexing & Semantic Search",
     description:
-      "Automatically group semantically similar prompts to surface dominant user intents, workflows, and repeatable use cases.",
-    image: "/screenshots/cluster-plot.png",
+      "Index documents and generate semantic representations of their content, making information easier to explore and retrieve.",
+    image: "/screenshots/dashboard-page.png",
   },
   {
-    title: "Token Usage & Cost by Cluster",
+    title: "Semantic Clustering",
     description:
-      "Track token consumption and cost at the use-case level, focusing on the highest-impact clusters driving spend.",
-    image: "/screenshots/token-usage-cluster.png",
+      "Automatically group semantically similar documents to uncover shared topics, relationships, and recurring themes across your data.",
+    image: "/screenshots/clusters-page.png",
   },
   {
-    title: "Cluster-Driven System Prompt Refinement",
+    title: "Automatic Cluster Labelling",
     description:
-      "Align LLM system-prompts with observed user demand rather than assumptions.",
-    image: "/optimise-system-prompt.png",
+      "Use LLMs to generate meaningful labels for document clusters, making groups easier to understand, identify, and navigate.",
+    image: "/screenshots/cluster-details-page.png",
   },
   {
-    title: "Cluster-Driven Prompt Templates",
+    title: "Tagging & Collection Management",
     description:
-      "Use clusters to create reusable prompt templates, improving workflow efficiency and UX consistency.",
-    image: "/prompt-templates.png",
-  }
+      "Organise documents through a unified collection system, combining automatically generated clusters with manually managed tags.",
+    image: "/screenshots/prompts-page.png",
+  },
 ];
 
-  export const FlowDiagramSteps = [
-    { title: 'Analyse Prompts', icon: faChartLine },
-    {title: 'Understand User Intent', icon: faLayerGroup },
-    {title: 'Optimise Product', icon: faCoins },
-    {title: 'Better UX & Outcomes', icon: faShieldHalved },
-  ];
+export const FlowDiagramSteps = [
+  { title: "Index Documents", icon: faDatabase },
+  { title: "Discover Patterns", icon: faLayerGroup },
+  { title: "Organise Collections", icon: faFolderOpen },
+  { title: "Explore & Retrieve", icon: faMagnifyingGlass },
+];
 
-
-  export const HowItWorksSteps: SectionItem[] = [
-    {
-      title: "1. Indexing",
-      description: "Add prompts, generate embeddings, and store prompts, embeddings, and metadata.",
-      icon: faDatabase
-    },
-    {
-      title: "2. Clustering",
-      description:"Incremental clustering groups prompts as new data arrives.",
-      icon: faLayerGroup
-    },
-    {
-      title: "3. Labelling",
-      description: "LLM labels clusters, with manual fallback when confidence is low.",
-      icon: faTag
-    },
-  ];
+export const HowItWorksSteps: SectionItem[] = [
+  {
+    title: "1. Indexing",
+    description:
+      "Process documents, generate semantic embeddings, and store document content and associated metadata.",
+    icon: faDatabase,
+  },
+  {
+    title: "2. Clustering",
+    description:
+      "Automatically group semantically similar documents to discover relationships and recurring themes.",
+    icon: faLayerGroup,
+  },
+  {
+    title: "3. Labelling",
+    description:
+      "Use LLMs to generate descriptive labels for clusters, making automatically discovered groups easier to understand.",
+    icon: faTag,
+  },
+  {
+    title: "4. Collections",
+    description:
+      "Organise and manage documents through collections, combining automatic clustering with manual tagging.",
+    icon: faFolderOpen,
+  },
+];
