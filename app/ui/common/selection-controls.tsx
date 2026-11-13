@@ -26,7 +26,7 @@ export function SelectionControls({
   if (!isSelecting) {
     return (
       <div className="flex justify-end">
-        <button onClick={onSelect} className="px-4 py-2 border rounded">
+        <button onClick={onSelect} className="px-4 py-2 text-sm border rounded-md bg-indigo-600 text-white hover:bg-indigo-700 transition-colors">          
           {label}
         </button>
       </div>
@@ -53,11 +53,11 @@ export function SelectionControls({
         </span>
       </div>
 
-      <div className="flex items-center gap-3">
-        <button onClick={onClearSelection} className="px-4 py-2 border rounded">
+      <div className="flex items-center gap-3 text-sm">
+        <button onClick={onClearSelection} className="px-4 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
           Clear selection
         </button>
-        <button onClick={onDone} className="px-4 py-2 border rounded">
+        <button onClick={onDone} className="px-4 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
           Done
         </button>
       </div>

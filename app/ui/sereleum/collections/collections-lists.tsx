@@ -216,12 +216,12 @@ export function CollectionsWrapper<T extends CollectionType = CollectionType>({
                 onDone={() => resetSelection()}
               />
               {!isSelecting && isCluster && (
-                <button
-                  onClick={() => setIsCreatingCluster(true)}
-                  className="px-4 py-2 border rounded"
-                >
-                  Create Cluster
-                </button>
+              <button
+                onClick={() => setIsCreatingCluster(true)}
+                className="px-4 py-2 border-2 border-indigo-600 rounded-md text-sm  hover:bg-indigo-50 transition-colors"
+              >
+                Create Cluster
+              </button>
               )}
           </div>
 
